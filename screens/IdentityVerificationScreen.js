@@ -3,12 +3,23 @@ import { StyleSheet, Text, View, TextInput, Image, Alert, TouchableOpacity } fro
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
+import { useFonts } from 'expo-font';
+import Stepper from './Stepper';
 
 export default function IdentityVerificationScreen() {
   const [docType, setDocType] = useState('');
   const [idNumber, setIdNumber] = useState('');
   const [idDocument, setIdDocument] = useState(null);
   const [selfie, setSelfie] = useState(null);
+  const [currentStep, setCurrentStep] = useState(3); // State for step
+  const [fontsLoaded] = useFonts({
+    'BebasNeue': require('../assets/fonts/BebasNeue-Regular.ttf'),
+    'PoppinsMedium': require('../assets/fonts/Poppins-Medium.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   const handleUploadDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
@@ -40,46 +51,44 @@ export default function IdentityVerificationScreen() {
   };
 
   const handleSubmit = () => {
+    if (!validateIdNumber(idNumber)) {
+      Alert.alert('Invalid ID Number', 'Please enter a valid South African ID number.');
+      return;
+    }
+
     Alert.alert('Submitted', 'Identity verification details submitted successfully.');
   };
 
-  return (
-    <View style={styles.container}>
+  return (  
+    <View style={styles.container}> 
       <View style={styles.card}>
-        <Text style={styles.title}>Identity Verification</Text>
+    <Stepper currentStep={currentStep} />
+        <Text style={styles.title}>IDENTITY VERIFICATION</Text>
+        <Text style={styles.subtitle}>Verify your identity</Text>
 
-        {/* <Text style={styles.label}>Document Type</Text>
-        <Picker
-          selectedValue={docType}
-          onValueChange={(itemValue) => setDocType(itemValue)}
-        >
-          <Picker.Item label="Select Document Type" value="" />
-          <Picker.Item label="Driver's License" value="drivers_license" />
-          <Picker.Item label="ID Card" value="id_card" />
-        </Picker> */}
-
-        {/* <Text style={styles.label}>Enter your Identity Number</Text> */}
         <TextInput
           style={styles.input}
           value={idNumber}
           onChangeText={setIdNumber}
           placeholder="Enter your Identity Number"
+           placeholderTextColor="#02457A"
           keyboardType="numeric"
         />
 
-        {/* <Text style={styles.label}>Upload ID Document (PDF)</Text> */}
         <TouchableOpacity style={styles.fileInput} onPress={handleUploadDocument}>
           <Text style={styles.fileInputText}>
             {idDocument ? 'PDF Uploaded Successfully' : 'Tap to upload your ID document(PDF)'}
           </Text>
         </TouchableOpacity>
 
-        {/* <Text style={styles.label}>Take a Selfie with ID in Hand</Text> */}
         <TouchableOpacity style={styles.selfieButton} onPress={handleTakeSelfie}>
           {selfie ? (
             <Image source={{ uri: selfie }} style={styles.selfieImage} />
           ) : (
-            <Text style={styles.selfieText}>Take a picture of yourself holding your ID</Text>
+            <View style={styles.iconContainer}>
+              <Text style={styles.selfieText}>Take a picture of yourself holding your ID</Text>
+              <Image source={require('../assets/camera.png')} style={styles.cameraIcon} />
+            </View>
           )}
         </TouchableOpacity>
 
@@ -94,81 +103,115 @@ export default function IdentityVerificationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5', // Light background for the whole screen
-    justifyContent: 'center', // Center vertically
-    alignItems: 'center', // Center horizontally
-    padding: 20, // Adjust padding as needed
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   card: {
-    backgroundColor: '#02457A',
+    backgroundColor: 'white',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 5, // For Android shadow
+    elevation: 5,
     padding: 20,
     width: '100%',
-    maxWidth: 400, // Max width to avoid stretching on large screens
-    maxHeight: '90%', // Max height to fit within screen constraints
-    overflow: 'scroll', // Allow scrolling if content is too tall
+    maxWidth: 400,
+    maxHeight: '90%',
+    overflow: 'scroll',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 20,
+    fontFamily: 'BebasNeue',
+    color: '#02457A',
+    marginBottom: 10,
     textAlign: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+  },
+  subtitle: {
+    fontSize: 10,
+    fontFamily: 'PoppinsMedium',
+    color: '#02457A',
+    textAlign: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
   label: {
-    fontSize: 16, // Adjust size for labels
-    fontWeight: '600', // Semi-bold font weight for labels
-    marginBottom: 10, // Space below label
-    color: '#0000FF', // Blue color for labels
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#0000FF',
   },
   input: {
     height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    borderColor: '#163460',
+    borderWidth: 1.5,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 20,
+    width: 300,
+    color: '#02457A',
   },
   fileInput: {
     height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    borderColor: '#163460',
+    borderWidth: 1.5,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e0e0e0',
+    backgroundColor: 'white',
     marginBottom: 20,
     paddingHorizontal: 10,
+    width: 300,
   },
   fileInputText: {
-    color: '#0000FF', // Blue color for text
-    fontSize: 16,
+    color: '#02457A',
+    fontSize: 14,
   },
   selfieButton: {
-    width: '100%', // Match button width
+    width: '100',
     height: 100,
-    backgroundColor: '#e0e0e0', // Light grey background
+    backgroundColor: 'white',
     borderRadius: 10,
+    borderColor: '#02457A',
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
+    padding: 10,
+  },
+  iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 20,
+    flex: 1,
+    width: '100%',
+  },
+  cameraIcon: {
+    width: 40, // Adjust size as needed
+    height: 40, // Adjust size as needed
+    marginBottom: 10, // Space between icon and text
+  },
+  selfieText: {
+    color: '#02457A',
+    fontSize: 14,
+    textAlign: 'center',
+    width: '100%',
   },
   selfieImage: {
     width: '100%',
     height: '100%',
     borderRadius: 10,
   },
-  selfieText: {
-    color: '#888', // Grey text color
-    fontSize: 14,
-    textAlign: 'center',
-  },
   submitButton: {
-    backgroundColor: '#007BFF', // Blue background color for the button
+    backgroundColor: '#007BFF',
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -177,7 +220,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   submitButtonText: {
-    color: '#fff', // White text color
+    color: '#fff',
     fontSize: 16,
   },
 });
