@@ -1,27 +1,27 @@
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import IdentityVerificationScreen from './screens/IdentityVerificationScreen';
+import SuccessScreen from './screens/SuccessScreen';
 
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
-import IdentityVerificationScreen from './screens/IdentityVerificationScreen'; // Adjust the path if needed
+// Create a Stack Navigator
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      {/* <Text>Open up App.js to start working on your app!</Text>
-       */}
-       <IdentityVerificationScreen/>
-      <StatusBar style="auto" />
-    </View>
-
-
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="IdentityVerification">
+        <Stack.Screen 
+          name="IdentityVerification" 
+          component={IdentityVerificationScreen}
+          options={{ headerShown: false }} // Hide header for this screen
+        />
+        <Stack.Screen 
+          name="Success" 
+          component={SuccessScreen}
+          options={{ headerShown: false }} // Hide header for this screen
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

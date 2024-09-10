@@ -2,20 +2,26 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Image, Alert, TouchableOpacity } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera } from 'expo-camera';
 import { useFonts } from 'expo-font';
 import Stepper from './Stepper';
 
+// Import Navigation props
+import { useNavigation } from '@react-navigation/native';
+
 export default function IdentityVerificationScreen() {
-  const [docType, setDocType] = useState('');
   const [idNumber, setIdNumber] = useState('');
   const [idDocument, setIdDocument] = useState(null);
+  const [idDocumentName, setIdDocumentName] = useState('');
   const [selfie, setSelfie] = useState(null);
-  const [currentStep, setCurrentStep] = useState(3); // State for step
+  const [currentStep, setCurrentStep] = useState(3);
   const [fontsLoaded] = useFonts({
     'BebasNeue': require('../assets/fonts/BebasNeue-Regular.ttf'),
     'PoppinsMedium': require('../assets/fonts/Poppins-Medium.ttf'),
   });
+  const [error, setError] = useState('');
+
+  // Get navigation prop
+  const navigation = useNavigation();
 
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
@@ -27,26 +33,109 @@ export default function IdentityVerificationScreen() {
       copyToCacheDirectory: true,
     });
 
-    if (result.type === 'success') {
-      setIdDocument(result.uri);
+    console.log(result);
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const document = result.assets[0];
+      Alert.alert('File Selected', `File Name: ${document.name}\nFile URI: ${document.uri}`);
+      setIdDocument(document.uri);
+      setIdDocumentName(document.name);
+    } else {
+      Alert.alert('No file selected');
     }
   };
 
   const handleTakeSelfie = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
-    if (status === 'granted') {
-      let result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-      if (!result.cancelled) {
-        setSelfie(result.uri);
+      if (status === 'granted') {
+        let result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+
+        if (!result.canceled) {
+          setSelfie(result.uri);
+        }
+      } else {
+        Alert.alert("Camera permission is required to take a selfie.");
       }
-    } else {
-      Alert.alert("Camera permission is required to take a selfie.");
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred while taking the selfie.');
+    }
+  };
+
+  const validateIdNumber = (number) => {
+    if (!/^\d{13}$/.test(number)) {
+      return false;
+    }
+
+    const birthDate = number.substring(0, 6);
+    const genderCode = number.substring(6, 10);
+    const citizenshipCode = number[10];
+    const checksumDigit = number[12];
+
+    const year = parseInt(birthDate.substring(0, 2), 10);
+    const month = parseInt(birthDate.substring(2, 4), 10);
+    const day = parseInt(birthDate.substring(4, 6), 10);
+
+    const fullYear = year >= 0 && year <= 22 ? 2000 + year : 1900 + year;
+
+    const date = new Date(fullYear, month - 1, day);
+    if (date.getFullYear() !== fullYear || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      return false;
+    }
+
+    const genderCodeInt = parseInt(genderCode, 10);
+    if (isNaN(genderCodeInt) || genderCodeInt < 0 || genderCodeInt > 9999) {
+      return false;
+    }
+
+    if (citizenshipCode !== '0' && citizenshipCode !== '1') {
+      return false;
+    }
+
+    const idWithoutChecksum = number.substring(0, 12);
+    const computedChecksum = calculateLuhnChecksum(idWithoutChecksum);
+
+    return computedChecksum === parseInt(checksumDigit, 10);
+  };
+
+  const calculateLuhnChecksum = (number) => {
+    let sum = 0;
+    let shouldDouble = true;
+
+    for (let i = number.length - 1; i >= 0; i--) {
+      let digit = parseInt(number.charAt(i), 10);
+
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+
+    return (10 - (sum % 10)) % 10;
+  };
+
+  const handleIdNumberChange = (text) => {
+    const sanitizedText = text.replace(/\D/g, '');
+
+    if (sanitizedText.length <= 13) {
+      setIdNumber(sanitizedText);
+
+      if (sanitizedText.length === 13 && !validateIdNumber(sanitizedText)) {
+        setError('Invalid ID Number');
+      } else {
+        setError('');
+      }
     }
   };
 
@@ -56,28 +145,41 @@ export default function IdentityVerificationScreen() {
       return;
     }
 
-    Alert.alert('Submitted', 'Identity verification details submitted successfully.');
+    if (!idDocument) {
+      Alert.alert('Document Missing', 'Please upload your ID document.');
+      return;
+    }
+
+    // if (!selfie) {
+    //   Alert.alert('Selfie Missing', 'Please take a selfie.');
+    //   return;
+    // }
+
+    // Navigate to SuccessScreen if everything is valid
+    navigation.navigate('Success');
   };
 
-  return (  
-    <View style={styles.container}> 
+  return (
+    <View style={styles.container}>
       <View style={styles.card}>
-    <Stepper currentStep={currentStep} />
+        <Stepper currentStep={currentStep} />
         <Text style={styles.title}>IDENTITY VERIFICATION</Text>
         <Text style={styles.subtitle}>Verify your identity</Text>
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, error ? styles.inputError : {}]}
           value={idNumber}
-          onChangeText={setIdNumber}
+          onChangeText={handleIdNumberChange}
           placeholder="Enter your Identity Number"
-           placeholderTextColor="#02457A"
+          placeholderTextColor="#02457A"
           keyboardType="numeric"
+          maxLength={13}
         />
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <TouchableOpacity style={styles.fileInput} onPress={handleUploadDocument}>
           <Text style={styles.fileInputText}>
-            {idDocument ? 'PDF Uploaded Successfully' : 'Tap to upload your ID document(PDF)'}
+            {idDocumentName ? `PDF Uploaded: ${idDocumentName}` : 'Tap to upload your ID document (PDF)'}
           </Text>
         </TouchableOpacity>
 
@@ -141,14 +243,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 1,
     shadowRadius: 2,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 10,
-    color: '#0000FF',
   },
   input: {
     height: 40,
@@ -159,6 +255,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: 300,
     color: '#02457A',
+  },
+  inputError: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
   },
   fileInput: {
     height: 40,
@@ -177,7 +281,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   selfieButton: {
-    width: '100',
+    width: '100%',
     height: 100,
     backgroundColor: 'white',
     borderRadius: 10,
@@ -195,9 +299,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cameraIcon: {
-    width: 40, // Adjust size as needed
-    height: 40, // Adjust size as needed
-    marginBottom: 10, // Space between icon and text
+    width: 40,
+    height: 40,
+    marginBottom: 10,
   },
   selfieText: {
     color: '#02457A',
