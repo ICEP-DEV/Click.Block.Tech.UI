@@ -46,26 +46,8 @@ export default function IdentityVerificationScreen() {
   };
 
   const handleTakeSelfie = async () => {
-    try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-
-      if (status === 'granted') {
-        let result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 1,
-        });
-
-        if (!result.canceled) {
-          setSelfie(result.uri);
-        }
-      } else {
-        Alert.alert("Camera permission is required to take a selfie.");
-      }
-    } catch (error) {
-      Alert.alert('Error', 'An error occurred while taking the selfie.');
-    }
+    // Simulate image capture by setting a local image URI
+    setSelfie(require('../assets/selfie.jpg'));
   };
 
   const validateIdNumber = (number) => {
@@ -150,10 +132,10 @@ export default function IdentityVerificationScreen() {
       return;
     }
 
-    // if (!selfie) {
-    //   Alert.alert('Selfie Missing', 'Please take a selfie.');
-    //   return;
-    // }
+    if (!selfie) {
+      Alert.alert('Selfie Missing', 'Please take a selfie.');
+      return;
+    }
 
     // Navigate to SuccessScreen if everything is valid
     navigation.navigate('Success');
@@ -161,6 +143,7 @@ export default function IdentityVerificationScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.background} />
       <View style={styles.card}>
         <Stepper currentStep={currentStep} />
         <Text style={styles.title}>IDENTITY VERIFICATION</Text>
@@ -179,13 +162,13 @@ export default function IdentityVerificationScreen() {
 
         <TouchableOpacity style={styles.fileInput} onPress={handleUploadDocument}>
           <Text style={styles.fileInputText}>
-            {idDocumentName ? `PDF Uploaded: ${idDocumentName}` : 'Tap to upload your ID document (PDF)'}
+            {idDocumentName ? `${idDocumentName}` : 'Tap to upload your ID document (PDF)'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.selfieButton} onPress={handleTakeSelfie}>
           {selfie ? (
-            <Image source={{ uri: selfie }} style={styles.selfieImage} />
+            <Image source={selfie} style={styles.selfieImage} />
           ) : (
             <View style={styles.iconContainer}>
               <Text style={styles.selfieText}>Take a picture of yourself holding your ID</Text>
@@ -282,7 +265,7 @@ const styles = StyleSheet.create({
   },
   selfieButton: {
     width: '100%',
-    height: 100,
+    height: '40%',
     backgroundColor: 'white',
     borderRadius: 10,
     borderColor: '#02457A',
@@ -299,8 +282,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cameraIcon: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginBottom: 10,
   },
   selfieText: {
@@ -310,21 +293,33 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   selfieImage: {
-    width: '100%',
+    width: '90%',
     height: '100%',
     borderRadius: 10,
   },
   submitButton: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#02457A',
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 10,
+    alignSelf: 'center', // This will center the button horizontally
   },
   submitButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  background: {
+    position: 'absolute',
+    top: 0,
+    // right:0,
+    left:0,
+    bottom: 0,
+    width: '120%',
+    height: '40%',
+    backgroundColor: '#02457A', // This can be changed to an image if needed
+    zIndex: -1, // Ensure it is behind other elements
   },
 });
