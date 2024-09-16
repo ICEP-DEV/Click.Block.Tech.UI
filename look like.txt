@@ -1,0 +1,133 @@
+import React from 'react';
+import { View, Text, Image, StyleSheet, Switch, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function ManageCard() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Ionicons name="arrow-back" size={24} color="white" />
+        <Text style={styles.headerText}>MANAGE CARD</Text>
+        <View style={styles.placeholder} />
+      </View>
+      
+      <View style={styles.content}>
+        <Image
+          source={{ uri: '/placeholder.svg?height=200&width=300' }}
+          style={styles.cardImage}
+        />
+        <Text style={styles.cardType}>Debit Card</Text>
+        
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>View card details</Text>
+        </TouchableOpacity>
+        
+        <View style={styles.option}>
+          <Text style={styles.optionText}>Deactivate your card</Text>
+          <Switch />
+        </View>
+        
+        <View style={styles.option}>
+          <Text style={styles.optionText}>Activate/Deactivate Panic Button Feature</Text>
+          <Switch />
+        </View>
+        
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>Card Settings</Text>
+        </TouchableOpacity>
+      </View>
+      
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.footerItem}>
+          <Ionicons name="home-outline" size={24} color="white" />
+          <Text style={styles.footerText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.footerItem}>
+          <Ionicons name="settings-outline" size={24} color="white" />
+          <Text style={styles.footerText}>Manage</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.footerItem, styles.qrButton]}>
+          <Ionicons name="qr-code-outline" size={32} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.footerItem}>
+          <Ionicons name="notifications-outline" size={24} color="white" />
+          <Text style={styles.footerText}>Notifications</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.footerItem}>
+          <Ionicons name="swap-horizontal-outline" size={24} color="white" />
+          <Text style={styles.footerText}>Transact</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1a2b4d',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  headerText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  placeholder: {
+    width: 24,
+  },
+  content: {
+    flex: 1,
+    padding: 16,
+  },
+  cardImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+  },
+  cardType: {
+    color: 'white',
+    fontSize: 16,
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  option: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  optionText: {
+    color: '#1a2b4d',
+    fontSize: 16,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#0f1c3f',
+    paddingVertical: 8,
+  },
+  footerItem: {
+    alignItems: 'center',
+  },
+  footerText: {
+    color: 'white',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  qrButton: {
+    backgroundColor: '#2c4b8c',
+    borderRadius: 30,
+    padding: 12,
+    marginTop: -20,
+  },
+});
