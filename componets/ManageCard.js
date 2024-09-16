@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import BottomNavigation from './BottomNavigation'; // Ensure the path is correct based on your project structure
+
+const { width } = Dimensions.get('window');
 
 const ManageCard = () => {
   const [isCardDeactivated, setIsCardDeactivated] = useState(false);
@@ -11,15 +13,17 @@ const ManageCard = () => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="white" />
+        <TouchableOpacity onPress={() => console.log('Back pressed')}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
         <Text style={styles.headerText}>MANAGE CARD</Text>
         <View style={styles.placeholder} />
       </View>
 
-      {/* Card Section */}
-      <View style={styles.content}>
+      {/* Scrollable Content */}
+      <ScrollView contentContainerStyle={styles.content}>
         <Image
-          source={{ uri: 'assets/ManageCard/6089337.jpg' }} // Replace with your actual card image URI
+          source={{ uri: 'https://i.guim.co.uk/img/media/13043cde285e39b573b7e23019d6fe3cbbfbc3d4/371_903_7825_4694/master/7825.jpg?width=700&quality=85&auto=format&fit=max&s=73fb68f6e7aa471e5ef07f8a5ce829d1' }} // Use remote image URI
           style={styles.cardImage}
         />
         <Text style={styles.cardType}>Debit Card</Text>
@@ -29,41 +33,39 @@ const ManageCard = () => {
           <Text style={styles.optionText}>View card details</Text>
         </TouchableOpacity>
 
-        {/* Toggle with Border */}
         <View style={styles.option}>
           <Text style={styles.optionText}>Deactivate your card</Text>
-          <View style={styles.toggleWrapper}>
-            <Switch
-              value={isCardDeactivated}
-              onValueChange={setIsCardDeactivated}
-              thumbColor={isCardDeactivated ? 'white' : '#02457A'} // Set thumb color
-              trackColor={{ false: 'white', true: '#02457A' }} // Set track color for off and on states
-            />
-          </View>
+          <Switch
+            value={isCardDeactivated}
+            onValueChange={setIsCardDeactivated}
+            thumbColor={isCardDeactivated ? 'white' : '#02457A'}
+            trackColor={{ false: '#ccc', true: '#02457A' }}
+            style={styles.switch}
+          />
         </View>
 
         <View style={styles.option}>
           <Text style={styles.optionText}>Activate/Deactivate Panic Button Feature</Text>
-          <View style={styles.toggleWrapper}>
-            <Switch
-              value={isPanicButtonActive}
-              onValueChange={setIsPanicButtonActive}
-              thumbColor={isPanicButtonActive ? 'white' : '#02457A'} // Set thumb color
-              trackColor={{ false: 'white', true: '#02457A' }} // Set track color for off and on states
-            />
-          </View>
+          <Switch
+            value={isPanicButtonActive}
+            onValueChange={setIsPanicButtonActive}
+            thumbColor={isPanicButtonActive ? 'white' : '#02457A'}
+            trackColor={{ false: '#ccc', true: '#02457A' }}
+            style={styles.switch}
+          />
         </View>
 
         <TouchableOpacity style={styles.option}>
           <Text style={styles.optionText}>Card Settings</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
 
       {/* Bottom Navigation */}
       <BottomNavigation />
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -74,32 +76,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#02457A', // Dark blue background color
-    position: 'absolute', // Position the header absolutely
-    top: 0, // Align it to the top
-    left: 0, // Align it to the left
-    right: 0, // Align it to the right
-    width: '100%', // Ensure it takes the full width
+    backgroundColor: '#02457A',
+    width: '100%',
+    height: 60,
+    position: 'relative',
+    zIndex: 1, // Ensure header is above other content
   },
   headerText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center', // Align text to center
-    flex: 1, // Take up available space
+    textAlign: 'center',
+    flex: 1,
   },
   placeholder: {
     width: 24,
   },
   content: {
-    flex: 1,
     padding: 16,
-    marginTop: 64, // Add margin to avoid overlap with the header
+    marginTop: 60, // Adjust based on header height
   },
   cardImage: {
-    width: '100%',
-    height: 400,
+    width: width - 32, // 16px padding on each side
+    height: (width - 32) * 0.2, // Smaller height to fit better on the screen
     resizeMode: 'contain',
+    alignSelf: 'center',
+    backgroundColor: '#f0f0f0', // Background color in case image doesn't load
   },
   cardType: {
     fontSize: 16,
@@ -114,7 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
-    padding: 16,
+    padding: 12,
     borderRadius: 8,
     marginBottom: 8,
     shadowColor: '#000',
@@ -125,16 +127,12 @@ const styles = StyleSheet.create({
   },
   optionText: {
     color: '#02457A',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
-  toggleWrapper: {
-    borderWidth: 2, // Border thickness
-    borderColor: '#02457A', // Border color
-    borderRadius: 20, // Rounded corners for the border
-    padding: 3, // Padding inside the border
+  switch: {
+    transform: [{ scale: 0.8 }], // Scale down the switch
   },
 });
-
 
 export default ManageCard;
