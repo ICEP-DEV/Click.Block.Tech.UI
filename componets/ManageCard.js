@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Switch,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Platform,
+  StatusBar
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import BottomNavigation from './BottomNavigation'; // Ensure the path is correct based on your project structure
-
-const { width } = Dimensions.get('window');
 
 const ManageCard = () => {
   const [isCardDeactivated, setIsCardDeactivated] = useState(false);
@@ -11,10 +19,11 @@ const ManageCard = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#02457A" />
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => console.log('Back pressed')}>
-          <Ionicons name="arrow-back" size={24} color="white" />
+        <TouchableOpacity onPress={() => console.log('Back pressed')} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={13} color="white" />
         </TouchableOpacity>
         <Text style={styles.headerText}>MANAGE CARD</Text>
         <View style={styles.placeholder} />
@@ -23,7 +32,7 @@ const ManageCard = () => {
       {/* Scrollable Content */}
       <ScrollView contentContainerStyle={styles.content}>
         <Image
-          source={{ uri: 'https://i.guim.co.uk/img/media/13043cde285e39b573b7e23019d6fe3cbbfbc3d4/371_903_7825_4694/master/7825.jpg?width=700&quality=85&auto=format&fit=max&s=73fb68f6e7aa471e5ef07f8a5ce829d1' }} // Use remote image URI
+          source={{ uri: 'https://t3.ftcdn.net/jpg/05/74/43/12/240_F_574431210_icdpLDlDxAfsNacnV56vIWb4pCRnaNBA.jpg' }}
           style={styles.cardImage}
         />
         <Text style={styles.cardType}>Debit Card</Text>
@@ -61,7 +70,29 @@ const ManageCard = () => {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <BottomNavigation />
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="home-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="settings-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Manage</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.navItem, styles.navItemCenter]}>
+          <View style={styles.qrButton}>
+            <Ionicons name="qr-code" size={24} color="white" />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="notifications-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Notifications</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="swap-horizontal-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Transact</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -78,60 +109,94 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#02457A',
     width: '100%',
-    height: 60,
-    position: 'relative',
-    zIndex: 1, // Ensure header is above other content
+    height: Platform.OS === 'ios' ? 90 : 60,
+    paddingTop: Platform.OS === 'ios' ? 40 : 16,
+  },
+  backButton: {
+    padding: 8,
+    marginLeft: -8,
   },
   headerText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
     flex: 1,
   },
   placeholder: {
-    width: 24,
+    width: 40,
   },
   content: {
     padding: 16,
-    marginTop: 60, // Adjust based on header height
+    paddingBottom: 80,
   },
   cardImage: {
-    width: width - 32, // 16px padding on each side
-    height: (width - 32) * 0.2, // Smaller height to fit better on the screen
+    width: '100%',
+    height: 200,
     resizeMode: 'contain',
-    alignSelf: 'center',
-    backgroundColor: '#f0f0f0', // Background color in case image doesn't load
+    marginBottom: 16,
   },
   cardType: {
-    fontSize: 16,
-    marginTop: 8,
-    marginBottom: 16,
-    textAlign: 'center',
+    fontSize: 18,
+    marginBottom: 24,
     color: '#02457A',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   option: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
-    padding: 12,
+    padding: 16,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   optionText: {
     color: '#02457A',
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '500',
+    flex: 1,
   },
   switch: {
-    transform: [{ scale: 0.8 }], // Scale down the switch
+    transform: [{ scale: 0.8 }],
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    height: 60,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  navItem: {
+    alignItems: 'center',
+  },
+  navItemCenter: {
+    top: -15,
+  },
+  qrButton: {
+    backgroundColor: '#02457A',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navText: {
+    color: '#02457A',
+    fontSize: 12,
+    marginTop: 4,
   },
 });
 
