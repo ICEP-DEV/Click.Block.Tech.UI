@@ -1,100 +1,136 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, Switch, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function ManageCard() {
+const ManageCard = () => {
+  const [isCardDeactivated, setIsCardDeactivated] = useState(false);
+  const [isPanicButtonActive, setIsPanicButtonActive] = useState(false);
+
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#02457A" />
+      {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="white" />
+        <TouchableOpacity onPress={() => console.log('Back pressed')} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={28} color="white" />
+        </TouchableOpacity>
         <Text style={styles.headerText}>MANAGE CARD</Text>
         <View style={styles.placeholder} />
       </View>
-      
-      <View style={styles.content}>
+
+      {/* Scrollable Content */}
+      <ScrollView contentContainerStyle={styles.content}>
         <Image
-          source={{ uri: '/placeholder.svg?height=200&width=300' }}
+             source={{ uri: 'https://img.freepik.com/premium-vector/realistic-credit-card-design_23-2149126086.jpg?w=740' }}
           style={styles.cardImage}
         />
         <Text style={styles.cardType}>Debit Card</Text>
-        
+
+        {/* Card Options */}
         <TouchableOpacity style={styles.option}>
           <Text style={styles.optionText}>View card details</Text>
         </TouchableOpacity>
-        
+
         <View style={styles.option}>
           <Text style={styles.optionText}>Deactivate your card</Text>
-          <Switch />
+          <Switch
+            value={isCardDeactivated}
+            onValueChange={setIsCardDeactivated}
+            thumbColor={isCardDeactivated ? 'white' : '#02457A'}
+            trackColor={{ false: '#ccc', true: '#02457A' }}
+            style={styles.switch}
+          />
         </View>
-        
+
         <View style={styles.option}>
           <Text style={styles.optionText}>Activate/Deactivate Panic Button Feature</Text>
-          <Switch />
+          <Switch
+            value={isPanicButtonActive}
+            onValueChange={setIsPanicButtonActive}
+            thumbColor={isPanicButtonActive ? 'white' : '#02457A'}
+            trackColor={{ false: '#ccc', true: '#02457A' }}
+            style={styles.switch}
+          />
         </View>
-        
+
         <TouchableOpacity style={styles.option}>
           <Text style={styles.optionText}>Card Settings</Text>
         </TouchableOpacity>
-      </View>
-      
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerItem}>
-          <Ionicons name="home-outline" size={24} color="white" />
-          <Text style={styles.footerText}>Home</Text>
+      </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="home-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}>
-          <Ionicons name="settings-outline" size={24} color="white" />
-          <Text style={styles.footerText}>Manage</Text>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="settings-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Manage</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.footerItem, styles.qrButton]}>
-          <Ionicons name="qr-code-outline" size={32} color="white" />
+        <TouchableOpacity style={[styles.navItem, styles.navItemCenter]}>
+          <View style={styles.qrButton}>
+            <Ionicons name="qr-code" size={24} color="white" />
+          </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}>
-          <Ionicons name="notifications-outline" size={24} color="white" />
-          <Text style={styles.footerText}>Notifications</Text>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="notifications-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Notifications</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}>
-          <Ionicons name="swap-horizontal-outline" size={24} color="white" />
-          <Text style={styles.footerText}>Transact</Text>
+        <TouchableOpacity style={styles.navItem}>
+          <Ionicons name="swap-horizontal-outline" size={24} color="#02457A" />
+          <Text style={styles.navText}>Transact</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a2b4d',
+    backgroundColor: 'white',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+    backgroundColor: '#02457A',
+    width: '100%',
+    height: Platform.OS === 'ios' ? 90 : 60,
+    paddingTop: Platform.OS === 'ios' ? 40 : 16,
+  },
+  backButton: {
+    padding: 8,
+    marginLeft: -8,
   },
   headerText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1,
   },
   placeholder: {
-    width: 24,
+    width: 40,
   },
   content: {
-    flex: 1,
     padding: 16,
+    paddingBottom: 80,
   },
   cardImage: {
     width: '100%',
     height: 200,
     resizeMode: 'contain',
+    marginBottom: 16,
   },
   cardType: {
-    color: 'white',
-    fontSize: 16,
-    marginTop: 8,
-    marginBottom: 16,
+    fontSize: 18,
+    marginBottom: 24,
+    color: '#02457A',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   option: {
     flexDirection: 'row',
@@ -103,31 +139,54 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 16,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   optionText: {
-    color: '#1a2b4d',
+    color: '#02457A',
     fontSize: 16,
+    fontWeight: '500',
+    flex: 1,
   },
-  footer: {
+  switch: {
+    transform: [{ scale: 0.8 }],
+  },
+  bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#0f1c3f',
-    paddingVertical: 8,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    height: 60,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
-  footerItem: {
+  navItem: {
     alignItems: 'center',
   },
-  footerText: {
-    color: 'white',
+  navItemCenter: {
+    top: -15,
+  },
+  qrButton: {
+    backgroundColor: '#02457A',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navText: {
+    color: '#02457A',
     fontSize: 12,
     marginTop: 4,
   },
-  qrButton: {
-    backgroundColor: '#2c4b8c',
-    borderRadius: 30,
-    padding: 12,
-    marginTop: -20,
-  },
 });
+
+export default ManageCard;
