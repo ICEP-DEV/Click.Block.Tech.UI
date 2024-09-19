@@ -10,16 +10,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Registration">
-        <Stack.Screen 
-          name="Registration" 
-          component={Registration} 
-          options={{ title: 'Create Account' }} 
-        />
-        <Stack.Screen 
-          name="PersonalInfo" 
-          component={PersonalInfoForm} 
-          options={{ title: 'Personal Information' }} 
-        />
+      <Stack.Screen name="Registration" component={Registration}  options={{ headerShown: false }}  />
+      <Stack.Screen name="PersonalInfo" component={PersonalInfoForm}  options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

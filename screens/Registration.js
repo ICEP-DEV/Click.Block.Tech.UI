@@ -72,7 +72,7 @@ const Registration = ({ navigation }) => {
       Alert.alert('Error', pinError);
     } else {
       Alert.alert('Success', 'Registration completed successfully!', [
-        { text: 'OK', onPress: () => navigation.navigate('PersonalInfoForm') }
+        { text: 'OK', onPress: () => navigation.navigate('PersonalInfo') } 
       ]);
     }
   };
