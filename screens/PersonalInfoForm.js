@@ -36,7 +36,7 @@ const PersonalInfoForm = ({ navigation }) => {
     }
 
     Alert.alert('Info', 'Personal information saved!', [
-      { text: 'OK', onPress: () => navigation.navigate('NextScreen') }
+      { text: 'OK', onPress: () => navigation.navigate('ContactDetails') }
     ]);
   };
 
