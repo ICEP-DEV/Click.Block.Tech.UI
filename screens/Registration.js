@@ -1,295 +1,295 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { Checkbox } from 'react-native-paper'; // Import from react-native-paper
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
+import { CheckBox } from 'react-native-elements';
 
-const InputWithIcon = ({ icon, placeholder, value, onChangeText, secureTextEntry, error }) => (
-  <View style={styles.inputWrapper}>
-  <View style={styles.inputContainer}>
-    <Image source={icon} style={styles.icon} />
-    <TextInput
-      style={[styles.input, error && styles.inputError]}
-      placeholder={placeholder}
-      value={value}
-      onChangeText={onChangeText}
-      secureTextEntry={secureTextEntry}
-      placeholderTextColor="#666"
-    />
-    </View>
-    {error && <Text style={styles.errorText}>{error}</Text>}
-  </View>
-);
+// Import images
+const userIcon = require('../assets/user.png');
+const avatarIcon = require('../assets/avatar.png');
+const emailIcon = require('../assets/email.png');
+const padlockIcon = require('../assets/padlock.png');
 
-export default function Registration() {
+const Registration = ({ navigation }) => {
+  const [checked, setChecked] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
-  const [isChecked, setIsChecked] = useState(false);
-  const [errors, setErrors] = useState({});
 
-  const validate = () => {
-    let valid = true;
-    let newErrors = {};
+  const handleFirstNameChange = (text) => {
+    const alphabeticText = text.replace(/[^a-zA-Z\s]/g, '');
+    setFirstName(alphabeticText);
+  };
 
-    // Validate First Name
-    if (!/^[a-zA-Z\s]{1,50}$/.test(firstName)) {
-      newErrors.firstName = 'First name must contain only letters and spaces,up to 50 characters long.';
-      valid = false;
+  const handleLastNameChange = (text) => {
+    const alphabeticText = text.replace(/[^a-zA-Z\s]/g, '');
+    setLastName(alphabeticText);
+  };
+
+  const handlePinChange = (text) => {
+    const numericText = text.replace(/[^0-9]/g, '');
+    setPin(numericText.slice(0, 5));
+  };
+
+  const handleConfirmPinChange = (text) => {
+    const numericText = text.replace(/[^0-9]/g, '');
+    setConfirmPin(numericText.slice(0, 5));
+  };
+
+  const validatePins = () => {
+    if (pin.length < 5) {
+      return 'You must enter exactly five digits for the PIN.';
     }
-
-    // Validate Last Name
-    if (!/^[a-zA-Z\s]{1,50}$/.test(lastName)) {
-      newErrors.lastName = 'Last name must contain only letters and spaces,up to 50 characters long.';
-      valid = false;
-    }
-
-    // Validate Email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      newErrors.email = 'Invalid email address.';
-      valid = false;
-    }
-
-    // Validate PIN
-    if (!/^\d{6}$/.test(pin)) {
-      newErrors.pin = 'PIN must be exactly 6 digits.';
-      valid = false;
-    }
-
-    // Validate Confirm PIN
     if (pin !== confirmPin) {
-      newErrors.confirmPin = 'PINs do not match.';
-      valid = false;
+      return 'PINs do not match.';
     }
+    return '';
+  };
 
-    // Validate Checkbox
-    if (!isChecked) {
-      newErrors.checkbox = 'You must agree to the Terms & Conditions.';
-      valid = false;
-    }
+  const validateEmail = (email) => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  };
 
-    setErrors(newErrors);
-    return valid;
+  const isFormValid = () => {
+    return (
+      checked &&
+      firstName.trim() !== '' &&
+      lastName.trim() !== '' &&
+      email.trim() !== '' &&
+      pin.trim() !== '' &&
+      confirmPin.trim() !== ''
+    );
   };
 
   const handleSubmit = () => {
-    if (validate()) {
-      // Proceed with form submission
-      console.log('Form is valid. Proceeding with submission...');
+    const pinError = validatePins();
+    if (!isFormValid()) {
+      Alert.alert('Error', 'Please fill out all fields correctly.');
+    } else if (!validateEmail(email)) {
+      Alert.alert('Error', 'Invalid email format.');
+    } else if (pinError) {
+      Alert.alert('Error', pinError);
+    } else {
+      Alert.alert('Success', 'Registration completed successfully!', [
+        { text: 'OK', onPress: () => navigation.navigate('PersonalInfoForm') }
+      ]);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.background} />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.card}>
-          <Text style={styles.header}>CREATE YOUR ACCOUNT</Text>
-          <Image source={require('../assets/user.png')} style={styles.iconTop} />
-          <Text style={styles.subHeader}>It will only take you a few minutes!</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.formContainer}>
+        <Text style={styles.headerText}>CREATE YOUR ACCOUNT</Text>
+        <Image source={userIcon} style={styles.userIcon} />
+        <Text style={styles.subHeaderText}>It will only take you a few minutes!</Text>
 
-          <InputWithIcon
-            icon={require('../assets/Account.png')}
-            placeholder="First Name"
+        <View style={styles.inputWrapper}>
+          <Image source={avatarIcon} style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your first name(s)"
             value={firstName}
-            onChangeText={setFirstName}
-            error={errors.firstName}
+            onChangeText={handleFirstNameChange}
+            placeholderTextColor="#02457A"
           />
-          <InputWithIcon
-            icon={require('../assets/Account.png')}
-            placeholder="Last Name"
+        </View>
+
+        <View style={styles.inputWrapper}>
+          <Image source={avatarIcon} style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your last name"
             value={lastName}
-            onChangeText={setLastName}
-            error={errors.lastName}
+            onChangeText={handleLastNameChange}
+            placeholderTextColor="#02457A"
           />
-          <InputWithIcon
-            icon={require('../assets/mail.png')}
-            placeholder="Email"
+        </View>
+
+        <View style={styles.inputWrapper}>
+          <Image source={emailIcon} style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
-            error={errors.email}
+            placeholderTextColor="#02457A"
           />
-          <InputWithIcon
-            icon={require('../assets/padlock.png')}
-            placeholder="Create your PIN"
-            value={pin}
-            onChangeText={setPin}
-            secureTextEntry
-            maxLength={6}
-            error={errors.pin}
-          />
-          <InputWithIcon
-            icon={require('../assets/padlock.png')}
-            placeholder="Confirm your PIN"
-            value={confirmPin}
-            onChangeText={setConfirmPin}
-            secureTextEntry
-            maxLength={6}
-            error={errors.confirmPin}
-          />
-
-          <View style={styles.checkboxContainer}>
-            <Checkbox
-              status={isChecked ? 'checked' : 'unchecked'}
-              onPress={() => setIsChecked(!isChecked)}
-              color='#02457A'
-            />
-            <Text style={styles.checkboxLabel}>
-              I have read and agree to the <Text style={styles.link}>Terms & Conditions</Text>.
-            </Text>
-          </View>
-          {errors.checkbox && <Text style={styles.errorText}>{errors.checkbox}</Text>}
-
-          <TouchableOpacity
-            style={[styles.submitButton, !isChecked && styles.disabledButton]}
-            disabled={!isChecked}
-            onPress={handleSubmit}
-          >
-            <Text style={styles.submitButtonText}>Sign Up</Text>
-          </TouchableOpacity>
-          <Text style={styles.footerText}>
-            You already have an account? <Text style={styles.link}>Login here.</Text>
-          </Text>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+        <View style={styles.inputWrapper}>
+          <Image source={padlockIcon} style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Please create your remote PIN"
+            value={pin}
+            onChangeText={handlePinChange}
+            secureTextEntry
+            maxLength={5}
+            keyboardType="numeric"
+            placeholderTextColor="#02457A"
+          />
+        </View>
+
+        <View style={styles.inputWrapper}>
+          <Image source={padlockIcon} style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm your remote PIN"
+            value={confirmPin}
+            onChangeText={handleConfirmPinChange}
+            secureTextEntry
+            maxLength={5}
+            keyboardType="numeric"
+            placeholderTextColor="#02457A"
+          />
+        </View>
+
+        <View style={styles.checkboxContainer}>
+          <CheckBox
+            checked={checked}
+            onPress={() => setChecked(!checked)}
+            containerStyle={styles.checkbox}
+          />
+          <Text style={styles.checkboxText}>I have read and agree to the</Text>
+          <TouchableOpacity>
+            <Text style={styles.linkText}>Terms & Conditions</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.button, !isFormValid() && styles.disabledButton]}
+          onPress={handleSubmit}
+          disabled={!isFormValid()}
+        >
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+
+        <View style={styles.loginContainer}>
+          <Text style={styles.loginText}>Already have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.loginLink}>Login here</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center', // Center content vertically if needed
-    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#02457a',
+    paddingVertical: 50,
   },
-  card: {
-    backgroundColor: 'white',
+  formContainer: {
+    width: '90%',
+    backgroundColor: '#fff',
+    padding: 45,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 5,
     elevation: 5,
-    padding: 20,
-    width: '100%',
-    maxWidth: 400,
     alignItems: 'center',
-    marginTop: 50,
-    marginBottom: 20, // Adjust margin to create space for footer
   },
-  background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: '120%',
-    height: '40%',
-    backgroundColor: '#02457A',
-    zIndex: -1,
-  },
-  header: {
+  headerText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#02457A',
-    marginBottom: 10,
     textAlign: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.5,
-    shadowRadius: 3,
+    marginBottom: 10,
   },
-  iconTop: {
-    width: 100, // Adjust width as needed
-    height: 100, // Adjust height as needed
-    marginBottom: 10, // Adjust spacing as needed
-  },
-  subHeader: {
+  subHeaderText: {
     fontSize: 14,
     color: '#02457A',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 30,
+  },
+  userIcon: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+    marginBottom: 20,
   },
   inputWrapper: {
-    width: 300,
-    marginBottom: 20,
-  },
-  inputContainer: {
-    position: 'relative',
-    width: 300,
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1.5,
-    borderColor: '#163460',
-    borderRadius: 5,
-    paddingHorizontal: 40, // Add extra padding to accommodate the icon
-    marginVertical: 8,
-    fontSize: 16,
-    color: '#02457A',
-  },
-  inputError: {
-    borderColor: 'red',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 25,
+    height: 40,
+    width: '100%',
   },
   icon: {
     position: 'absolute',
-    left: 10,
-    top: '50%',
-    transform: [{ translateY: -12 }], // Center the icon vertically
-    width: 24, // Adjust size as needed
-    height: 24, // Adjust size as needed
+    right: 150,
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
+  },
+  input: {
+    flex: 1,
+    height: '100%',
+    fontSize: 14,
+    color: '#02457A',
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
-  },
-  checkboxLabel: {
-    fontSize: 14,
-    marginLeft: 8,
-  },
-  link: {
-    color: '#02457A',
-    textDecorationLine: 'underline',
-  },
-  submitButton: {
-    backgroundColor: '#02457A',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10,
-    alignSelf: 'center',
+    marginBottom: 20,
     width: '100%',
+  },
+  checkbox: {
+    marginRight: 5,
+    padding: 0,
+  },
+  checkboxText: {
+    fontSize: 12,
+    color: '#555',
+  },
+  linkText: {
+    fontSize: 12,
+    color: '#02457A',
+    fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  button: {
+    backgroundColor: '#02457A',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    width: '100%',
+    alignItems: 'center',
   },
   disabledButton: {
     backgroundColor: '#ccc',
   },
-  submitButtonText: {
+  buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
   },
-  footerText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    marginTop: 10, // Ensure space between the button and footer
+  loginContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
   },
-  errorText: {
-    color: 'red',
+  loginText: {
     fontSize: 12,
-    marginTop: 5,
-    textAlign: 'left',
-    width: '100%',
+    color: '#555',
+  },
+  loginLink: {
+    fontSize: 12,
+    color: '#02457A',
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
 });
+
+export default Registration;
