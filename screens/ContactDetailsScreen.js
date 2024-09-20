@@ -30,7 +30,7 @@ const ContactDetailsScreen = () => {
     } else {
       // Show an alert, and navigate to the next screen after pressing "OK"
       Alert.alert('Success', 'Phone number is valid', [
-        { text: 'OK', onPress: () => navigation.navigate('') },
+        { text: 'OK', onPress: () => navigation.navigate('VerifyPhoneNumber') },
       ]);
     }
   };
@@ -41,7 +41,7 @@ const ContactDetailsScreen = () => {
         <View style={styles.formContainer}>
           <View style={styles.progressContainer}>
             <View style={[styles.progressSquare, styles.activeSquare]}>
-              <Text style={styles.progressText}>1</Text>
+              <Text style={styles.progressText}>2</Text>
             </View>
             <View style={styles.progressSquare}>
               <Text style={styles.progressText}>2</Text>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DropDownPicker from 'react-native-dropdown-picker';
-import moment from 'moment';
+import moment from 'moment'
 
 const PersonalInfoForm = ({ navigation }) => {
   const [dob, setDob] = useState('');
@@ -11,6 +11,7 @@ const PersonalInfoForm = ({ navigation }) => {
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
   const [zipCode, setZipCode] = useState('');
+  const [currentStep,setCurrentStep]=useState(1);
 
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
