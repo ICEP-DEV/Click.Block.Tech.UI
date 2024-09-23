@@ -23,7 +23,7 @@ export default function Component() {
           </TouchableOpacity>
           <Text style={styles.headerText}>MANAGE CARD</Text>
           <View style={styles.placeholder} />
-        </View>
+         </View>
 
         {/* Scrollable Content */}
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   switch: {
-    transform: [{ scale: 0.8 }],
-  },
+    transform: [{ scale: 0.8 }],
+  },
 });
