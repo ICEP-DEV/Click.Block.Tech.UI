@@ -4,7 +4,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useFonts } from 'expo-font';
 import Stepper from './Stepper';
-
+import axios from 'axios';
+import api from '../API/API'
 // Import Navigation props
 import { useNavigation } from '@react-navigation/native';
 
@@ -37,7 +38,6 @@ export default function IdentityVerificationScreen() {
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const document = result.assets[0];
-      Alert.alert('File Selected', `File Name: ${document.name}\nFile URI: ${document.uri}`);
       setIdDocument(document.uri);
       setIdDocumentName(document.name);
     } else {
@@ -121,25 +121,52 @@ export default function IdentityVerificationScreen() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
+    // Validate the inputs
     if (!validateIdNumber(idNumber)) {
       Alert.alert('Invalid ID Number', 'Please enter a valid South African ID number.');
       return;
     }
-
+  
     if (!idDocument) {
       Alert.alert('Document Missing', 'Please upload your ID document.');
       return;
     }
-
+  
     if (!selfie) {
       Alert.alert('Selfie Missing', 'Please take a selfie.');
       return;
     }
-
-    // Navigate to SuccessScreen if everything is valid
-    navigation.navigate('Success');
+  
+    try {
+      // Prepare only the necessary data (no files)
+      const data = {
+        CustID_Nr: idNumber,
+        ID_Document: idDocumentName, // only send the document name
+        Selfie_With_ID: 'selfie.jpg'        // only send the selfie file name
+      };
+      console.log(data)
+      // Make the POST request to send only the ID number, document name, and selfie name
+      const response = await axios.post('http://192.168.68.219:5000/api/upload', data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      // Check for success response
+      if (response.status === 200) {
+        Alert.alert('Success', 'Your details have been uploaded successfully!');
+        // Navigate to the success screen
+        navigation.navigate('Success');
+      } else {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error uploading details:', error.response || error.message);
+      Alert.alert('Error', 'Failed to upload details. Please try again.');
+    }
   };
+  
 
   return (
     <View style={styles.container}>
