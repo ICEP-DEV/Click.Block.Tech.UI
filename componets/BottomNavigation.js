@@ -41,27 +41,27 @@ const BottomNavigation = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Change from 'space-around' to 'space-between' to create space for the centered QR
+    justifyContent: 'space-between', // Create space for the centered QR button
     alignItems: 'center',
-    backgroundColor: '#0f1c3f',
+    backgroundColor: '#002e52',
     paddingVertical: 8,
-    shadowColor: '#02457A',
+    shadowColor: 'white',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     position: 'absolute',
-    elevation: 100,  // For Android shadow
     bottom: 0,
+    elevation: 3,
     width: '100%',
-    height: 90,  // Increased height for better visual balance
+    height: 80,  // Increased height for better visual balance
   },
 
   navItem: {
     alignItems: 'center',
-    flex: 0.7, // Ensure items take equal space
+    flex: 1, // Ensure items take equal space
   },
 
   label: {
-    fontSize: 12,  // Slightly larger font for better readability
+    fontSize: 10,  // Slightly larger font for better readability
     color: 'white',
     marginTop: 4,  // Increased margin for better spacing
   },
@@ -70,23 +70,23 @@ const styles = StyleSheet.create({
     position: 'absolute',  // Use absolute positioning to center
     bottom: 20, // Ensure it overlaps from the bottom
     left: '50%', // Center horizontally
-    transform: [{ translateX: -40 }], // Adjust for the size of the circle
+    transform: [{ translateX: -35 }], // Adjust for the size of the circle
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   qrCircle: {
     backgroundColor: '#02457A',
-    borderRadius: 60,  // Adjusted for a more prominent circle
-    padding: 20,  // Increased padding for better icon visibility
+    borderRadius: 35,  // Adjusted for a more prominent circle
+    padding: 19,  // Increased padding for better icon visibility
     borderWidth: 4,
     borderColor: 'white',
     shadowColor: 'white',  // Added shadow for a more 3D effect
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    elevation: 5,  // For Android shadow
-    top:-38
+    elevation: 15,  // For Android shadow
+    top: -39,
   },
 });
 
