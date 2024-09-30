@@ -33,8 +33,8 @@ export default function IdentityVerificationScreen() {
       type: 'application/pdf',
       copyToCacheDirectory: true,
     });
-
-    console.log(result);
+ 
+    // console.log(result);
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const document = result.assets[0];
@@ -44,11 +44,26 @@ export default function IdentityVerificationScreen() {
       Alert.alert('No file selected');
     }
   };
-
   const handleTakeSelfie = async () => {
-    // Simulate image capture by setting a local image URI
-    setSelfie(require('../assets/selfie.jpg'));
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+  
+    if (permissionResult.granted === false) {
+      Alert.alert('Permission to access camera is required!');
+      return;
+    }
+  
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      setSelfie(result.assets[0]);  // Update this to store the image correctly
+    } else {
+      Alert.alert('No photo taken');
+    }
   };
+  
 
   const validateIdNumber = (number) => {
     if (!/^\d{13}$/.test(number)) {
@@ -121,7 +136,7 @@ export default function IdentityVerificationScreen() {
     }
   };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     // Validate the inputs
     if (!validateIdNumber(idNumber)) {
       Alert.alert('Invalid ID Number', 'Please enter a valid South African ID number.');
@@ -139,24 +154,34 @@ export default function IdentityVerificationScreen() {
     }
   
     try {
-      // Prepare only the necessary data (no files)
-      const data = {
-        CustID_Nr: idNumber,
-        ID_Document: idDocumentName, // only send the document name
-        Selfie_With_ID: 'selfie.jpg'        // only send the selfie file name
-      };
-      console.log(data)
-      // Make the POST request to send only the ID number, document name, and selfie name
-      const response = await axios.post('http://192.168.68.219:5000/api/upload', data, {
+      // Prepare form data
+      const formData = new FormData();
+      formData.append('CustID_Nr', idNumber);
+      
+      // Append the document as a file
+      formData.append('ID_Document', {
+        uri: idDocument,
+        name: idDocumentName,
+        type: 'application/pdf',
+      });
+      
+      // Append the selfie
+      formData.append('Selfie_With_ID', {
+        uri: selfie.uri,  // Ensure correct URI
+        name: 'selfie.jpg',
+        type: 'image/jpeg',
+      });
+  
+      // Make the POST request
+      const response = await axios.post('http://192.168.134.147:5000/api/upload', formData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
   
       // Check for success response
       if (response.status === 200) {
         Alert.alert('Success', 'Your details have been uploaded successfully!');
-        // Navigate to the success screen
         navigation.navigate('Success');
       } else {
         Alert.alert('Error', 'Something went wrong. Please try again.');
@@ -166,6 +191,8 @@ export default function IdentityVerificationScreen() {
       Alert.alert('Error', 'Failed to upload details. Please try again.');
     }
   };
+  
+  
   
 
   return (
@@ -341,7 +368,6 @@ const styles = StyleSheet.create({
   background: {
     position: 'absolute',
     top: 0,
-    // right:0,
     left:0,
     bottom: 0,
     width: '120%',
