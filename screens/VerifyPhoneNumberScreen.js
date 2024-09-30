@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Image } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient'; // Requires 'expo-linear-gradient' package for gradient
-
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 const VerifyPhoneNumberScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');
+  const navigation = useNavigation(); // Initialize navigation hook
 
   // Handle verification code change
   const handleCodeChange = (text) => {
@@ -20,6 +21,7 @@ const VerifyPhoneNumberScreen = () => {
     } else {
       console.log('Code is valid:', verificationCode);
       // Navigate to the next screen
+      navigation.navigate('Success'); // Replace 'NextScreen' with your target screen name
     }
   };
 
@@ -27,23 +29,23 @@ const VerifyPhoneNumberScreen = () => {
     <SafeAreaView style={styles.safeContainer}>
       <LinearGradient colors={['#003366', '#003366', '#ffffff']} style={styles.gradient}>
         <View style={styles.formContainer}>
-            
+          
           {/* Progress Bar */}
           <View style={styles.progressContainer}>
-            <View style={[styles.progressCircle, styles.activeCircle]}><Text style={styles.progressText}>1</Text></View>
-            <View style={[styles.progressCircle, styles.activeCircle]}><Text style={styles.progressText}>2</Text></View>
-            <View style={styles.progressCircle}><Text style={styles.progressText}>3</Text></View>
-            <View style={styles.progressCircle}><Text style={styles.progressText}>4</Text></View>
+            <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>1</Text></View>
+            <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>2</Text></View>
+            <View style={[styles.progressSquare, styles.activeSquare]}><Text style={styles.activeProgressText}>3</Text></View>
+            <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>4</Text></View>
           </View>
 
           {/* Title and instructions */}
-          <Text style={styles.title}>VERIFY PHONE NUMBER</Text>
+          <Text style={styles.title}>VERIFY EMAIL ACCOUNT</Text>
           <Text style={styles.subtitle}>
-            We've sent a text message to your phone with a verification code. Please enter it in the field below to verify your phone number.
+            We've sent a text message to your email account with a verification code. Please enter it in the field below to verify your email account.
           </Text>
 
           {/* Phone Number Mask */}
-          <Text style={styles.phoneNumber}>+27 (02) 1234 346</Text>
+          <Text style={styles.phoneNumber}></Text>
 
           {/* Verification Code Input */}
           <View style={styles.codeInputContainer}>
@@ -91,33 +93,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
   },
-  progressCircle: {
-    width: 40,
-    height: 40,
-    borderWidth: 2,
-    borderColor: '#003366',
+  progressSquare: {
+    width: 30,
+    height: 30,
+    borderRadius: 5,
+    backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 5,
-    borderRadius: 20,
+    marginHorizontal: 10,
   },
-  activeCircle: {
-    backgroundColor: '#003366',
+  activeSquare: {
+    backgroundColor: '#02457A',
   },
-  progressText: {
-    color: '#fff',
+  activeProgressText: {
+    color: '#fff', // White text for active square
+    fontWeight: 'bold',
+  },
+  inactiveProgressText: {
+    color: '#02457A', // Dark blue text for inactive square
     fontWeight: 'bold',
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#003366',
+    color: '#02457A',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#02457A',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -126,7 +131,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#003366',
+    color: '#02457A',
   },
   codeInputContainer: {
     flexDirection: 'row',
@@ -134,17 +139,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   codeInput: {
-    width: 40,
-    height: 50,
+    width: 30,
+    height: 30,
     borderWidth: 1,
-    borderColor: '#003366',
-    textAlign: 'center',
-    fontSize: 18,
+    borderRadius: 5,
+    fontSize: 14,
     backgroundColor: '#fff',
+    color: '#02457A', // Ensure the input text color is visible
+     padding: 0,
+     fontWeightnt: 'bold',
+   
   },
   button: {
-    backgroundColor: '#003366',
+    backgroundColor: '#02457A',
     marginTop: 10,
+
   },
 });
 

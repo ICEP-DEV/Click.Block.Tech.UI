@@ -1,35 +1,21 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient'; // Requires 'expo-linear-gradient' package for gradient
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation for screen navigation
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const ContactDetailsScreen = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const navigation = useNavigation(); // Hook to use navigation
-
-  // Validate and format phone number
-  const handlePhoneNumberChange = (text) => {
-    let formattedText = text.replace(/[^0-9]/g, '');
-
-    if (formattedText.length > 0 && formattedText[0] !== '0') {
-      formattedText = '0' + formattedText.slice(1);
-    }
-
-    if (formattedText.length > 10) {
-      formattedText = formattedText.slice(0, 10);
-    }
-
-    setPhoneNumber(formattedText);
-  };
+  const [email, setEmail] = useState('');
+  const navigation = useNavigation();
 
   // Handle the "Next" button press
   const handleNext = () => {
-    if (phoneNumber.length !== 10) {
-      Alert.alert('Invalid Phone Number', 'Phone number must be exactly 10 digits.');
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
     } else {
-      // Show an alert, and navigate to the next screen after pressing "OK"
-      Alert.alert('Success', 'Phone number is valid', [
+      Alert.alert('Success', 'Email is valid', [
         { text: 'OK', onPress: () => navigation.navigate('VerifyPhoneNumber') },
       ]);
     }
@@ -40,30 +26,35 @@ const ContactDetailsScreen = () => {
       <LinearGradient colors={['#003366', '#003366', '#ffffff']} style={styles.gradient}>
         <View style={styles.formContainer}>
           <View style={styles.progressContainer}>
+            {/* Step 1 - Inactive */}
+            <View style={styles.progressSquare}>
+              <Text style={styles.inactiveText}>1</Text>
+            </View>
+            {/* Step 2 - Active */}
             <View style={[styles.progressSquare, styles.activeSquare]}>
-              <Text style={styles.progressText}>2</Text>
+              <Text style={styles.activeText}>2</Text>
             </View>
+            {/* Step 3 - Inactive */}
             <View style={styles.progressSquare}>
-              <Text style={styles.progressText}>2</Text>
+              <Text style={styles.inactiveText}>3</Text>
             </View>
+            {/* Step 4 - Inactive */}
             <View style={styles.progressSquare}>
-              <Text style={styles.progressText}>3</Text>
-            </View>
-            <View style={styles.progressSquare}>
-              <Text style={styles.progressText}>4</Text>
+              <Text style={styles.inactiveText}>4</Text>
             </View>
           </View>
 
-          <Text style={styles.title}>CONTACT DETAILS</Text>
-          <Text style={styles.subtitle}>Verify your phone number</Text>
+          <Text style={styles.title}>EMAIL ACCOUNT</Text>
+          <Text style={styles.subtitle}>Verify your email account</Text>
 
           <TextInput
-            label="Enter your phone number"
-            value={phoneNumber}
-            onChangeText={handlePhoneNumberChange}
+            label="Enter your email address"
+            value={email}
+            onChangeText={setEmail}
             style={styles.input}
             mode="outlined"
-            keyboardType="numeric"
+            keyboardType="email-address"
+            autoCapitalize="none" // To prevent auto-capitalizing the first letter of email
           />
           <Button mode="contained" onPress={handleNext} style={styles.button}>
             Next
@@ -97,19 +88,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   progressSquare: {
-    width: 40,
-    height: 40,
-    borderWidth: 2,
-    borderColor: '#003366',
+    width: 30,
+    height: 30,
+    borderRadius: 5,
+    backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 5,
+    marginHorizontal: 10,
   },
   activeSquare: {
     backgroundColor: '#003366',
   },
-  progressText: {
-    color: '#fff',
+  inactiveText: {
+    color: '#003366',
+    fontWeight: 'bold',
+  },
+  activeText: {
+    color: '#ffffff',
     fontWeight: 'bold',
   },
   title: {

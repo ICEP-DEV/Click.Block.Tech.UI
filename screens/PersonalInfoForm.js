@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DropDownPicker from 'react-native-dropdown-picker';
-import moment from 'moment'
+import moment from 'moment';
 
 const PersonalInfoForm = ({ navigation }) => {
-  const [dob, setDob] = useState('');
+  const [dobDay, setDobDay] = useState('');
+  const [dobMonth, setDobMonth] = useState('');
+  const [dobYear, setDobYear] = useState('');
   const [country, setCountry] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
   const [zipCode, setZipCode] = useState('');
-  const [currentStep,setCurrentStep]=useState(1);
 
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
@@ -19,47 +20,29 @@ const PersonalInfoForm = ({ navigation }) => {
     { label: 'Canada', value: 'ca' },
     { label: 'United Kingdom', value: 'uk' },
     { label: 'Australia', value: 'au' },
-    { label: 'India', value: 'in' },
     { label: 'South Africa', value: 'za' },
   ]);
 
   const handleNext = () => {
-    const dateFormatRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
-
-    if (!dob || !country || !addressLine1 || !city || !zipCode) {
+    if (!dobDay || !dobMonth || !dobYear || !country || !addressLine1 || !city || !zipCode) {
       Alert.alert('Error', 'Please fill out all fields.');
       return;
     }
 
-    if (!dateFormatRegex.test(dob) || !moment(dob, 'DD/MM/YYYY', true).isValid()) {
-      Alert.alert('Invalid Date', 'Please enter a valid date in DD/MM/YYYY format.');
+    const dateStr = `${dobDay}/${dobMonth}/${dobYear}`;
+    if (!moment(dateStr, 'DD/MM/YYYY', true).isValid()) {
+      Alert.alert('Invalid Date', 'Please enter a valid date.');
+      return;
+    }
+
+    if (!/^\d{4}$/.test(zipCode)) {
+      Alert.alert('Invalid Zip Code', 'Please enter a valid 4-digit Zip Code.');
       return;
     }
 
     Alert.alert('Info', 'Personal information saved!', [
       { text: 'OK', onPress: () => navigation.navigate('ContactDetails') }
     ]);
-  };
-
-  const formatDOB = (text) => {
-    const numericText = text.replace(/[^0-9]/g, '');
-    let formattedText = '';
-    if (numericText.length > 0) {
-      formattedText += numericText.slice(0, 2); // Day
-    }
-    if (numericText.length >= 3) {
-      formattedText += '/' + numericText.slice(2, 4); // Month
-    }
-    if (numericText.length >= 5) {
-      formattedText += '/' + numericText.slice(4, 8); // Year
-    }
-    setDob(formattedText);
-  };
-
-  const formatZipCode = (text) => {
-    // Allow only numeric input
-    const numericText = text.replace(/[^0-9]/g, '');
-    setZipCode(numericText);
   };
 
   return (
@@ -83,14 +66,35 @@ const PersonalInfoForm = ({ navigation }) => {
 
           <Text style={styles.headerText}>PERSONAL INFORMATION</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Date of Birth (DD/MM/YYYY)"
-            value={dob}
-            onChangeText={formatDOB}
-            placeholderTextColor="#ccc"
-            keyboardType="numeric"
-          />
+          <View style={styles.dateContainer}>
+            <TextInput
+              style={styles.dateInput}
+              placeholder="DD"
+              value={dobDay}
+              onChangeText={text => setDobDay(text.replace(/[^0-9]/g, ''))}
+              maxLength={2}
+              keyboardType="numeric"
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={styles.dateInput}
+              placeholder="MM"
+              value={dobMonth}
+              onChangeText={text => setDobMonth(text.replace(/[^0-9]/g, ''))}
+              maxLength={2}
+              keyboardType="numeric"
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={styles.dateInput}
+              placeholder="YYYY"
+              value={dobYear}
+              onChangeText={text => setDobYear(text.replace(/[^0-9]/g, ''))}
+              maxLength={4}
+              keyboardType="numeric"
+              placeholderTextColor="#ccc"
+            />
+          </View>
 
           <DropDownPicker
             open={open}
@@ -102,6 +106,7 @@ const PersonalInfoForm = ({ navigation }) => {
             placeholder="Select your country"
             style={styles.dropdown}
             placeholderStyle={{ color: '#ccc' }}
+            textStyle={{ color: '#02457A' }}  // Dropdown text color updated here
             containerStyle={{ marginBottom: 15 }}
           />
 
@@ -121,22 +126,27 @@ const PersonalInfoForm = ({ navigation }) => {
             placeholderTextColor="#ccc"
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="City"
-            value={city}
-            onChangeText={setCity}
-            placeholderTextColor="#ccc"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Zip Code"
-            value={zipCode}
-            onChangeText={formatZipCode}
-            placeholderTextColor="#ccc"
-            keyboardType="numeric"
-          />
+          <View style={styles.rowContainer}>
+            <TextInput
+              style={[styles.input, styles.halfInput]}
+              placeholder="City"
+              value={city}
+              onChangeText={setCity}
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={[styles.input, styles.halfInput]}
+              placeholder="Zip Code"
+              value={zipCode}
+              onChangeText={text => {
+                if (/^\d{0,4}$/.test(text)) {
+                  setZipCode(text);
+                }
+              }}
+              placeholderTextColor="#ccc"
+              keyboardType="numeric"
+            />
+          </View>
 
           <TouchableOpacity style={styles.button} onPress={handleNext}>
             <Text style={styles.buttonText}>Next</Text>
@@ -156,6 +166,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   stepContainer: {
     flexDirection: 'row',
@@ -183,7 +194,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
-    width: '85%',
+    width: '90%',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -194,7 +205,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#001F54',
+    color: '#02457A',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -208,13 +219,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#F8F8F8',
     fontSize: 14,
+    color: '#02457A',
   },
   dropdown: {
     width: '100%',
     borderRadius: 8,
     backgroundColor: '#F8F8F8',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#02457A',
   },
   button: {
     backgroundColor: '#02457A',
@@ -228,6 +240,32 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 15,
+  },
+  dateInput: {
+    height: 45,
+    width: '30%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#F8F8F8',
+    fontSize: 14,
+    color: '#02457A',  // Updated date input text color
+    textAlign: 'center',
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  halfInput: {
+    width: '48%',
   },
 });
 
