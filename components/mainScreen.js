@@ -1,5 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import axios from 'axios';
 import styles from './style';
 
 import accountIcon from '../assets/Homepage/account.png'; 
@@ -11,13 +12,49 @@ import transferIcon from '../assets/Homepage/transfer.png';
 import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
 
+const api = 'http://10.0.2.2:5000/api/'; // Your base API URL
+
 const MainScreen = () => {
+  const [firstName, setFirstName] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Fetch customer details by CustID_Nr
+  const custID_Nr = '0707170585088'; // Replace with the actual CustID_Nr
+
+  useEffect(() => {
+    const fetchCustomerData = async () => {
+      try {
+        const response = await axios.get(`${api}customer/${custID_Nr}`);
+        const customerData = response.data;
+        console.log('Customer Data:', customerData);  // Log to see the data structure
+
+        // Update state with the retrieved customer FirstName
+        setFirstName(customerData.FirstName || '');
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching customer data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchCustomerData();
+  }, [custID_Nr]);
+
+  if (loading) {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.fullScreenContainer}>
-
       <View style={styles.header}>
         <Image source={accountIcon} style={styles.accountIcon} />
-        <Text style={styles.greeting}>WELCOME BACK, JONATHAN</Text>
+        <Text style={styles.greeting}>
+          WELCOME BACK, {firstName ? firstName.toUpperCase() : 'Guest'}
+        </Text>
         <Text style={styles.subGreeting}>How can we help you with today</Text>
       </View>
 
@@ -75,19 +112,11 @@ const MainScreen = () => {
           </View>
         </View>
       </ScrollView>
-
     </View>
   );
 };
 
 export default MainScreen;
-
-
-
-
-
-
-
 
 
 
