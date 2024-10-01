@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import CardSettings from './components/CardSettings';
+import CardSettings from './screens/CardSettings';
 
 const Stack = createStackNavigator();
 
