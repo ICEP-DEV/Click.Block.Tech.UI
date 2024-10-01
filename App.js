@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import NavigationBar from './components/navigationBar'; 
+import NavigationBar from './screens/navigationBar'; 
 
 export default function App() {
   return (

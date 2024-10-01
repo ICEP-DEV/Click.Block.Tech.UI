@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Ensure you have this package installed
-import styles from './style'; // Importing styles
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import styles from './style';
 
-// Screens
-import MainScreen from './mainScreen';
+// Import screens
+import HomeScreen from './homeScreen'; // Previously MainScreen
 import ManageScreen from './manageScreen';
 import NotificationsScreen from './notificationsScreen';
 import TransactScreen from './transactScreen';
@@ -45,13 +45,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           >
             <Ionicons
               name={iconName}
-              size={24} // Increase the icon size for better visibility
-              color={isFocused ? '#4169E1' : 'lightgray'} // Royal blue for focused, light gray for unfocused
+              size={24}
+              color={isFocused ? '#4169E1' : 'lightgray'}
             />
             <Text
               style={[
                 styles.label,
-                { color: isFocused ? '#4169E1' : 'lightgray' }, // Royal blue for focused, light gray for unfocused
+                { color: isFocused ? '#4169E1' : 'lightgray' },
               ]}
             >
               {route.name}
@@ -73,10 +73,10 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 export const NavigationBar = () => {
   return (
     <Tab.Navigator
-      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
+      tabBar={(props) => <CustomTabBar {...props} />} // Ensure this is passed in the right place
     >
-      <Tab.Screen name="Home" component={MainScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Manage" component={ManageScreen} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
       <Tab.Screen name="Transact" component={TransactScreen} />
@@ -85,6 +85,8 @@ export const NavigationBar = () => {
 };
 
 export default NavigationBar;
+
+
 
 
 
