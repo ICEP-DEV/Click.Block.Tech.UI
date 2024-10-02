@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import BottomNavigation from './BottomNavigation';
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 
+
 const { width } = Dimensions.get('window');
 
 export default function ManageCard() {
