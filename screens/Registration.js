@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import { CheckBox } from 'react-native-elements';
+import { createCustomer } from '../API/customerAPI';  // Import your API function
 
-// Import images
-const userIcon = require('../assets/user.png');
-const avatarIcon = require('../assets/avatar.png');
-const emailIcon = require('../assets/email.png');
-const padlockIcon = require('../assets/padlock.png');
 
 const Registration = ({ navigation }) => {
   const [checked, setChecked] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
+  const [idNumber, setIdNumber] = useState('');  // State for ID number
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
 
@@ -24,6 +20,11 @@ const Registration = ({ navigation }) => {
   const handleLastNameChange = (text) => {
     const alphabeticText = text.replace(/[^a-zA-Z\s]/g, '');
     setLastName(alphabeticText);
+  };
+
+  const handleIdNumberChange = (text) => {
+    const numericText = text.replace(/[^0-9]/g, '');
+    setIdNumber(numericText.slice(0, 13));
   };
 
   const handlePinChange = (text) => {
@@ -46,9 +47,11 @@ const Registration = ({ navigation }) => {
     return '';
   };
 
-  const validateEmail = (email) => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
+  const validateIdNumber = () => {
+    if (idNumber.length !== 13) {
+      return 'ID number must be exactly 13 digits.';
+    }
+    return '';
   };
 
   const isFormValid = () => {
@@ -56,24 +59,47 @@ const Registration = ({ navigation }) => {
       checked &&
       firstName.trim() !== '' &&
       lastName.trim() !== '' &&
-      email.trim() !== '' &&
+      idNumber.trim() !== '' &&
       pin.trim() !== '' &&
       confirmPin.trim() !== ''
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const pinError = validatePins();
+    const idError = validateIdNumber();
+
+    console.log("Form validation - ID Error:", idError, "PIN Error:", pinError);
+
     if (!isFormValid()) {
       Alert.alert('Error', 'Please fill out all fields correctly.');
-    } else if (!validateEmail(email)) {
-      Alert.alert('Error', 'Invalid email format.');
+    } else if (idError) {
+      Alert.alert('Error', idError);
     } else if (pinError) {
       Alert.alert('Error', pinError);
     } else {
-      Alert.alert('Success', 'Registration completed successfully!', [
-        { text: 'OK', onPress: () => navigation.navigate('PersonalInfo') } 
-      ]);
+      try {
+        const customerData = {
+          firstName,
+          lastName,
+          idNumber,  // Send ID number instead of email
+          pin,
+        };
+
+        console.log('Customer data being submitted:', customerData);
+
+        // Call the API function to create the customer
+        const response = await createCustomer.        
+        console.log('API response:', response);
+
+        // Success message and navigation
+        Alert.alert('Success', 'Registration completed successfully!', [
+          { text: 'OK', onPress: () => navigation.navigate('PersonalInfo') },
+        ]);
+      } catch (error) {
+        console.error('Error creating customer:', error);
+        Alert.alert('Error', 'There was an issue with the registration.');
+      }
     }
   };
 
@@ -81,11 +107,12 @@ const Registration = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.formContainer}>
         <Text style={styles.headerText}>CREATE YOUR ACCOUNT</Text>
-        <Image source={userIcon} style={styles.userIcon} />
+        <Image source={require('../assets/user.png')} style={styles.userIcon} />
         <Text style={styles.subHeaderText}>It will only take you a few minutes!</Text>
 
+        {/* Form Fields */}
         <View style={styles.inputWrapper}>
-          <Image source={avatarIcon} style={styles.icon} />
+          <Image source={require('../assets/avatar.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your first name(s)"
@@ -96,7 +123,7 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={avatarIcon} style={styles.icon} />
+          <Image source={require('../assets/avatar.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your last name"
@@ -107,19 +134,20 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={emailIcon} style={styles.icon} />
+          <Image source={require('../assets/email.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
+            placeholder="Enter your ID number"
+            value={idNumber}
+            onChangeText={handleIdNumberChange}
+            keyboardType="numeric"
+            maxLength={13}  // Limit input to 13 digits
             placeholderTextColor="#02457A"
           />
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={padlockIcon} style={styles.icon} />
+          <Image source={require('../assets/padlock.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Please create your remote PIN"
@@ -133,7 +161,7 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={padlockIcon} style={styles.icon} />
+          <Image source={require('../assets/padlock.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Confirm your remote PIN"
@@ -146,6 +174,7 @@ const Registration = ({ navigation }) => {
           />
         </View>
 
+        {/* Checkbox and Submit Button */}
         <View style={styles.checkboxContainer}>
           <CheckBox
             checked={checked}
