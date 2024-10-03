@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DropDownPicker from 'react-native-dropdown-picker';
 import moment from 'moment';
+import axios from 'axios'; 
 
-const PersonalInfoForm = ({ navigation }) => {
+const PersonalInfoForm = ({ route, navigation }) => {
+  const { CustID_Nr } = route.params; 
+  
+
   const [dobDay, setDobDay] = useState('');
   const [dobMonth, setDobMonth] = useState('');
   const [dobYear, setDobYear] = useState('');
@@ -23,27 +27,51 @@ const PersonalInfoForm = ({ navigation }) => {
     { label: 'South Africa', value: 'za' },
   ]);
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Check for empty fields
     if (!dobDay || !dobMonth || !dobYear || !country || !addressLine1 || !city || !zipCode) {
-      Alert.alert('Error', 'Please fill out all fields.');
-      return;
+        Alert.alert('Error', 'Please fill out all fields.');
+        return;
     }
 
+    // Validate the date
     const dateStr = `${dobDay}/${dobMonth}/${dobYear}`;
     if (!moment(dateStr, 'DD/MM/YYYY', true).isValid()) {
-      Alert.alert('Invalid Date', 'Please enter a valid date.');
-      return;
+        Alert.alert('Invalid Date', 'Please enter a valid date.');
+        return;
     }
 
+    // Validate zip code
     if (!/^\d{4}$/.test(zipCode)) {
-      Alert.alert('Invalid Zip Code', 'Please enter a valid 4-digit Zip Code.');
-      return;
+        Alert.alert('Invalid Zip Code', 'Please enter a valid 4-digit Zip Code.');
+        return;
     }
 
-    Alert.alert('Info', 'Personal information saved!', [
-      { text: 'OK', onPress: () => navigation.navigate('ContactDetails') }
-    ]);
-  };
+    // Create a single address string
+    const addressString = `${addressLine1}, ${city}, ${country}, ${zipCode}`;
+
+    // Prepare the data to send to the API
+    const personalInfo = {
+        CustID_Nr, // Include the CustID_Nr
+        dateOfBirth: `${dobYear}-${dobMonth}-${dobDay}`, // Format date to YYYY-MM-DD
+        address: addressString, // Use the concatenated address string
+    };
+
+
+    try {
+        // PATCH request to update personal information
+        const response = await axios.patch(`http://10.2.32.151:5000/api/customers/${CustID_Nr}`, personalInfo);
+        console.log(response);
+        if (response.status === 200) {
+            Alert.alert('Success', 'Personal information updated!', [
+                { text: 'OK', onPress: () => navigation.navigate('ContactDetails', { CustID: CustID_Nr}) }
+            ]);
+        }
+    } catch (error) {
+        Alert.alert('Error', 'Failed to update personal information. Please try again later.');
+        console.error('Error updating customer:', error);
+    }
+};
 
   return (
     <LinearGradient colors={['#001F54', '#FFFFFF']} style={styles.background}>

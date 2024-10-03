@@ -2,22 +2,59 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios'; 
+
+const API_URL = 'http://10.2.32.151:5000/api/customers'; 
 
 const ContactDetailsScreen = () => {
   const [email, setEmail] = useState('');
   const navigation = useNavigation();
+  const route = useRoute();  // Get the route object to access params
+  const { CustID } = route.params; // Destructure CustID_Nr from route.params
+
+  // API call to update customer step
+  const updateCustomerStep = async (customerData) => {
+    try {
+      const response = await axios.patch(`${API_URL}/${customerData.CustID_Nr}`, customerData);
+      console.log('Update successful:', response.data);
+      return response;
+    } catch (error) {
+      console.error('Error updating customer:', error.response.data);
+      throw error.response.data;
+    }
+  };
 
   // Handle the "Next" button press
-  const handleNext = () => {
+  const handleNext = async () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
-    } else {
-      Alert.alert('Success', 'Email is valid', [
-        { text: 'OK', onPress: () => navigation.navigate('VerifyPhoneNumber') },
-      ]);
+      return;
+    }
+
+    const customerData = {
+      CustID_Nr: CustID,
+      Email: email,
+    };
+
+    console.log('Customer data being submitted:', customerData);
+
+    try {
+      const response = await updateCustomerStep(customerData); // Call the API to update customer
+      console.log('API response:', response.stepText);
+
+    
+      if (response.status === 200) {
+          Alert.alert('Success', 'Email sent. Check otp', [
+              { text: 'OK', onPress: () => navigation.navigate('VerifyEmail', { Email: email}) }
+          ]);
+      }
+      
+     
+    } catch (error) {
+      alert('Failed to update customer: ' + error.message);
     }
   };
 

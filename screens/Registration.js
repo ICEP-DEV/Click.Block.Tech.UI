@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import { CheckBox } from 'react-native-elements';
-import { createCustomer } from '../API/customerAPI';  // Import your API function
+import axios from 'axios';
 
+const API_URL = 'http://10.2.32.151:5000/api/customers';
 
 const Registration = ({ navigation }) => {
   const [checked, setChecked] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [idNumber, setIdNumber] = useState('');  // State for ID number
+  const [phoneNumber, setPhoneNumber] = useState(''); // Add state for phone number
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
 
@@ -25,6 +27,11 @@ const Registration = ({ navigation }) => {
   const handleIdNumberChange = (text) => {
     const numericText = text.replace(/[^0-9]/g, '');
     setIdNumber(numericText.slice(0, 13));
+  };
+
+  const handlePhoneNumberChange = (text) => { // Handle phone number input
+    const numericText = text.replace(/[^0-9]/g, '');
+    setPhoneNumber(numericText.slice(0, 10)); // Limit to 10 digits
   };
 
   const handlePinChange = (text) => {
@@ -60,6 +67,7 @@ const Registration = ({ navigation }) => {
       firstName.trim() !== '' &&
       lastName.trim() !== '' &&
       idNumber.trim() !== '' &&
+      phoneNumber.trim() !== '' &&  // Validate phone number
       pin.trim() !== '' &&
       confirmPin.trim() !== ''
     );
@@ -68,8 +76,6 @@ const Registration = ({ navigation }) => {
   const handleSubmit = async () => {
     const pinError = validatePins();
     const idError = validateIdNumber();
-
-    console.log("Form validation - ID Error:", idError, "PIN Error:", pinError);
 
     if (!isFormValid()) {
       Alert.alert('Error', 'Please fill out all fields correctly.');
@@ -80,25 +86,34 @@ const Registration = ({ navigation }) => {
     } else {
       try {
         const customerData = {
+          CustID_Nr: idNumber,
           firstName,
           lastName,
-          idNumber,  // Send ID number instead of email
-          pin,
+          phoneNumber,  // Include phone number
+          loginPin: pin,
         };
 
         console.log('Customer data being submitted:', customerData);
 
-        // Call the API function to create the customer
-        const response = await createCustomer.        
-        console.log('API response:', response);
+        // API call to create a customer
+        const response = await axios.post(API_URL, customerData);
+        
+        console.log('API response:', response.data);
 
-        // Success message and navigation
-        Alert.alert('Success', 'Registration completed successfully!', [
-          { text: 'OK', onPress: () => navigation.navigate('PersonalInfo') },
-        ]);
+       
+          Alert.alert('Success', 'Registration completed successfully!', [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('PersonalInfo', { CustID_Nr: idNumber }), // Navigate to PersonalInfo
+            },
+          ]);
+          
+
       } catch (error) {
-        console.error('Error creating customer:', error);
-        Alert.alert('Error', 'There was an issue with the registration.');
+        // Improved error handling
+        console.error('Error creating customer:', error); 
+        const errorMessage = error.response?.data?.message || error.message || 'There was an issue with the registration.';
+        Alert.alert('Error', errorMessage);
       }
     }
   };
@@ -142,6 +157,19 @@ const Registration = ({ navigation }) => {
             onChangeText={handleIdNumberChange}
             keyboardType="numeric"
             maxLength={13}  // Limit input to 13 digits
+            placeholderTextColor="#02457A"
+          />
+        </View>
+
+        <View style={styles.inputWrapper}>
+          <Image source={require('../assets/email.png')} style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your phone number"
+            value={phoneNumber}
+            onChangeText={handlePhoneNumberChange}
+            keyboardType="numeric"
+            maxLength={10}  // Limit input to 10 digits
             placeholderTextColor="#02457A"
           />
         </View>
@@ -246,63 +274,58 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 25,
-    height: 40,
     width: '100%',
+    marginBottom: 15,
   },
   icon: {
     position: 'absolute',
-    right: 150,
-    width: 200,
-    height: 200,
+    left: 10,
+    top: 10,
+    width: 20,
+    height: 20,
     resizeMode: 'contain',
   },
   input: {
-    flex: 1,
-    height: '100%',
-    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#02457A',
+    borderRadius: 5,
+    padding: 10,
+    paddingLeft: 40,
+    fontSize: 16,
     color: '#02457A',
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    width: '100%',
+    marginVertical: 15,
   },
   checkbox: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
     marginRight: 5,
-    padding: 0,
   },
   checkboxText: {
-    fontSize: 12,
-    color: '#555',
+    fontSize: 14,
+    color: '#02457A',
   },
   linkText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#02457A',
-    fontWeight: 'bold',
-    marginLeft: 5,
+    textDecorationLine: 'underline',
   },
   button: {
     backgroundColor: '#02457A',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    width: '100%',
+    padding: 15,
+    borderRadius: 5,
     alignItems: 'center',
+    marginTop: 10,
   },
   disabledButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: 'gray',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   loginContainer: {
@@ -310,11 +333,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   loginText: {
-    fontSize: 12,
-    color: '#555',
+    fontSize: 14,
+    color: '#02457A',
   },
   loginLink: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#02457A',
     fontWeight: 'bold',
     marginLeft: 5,
