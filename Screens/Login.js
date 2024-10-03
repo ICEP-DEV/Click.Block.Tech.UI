@@ -1,47 +1,79 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import axios from "axios";
+import LottieView from 'lottie-react-native';
+import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
 
 // `navigation` is passed as a prop when using React Navigation
-const Login = ({ navigation }) => {
-  const [pin, setPin] = useState('');
+export default function Login ({ navigation }){
+const [user, setUser] = useState(null);
+const [inputPin, setInputPin] = useState('');
+const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Perform login logic (e.g., API call), then navigate to the HomeScreen
-    if (pin) {
-      navigation.navigate('Home');  // Navigate to HomeScreen on successful login
-    } else {
-      alert('Please enter your PIN');
+const showToastMsg= (msg) => {
+  ToastAndroid.showWithGravity(
+    msg,
+    ToastAndroid.SHORT,
+    ToastAndroid.CENTER,
+  );
+};
+  async function  handleLogin (){
+    setIsLoading(true);
+    //fetching user account data using account number
+    if(inputPin){
+      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
+        
+        const userData = response.data;
+        setUser(userData);
+        console.log(userData);
+        //check if the user data is not null
+        if (userData) {
+          //!!!!!!!route to home page/Dashboard!!!!!!! 
+          showToastMsg('Successfully logged in');
+          setIsLoading(false);
+        } else {
+          showToastMsg('Wrong remote pin');
+          setIsLoading(false);
+         
+        }
+        }).catch((error)=>{
+        console.error('Error fetching data:', error.response.data);
+      });
+    }else{
+      showToastMsg('Please provide your remote Pin')
+      setIsLoading(false);
     }
+   
+   
   };
-
   const handleForgotPin = () => {
     alert('Forgot PIN clicked');
   };
 
   return (
     <View style={styles.container}>
+   
       <Image
         source={require('../assets/logo.png')}
         style={styles.logo}
       />
       <View style={styles.background} />
       <View style={styles.card}>
+      
         <Image
           source={require('../assets/user.png')}
           style={styles.user}
           resizeMode="contain"
         />
         <Text style={styles.greeting}>
-          Hello Again, <Text style={styles.name}>Jonathan!</Text>
+          Hello<Text style={styles.name}></Text>
         </Text>
-        <Text style={styles.label}>Enter Remote PIN</Text>
+        <Text style={styles.label}>Enter Remote Pin</Text>
         <TextInput
           style={styles.input}
           secureTextEntry
           keyboardType="numeric"
-          placeholder="••••••"
-          value={pin}
-          onChangeText={setPin}
+          placeholder="Remote pin"
+          onChangeText={setInputPin}
         />
         <View style={styles.forgotPinContainer}>
           <TouchableOpacity onPress={handleForgotPin}>
@@ -49,11 +81,17 @@ const Login = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Login</Text>
+          
+          {isLoading ? (
+        <LottieView style={{ width: 100, height: 100,alignItems: 'center', marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
+      ) : (
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
+      )}
         </View>
       </View>
+     
     </View>
   );
 };
@@ -89,7 +127,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
-    width: 288,
+    width: 380,
     height: 448,
     alignItems: 'center',
   },
@@ -133,10 +171,6 @@ const styles = StyleSheet.create({
   },
   forgotPinContainer: {
     alignSelf: 'flex-end',
-    position: 'absolute',
-    right: 30,
-    top: 230,
-    marginBottom: 20,
   },
   forgotPin: {
     color: '#02457A',
@@ -146,7 +180,6 @@ const styles = StyleSheet.create({
   bottomContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    width: '100%',
     alignItems: 'center',
   },
   loginButton: {
@@ -154,9 +187,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 7,
     borderRadius: 5,
-    width: 61,
+    width: 150,
     alignItems: 'center',
-    marginBottom: 100,
+    marginBottom: 65,
   },
   loginButtonText: {
     color: 'white',
@@ -164,5 +197,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default Login;
