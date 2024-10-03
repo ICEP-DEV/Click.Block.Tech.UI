@@ -106,7 +106,7 @@ const PersonalInfoForm = ({ navigation }) => {
             placeholder="Select your country"
             style={styles.dropdown}
             placeholderStyle={{ color: '#ccc' }}
-            textStyle={{ color: '#02457A' }}  // Dropdown text color updated here
+            textStyle={{ color: '#02457A' }}
             containerStyle={{ marginBottom: 15 }}
           />
 
@@ -159,20 +159,37 @@ const PersonalInfoForm = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#02457A',
+    zIndex: -1,
   },
   scrollView: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+  },
+  formContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    width: '100%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 8,
   },
   stepContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 20,
-    marginTop: 20,
   },
   stepSquare: {
     width: 30,
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
   },
   activeStep: {
     backgroundColor: '#001F54',
@@ -190,24 +207,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  formContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    width: '90%',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 8,
-  },
   headerText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#02457A',
     marginBottom: 20,
-    textAlign: 'center',
   },
   input: {
     height: 45,
@@ -235,6 +239,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginTop: 10,
+    padding :20,
   },
   buttonText: {
     color: '#FFFFFF',
@@ -256,7 +261,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: '#F8F8F8',
     fontSize: 14,
-    color: '#02457A',  // Updated date input text color
+    color: '#02457A',
     textAlign: 'center',
   },
   rowContainer: {
