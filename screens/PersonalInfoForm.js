@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView 
 import { LinearGradient } from 'expo-linear-gradient';
 import DropDownPicker from 'react-native-dropdown-picker';
 import moment from 'moment';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const PersonalInfoForm = ({ navigation }) => {
   const [dobDay, setDobDay] = useState('');
@@ -22,6 +23,10 @@ const PersonalInfoForm = ({ navigation }) => {
     { label: 'Australia', value: 'au' },
     { label: 'South Africa', value: 'za' },
   ]);
+
+  // States for Date Picker
+  const [showPicker, setShowPicker] = useState(false);
+  const [dob, setDob] = useState(new Date());
 
   const handleNext = () => {
     if (!dobDay || !dobMonth || !dobYear || !country || !addressLine1 || !city || !zipCode) {
@@ -43,6 +48,18 @@ const PersonalInfoForm = ({ navigation }) => {
     Alert.alert('Info', 'Personal information saved!', [
       { text: 'OK', onPress: () => navigation.navigate('ContactDetails') }
     ]);
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || dob;
+    setShowPicker(false);
+    if (currentDate) {
+      setDob(currentDate);
+      // Update the day, month, and year state from the selected date
+      setDobDay(moment(currentDate).date().toString().padStart(2, '0')); // Day (2 digits)
+      setDobMonth((moment(currentDate).month() + 1).toString().padStart(2, '0')); // Month (2 digits)
+      setDobYear(moment(currentDate).year().toString()); // Year
+    }
   };
 
   return (
@@ -71,30 +88,42 @@ const PersonalInfoForm = ({ navigation }) => {
               style={styles.dateInput}
               placeholder="DD"
               value={dobDay}
-              onChangeText={text => setDobDay(text.replace(/[^0-9]/g, ''))}
+              onChangeText={text => setDobDay(text.replace(/[^0-9]/g, '').padStart(2, '0'))}
               maxLength={2}
               keyboardType="numeric"
               placeholderTextColor="#ccc"
+              onFocus={() => setShowPicker(true)} // Show the date picker on focus
             />
             <TextInput
               style={styles.dateInput}
               placeholder="MM"
               value={dobMonth}
-              onChangeText={text => setDobMonth(text.replace(/[^0-9]/g, ''))}
+              onChangeText={text => setDobMonth(text.replace(/[^0-9]/g, '').padStart(2, '0'))}
               maxLength={2}
               keyboardType="numeric"
               placeholderTextColor="#ccc"
+              onFocus={() => setShowPicker(true)} // Show the date picker on focus
             />
             <TextInput
               style={styles.dateInput}
               placeholder="YYYY"
               value={dobYear}
-              onChangeText={text => setDobYear(text.replace(/[^0-9]/g, ''))}
+              onChangeText={text => setDobYear(text.replace(/[^0-9]/g, '').padStart(4, '0'))}
               maxLength={4}
               keyboardType="numeric"
               placeholderTextColor="#ccc"
+              onFocus={() => setShowPicker(true)} // Show the date picker on focus
             />
           </View>
+
+          {showPicker && (
+            <DateTimePicker
+              value={dob}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+            />
+          )}
 
           <DropDownPicker
             open={open}
@@ -239,7 +268,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginTop: 10,
-    padding :20,
+    padding: 20,
   },
   buttonText: {
     color: '#FFFFFF',
@@ -254,7 +283,7 @@ const styles = StyleSheet.create({
   },
   dateInput: {
     height: 45,
-    width: '30%',
+    width: '30%', // Adjusted width for three input boxes
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,

@@ -234,7 +234,7 @@ const Registration = ({ navigation }) => {
             containerStyle={styles.checkbox}
           />
           <Text style={styles.checkboxText}>I have read and agree to the</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
             <Text style={styles.linkText}>Terms & Conditions</Text>
           </TouchableOpacity>
         </View>
