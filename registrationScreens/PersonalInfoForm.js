@@ -60,7 +60,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
 
     try {
         // PATCH request to update personal information
-        const response = await axios.patch(`http://10.2.32.151:5000/api/customers/${CustID_Nr}`, personalInfo);
+        const response = await axios.patch(`http://10.2.47.159:5000/api/customers/${CustID_Nr}`, personalInfo);
         console.log(response);
         if (response.status === 200) {
             Alert.alert('Success', 'Personal information updated!', [

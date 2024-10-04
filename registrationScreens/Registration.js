@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, Scro
 import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
 
-const API_URL = 'http://10.2.32.151:5000/api/customers';
+const API_URL = 'http://10.2.47.159:5000/api/customers';
 
 const Registration = ({ navigation }) => {
   const [checked, setChecked] = useState(false);
@@ -122,12 +122,12 @@ const Registration = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.formContainer}>
         <Text style={styles.headerText}>CREATE YOUR ACCOUNT</Text>
-        <Image source={require('../assets/user.png')} style={styles.userIcon} />
+        <Image source={require('../registrationAssets/user.png')} style={styles.userIcon} />
         <Text style={styles.subHeaderText}>It will only take you a few minutes!</Text>
 
         {/* Form Fields */}
         <View style={styles.inputWrapper}>
-          <Image source={require('../assets/avatar.png')} style={styles.icon} />
+          <Image source={require('../registrationAssets/avatar.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your first name(s)"
@@ -138,7 +138,7 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={require('../assets/avatar.png')} style={styles.icon} />
+          <Image source={require('../registrationAssets/avatar.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your last name"
@@ -149,7 +149,7 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={require('../assets/email.png')} style={styles.icon} />
+          <Image source={require('../registrationAssets/email.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your ID number"
@@ -162,7 +162,7 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={require('../assets/email.png')} style={styles.icon} />
+          <Image source={require('../registrationAssets/email.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your phone number"
@@ -175,7 +175,7 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={require('../assets/padlock.png')} style={styles.icon} />
+          <Image source={require('../registrationAssets/padlock.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Please create your remote PIN"
@@ -189,7 +189,7 @@ const Registration = ({ navigation }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Image source={require('../assets/padlock.png')} style={styles.icon} />
+          <Image source={require('../registrationAssets/padlock.png')} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Confirm your remote PIN"

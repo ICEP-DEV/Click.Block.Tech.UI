@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 
-const API_URL = 'http://10.2.32.151:5000/api/customers';
+const API_URL = 'http://10.2.47.159:5000/api/customers';
 
 const VerifyEmailScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');
@@ -17,7 +17,7 @@ const VerifyEmailScreen = () => {
   const handleCodeChange = (text) => {
     // Limit the input to 6 digits
     setVerificationCode(text.slice(0, 6));
-    console.log(verificationCode);
+    
   };
 
   // API call to verify the OTP
@@ -28,11 +28,15 @@ const VerifyEmailScreen = () => {
         otp: verificationCode
       };
 
+      console.log(otpData);
 
       const response = await axios.post(`${API_URL}/verify-otp`, otpData);
+
+      console.log(otpData);
       console.log('Verification successful:', response.data);
       Alert.alert('Success', 'Email verified successfully!'); // Show success alert
       navigation.navigate('Success'); // Navigate to the next screen
+
     } catch (error) {
       console.error('Error verifying OTP:', error.response.data);
       Alert.alert('Error', 'Failed to verify email: ' + error.message); // Show error alert

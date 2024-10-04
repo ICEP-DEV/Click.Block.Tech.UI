@@ -2,10 +2,10 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Registration from './screens/Registration';
-import PersonalInfoForm from './screens/PersonalInfoForm';
-import ContactDetailsScreen from './screens/ContactDetailsScreen'; // Adjust the path based on where your file is located
-import VerifyEmailScreen from './screens/VerifyEmailScreen';
-import SuccessScreen from './screens/SuccessScreen';
+import PersonalInfoForm from './registrationScreens/PersonalInfoForm';
+import ContactDetailsScreen from './registrationScreens/ContactDetailsScreen'; // Adjust the path based on where your file is located
+import VerifyEmailScreen from './registrationScreens/VerifyEmailScreen';
+import SuccessScreen from './registrationScreens/SuccessScreen';
 
 const Stack = createStackNavigator();
 
