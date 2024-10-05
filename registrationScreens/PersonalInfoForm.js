@@ -3,11 +3,11 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView 
 import { LinearGradient } from 'expo-linear-gradient';
 import DropDownPicker from 'react-native-dropdown-picker';
 import moment from 'moment';
-import axios from 'axios'; 
+import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
 
 const PersonalInfoForm = ({ route, navigation }) => {
-  const { CustID_Nr } = route.params; 
-  
+  const { CustID_Nr } = route.params;
 
   const [dobDay, setDobDay] = useState('');
   const [dobMonth, setDobMonth] = useState('');
@@ -27,51 +27,64 @@ const PersonalInfoForm = ({ route, navigation }) => {
     { label: 'South Africa', value: 'za' },
   ]);
 
+  const [showPicker, setShowPicker] = useState(false);
+  const [dob, setDob] = useState(new Date());
+
+  // Extract DOB from ID
+  useEffect(() => {
+    if (CustID_Nr && CustID_Nr.length >= 6) {
+      const year = CustID_Nr.substring(0, 2);
+      const month = CustID_Nr.substring(2, 4);
+      const day = CustID_Nr.substring(4, 6);
+
+      // Assuming IDs are post-2000. Adjust logic if IDs before 2000 need to be considered.
+      const fullYear = parseInt(year) > 22 ? `19${year}` : `20${year}`;
+
+      setDobYear(fullYear);
+      setDobMonth(month);
+      setDobDay(day);
+
+      // Set the date for the DateTimePicker
+      setDob(new Date(`${fullYear}-${month}-${day}`));
+    }
+  }, [CustID_Nr]);
+
   const handleNext = async () => {
-    // Check for empty fields
     if (!dobDay || !dobMonth || !dobYear || !country || !addressLine1 || !city || !zipCode) {
-        Alert.alert('Error', 'Please fill out all fields.');
-        return;
+      Alert.alert('Error', 'Please fill out all fields.');
+      return;
     }
 
-    // Validate the date
     const dateStr = `${dobDay}/${dobMonth}/${dobYear}`;
     if (!moment(dateStr, 'DD/MM/YYYY', true).isValid()) {
-        Alert.alert('Invalid Date', 'Please enter a valid date.');
-        return;
+      Alert.alert('Invalid Date', 'Please enter a valid date.');
+      return;
     }
 
-    // Validate zip code
     if (!/^\d{4}$/.test(zipCode)) {
-        Alert.alert('Invalid Zip Code', 'Please enter a valid 4-digit Zip Code.');
-        return;
+      Alert.alert('Invalid Zip Code', 'Please enter a valid 4-digit Zip Code.');
+      return;
     }
 
-    // Create a single address string
     const addressString = `${addressLine1}, ${city}, ${country}, ${zipCode}`;
 
-    // Prepare the data to send to the API
     const personalInfo = {
-        CustID_Nr, // Include the CustID_Nr
-        dateOfBirth: `${dobYear}-${dobMonth}-${dobDay}`, // Format date to YYYY-MM-DD
-        address: addressString, // Use the concatenated address string
+      CustID_Nr,
+      dateOfBirth: `${dobYear}-${dobMonth}-${dobDay}`,
+      address: addressString,
     };
 
-
     try {
-        // PATCH request to update personal information
-        const response = await axios.patch(`http://10.2.47.159:5000/api/customers/${CustID_Nr}`, personalInfo);
-        console.log(response);
-        if (response.status === 200) {
-            Alert.alert('Success', 'Personal information updated!', [
-                { text: 'OK', onPress: () => navigation.navigate('ContactDetails', { CustID: CustID_Nr}) }
-            ]);
-        }
+      const response = await axios.patch(`http://192.168.18.2:5000/api/customers/${CustID_Nr}`, personalInfo);
+      if (response.status === 200) {
+        Alert.alert('Success', 'Personal information updated!', [
+          { text: 'OK', onPress: () => navigation.navigate('ContactDetails', { CustID: CustID_Nr }) },
+        ]);
+      }
     } catch (error) {
-        Alert.alert('Error', 'Failed to update personal information. Please try again later.');
-        console.error('Error updating customer:', error);
+      Alert.alert('Error', 'Failed to update personal information. Please try again later.');
     }
-};
+  };
 
   return (
     <LinearGradient colors={['#001F54', '#FFFFFF']} style={styles.background}>
@@ -99,7 +112,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
               style={styles.dateInput}
               placeholder="DD"
               value={dobDay}
-              onChangeText={text => setDobDay(text.replace(/[^0-9]/g, ''))}
+              onChangeText={text => setDobDay(text.replace(/[^0-9]/g, '').padStart(2, '0'))}
               maxLength={2}
               keyboardType="numeric"
               placeholderTextColor="#ccc"
@@ -108,7 +121,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
               style={styles.dateInput}
               placeholder="MM"
               value={dobMonth}
-              onChangeText={text => setDobMonth(text.replace(/[^0-9]/g, ''))}
+              onChangeText={text => setDobMonth(text.replace(/[^0-9]/g, '').padStart(2, '0'))}
               maxLength={2}
               keyboardType="numeric"
               placeholderTextColor="#ccc"
@@ -117,12 +130,25 @@ const PersonalInfoForm = ({ route, navigation }) => {
               style={styles.dateInput}
               placeholder="YYYY"
               value={dobYear}
-              onChangeText={text => setDobYear(text.replace(/[^0-9]/g, ''))}
+              onChangeText={text => setDobYear(text.replace(/[^0-9]/g, '').padStart(4, '0'))}
               maxLength={4}
               keyboardType="numeric"
               placeholderTextColor="#ccc"
             />
           </View>
+
+          {showPicker && (
+            <DateTimePicker
+              value={dob}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                const currentDate = selectedDate || dob;
+                setDob(currentDate);
+                setShowPicker(false);
+              }}
+            />
+          )}
 
           <DropDownPicker
             open={open}
@@ -134,7 +160,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
             placeholder="Select your country"
             style={styles.dropdown}
             placeholderStyle={{ color: '#ccc' }}
-            textStyle={{ color: '#02457A' }}  // Dropdown text color updated here
+            textStyle={{ color: '#02457A' }}
             containerStyle={{ marginBottom: 15 }}
           />
 
@@ -187,42 +213,26 @@ const PersonalInfoForm = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#02457A',
+    zIndex: -1,
   },
   scrollView: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  stepContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  stepSquare: {
-    width: 30,
-    height: 30,
-    borderRadius: 5,
-    backgroundColor: '#ccc',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 10,
-  },
-  activeStep: {
-    backgroundColor: '#001F54',
-  },
-  stepText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    padding: 20,
   },
   formContainer: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
-    width: '90%',
+    width: '100%',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -230,49 +240,52 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     elevation: 8,
   },
+  stepContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  stepSquare: {
+    width: 30,
+    height: 30,
+    backgroundColor: '#ccc',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  activeStep: {
+    backgroundColor: '#02457A',
+  },
+  stepText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
   headerText: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: '#02457A',
+    fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: 'center',
   },
   input: {
-    height: 45,
     width: '100%',
+    height: 45,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 15,
     backgroundColor: '#F8F8F8',
     fontSize: 14,
+    marginBottom: 15,
     color: '#02457A',
   },
   dropdown: {
-    width: '100%',
+    borderColor: '#ccc',
     borderRadius: 8,
-    backgroundColor: '#F8F8F8',
-    borderWidth: 1,
-    borderColor: '#02457A',
-  },
-  button: {
-    backgroundColor: '#02457A',
-    borderRadius: 8,
-    paddingVertical: 12,
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   dateContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
     marginBottom: 15,
   },
   dateInput: {
@@ -284,8 +297,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: '#F8F8F8',
     fontSize: 14,
-    color: '#02457A',  // Updated date input text color
     textAlign: 'center',
+    color: '#02457A',
   },
   rowContainer: {
     flexDirection: 'row',
@@ -294,6 +307,19 @@ const styles = StyleSheet.create({
   },
   halfInput: {
     width: '48%',
+  },
+  button: {
+    backgroundColor: '#02457A',
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 60,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

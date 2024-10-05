@@ -3,61 +3,45 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, Scro
 import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
 
-const API_URL = 'http://10.2.47.159:5000/api/customers';
+// Import images
+const userIcon = require('../registrationAssets/user.png');
+const idIcon = require('../registrationAssets/id.png');
+const padlockIcon = require('../registrationAssets/padlock.png');
+const phoneIcon = require('../registrationAssets/email.png'); // Add phone icon if available
+
+const API_URL = 'http://192.168.18.2:5000/api/customers';
 
 const Registration = ({ navigation }) => {
   const [checked, setChecked] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [idNumber, setIdNumber] = useState('');  // State for ID number
-  const [phoneNumber, setPhoneNumber] = useState(''); // Add state for phone number
+  const [idNumber, setIdNumber] = useState('');
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(''); // New phone number state
+  const [errors, setErrors] = useState({});
 
-  const handleFirstNameChange = (text) => {
-    const alphabeticText = text.replace(/[^a-zA-Z\s]/g, '');
-    setFirstName(alphabeticText);
-  };
-
-  const handleLastNameChange = (text) => {
-    const alphabeticText = text.replace(/[^a-zA-Z\s]/g, '');
-    setLastName(alphabeticText);
-  };
-
-  const handleIdNumberChange = (text) => {
-    const numericText = text.replace(/[^0-9]/g, '');
-    setIdNumber(numericText.slice(0, 13));
-  };
-
-  const handlePhoneNumberChange = (text) => { // Handle phone number input
-    const numericText = text.replace(/[^0-9]/g, '');
-    setPhoneNumber(numericText.slice(0, 10)); // Limit to 10 digits
-  };
-
-  const handlePinChange = (text) => {
-    const numericText = text.replace(/[^0-9]/g, '');
-    setPin(numericText.slice(0, 5));
-  };
-
-  const handleConfirmPinChange = (text) => {
-    const numericText = text.replace(/[^0-9]/g, '');
-    setConfirmPin(numericText.slice(0, 5));
-  };
+  const handleFirstNameChange = (text) => setFirstName(text.replace(/[^a-zA-Z\s]/g, ''));
+  const handleLastNameChange = (text) => setLastName(text.replace(/[^a-zA-Z\s]/g, ''));
+  const handleIdChange = (text) => setIdNumber(text.replace(/[^0-9]/g, '').slice(0, 13));
+  const handlePinChange = (text) => setPin(text.replace(/[^0-9]/g, '').slice(0, 5));
+  const handleConfirmPinChange = (text) => setConfirmPin(text.replace(/[^0-9]/g, '').slice(0, 5));
+  const handlePhoneChange = (text) => setPhoneNumber(text.replace(/[^0-9]/g, '').slice(0, 10)); // Phone number max 10 digits
 
   const validatePins = () => {
-    if (pin.length < 5) {
-      return 'You must enter exactly five digits for the PIN.';
-    }
-    if (pin !== confirmPin) {
-      return 'PINs do not match.';
-    }
-    return '';
+    let pinErrors = {};
+    if (pin.length !== 5) pinErrors.pin = 'You must enter exactly five digits for the PIN.';
+    if (pin !== confirmPin) pinErrors.confirmPin = 'PINs do not match.';
+    return pinErrors;
   };
 
   const validateIdNumber = () => {
-    if (idNumber.length !== 13) {
-      return 'ID number must be exactly 13 digits.';
-    }
+    if (idNumber.length !== 13) return 'ID number must be exactly 13 digits.';
+    return '';
+  };
+
+  const validatePhoneNumber = () => {
+    if (phoneNumber.length !== 10) return 'Phone number must be exactly 10 digits.';
     return '';
   };
 
@@ -67,51 +51,48 @@ const Registration = ({ navigation }) => {
       firstName.trim() !== '' &&
       lastName.trim() !== '' &&
       idNumber.trim() !== '' &&
-      phoneNumber.trim() !== '' &&  // Validate phone number
       pin.trim() !== '' &&
-      confirmPin.trim() !== ''
+      confirmPin.trim() !== '' &&
+      phoneNumber.trim() !== '' // Check if phone number is entered
     );
   };
 
   const handleSubmit = async () => {
-    const pinError = validatePins();
+    const pinErrors = validatePins();
     const idError = validateIdNumber();
+    const phoneError = validatePhoneNumber();
 
     if (!isFormValid()) {
+      setErrors({ form: 'Please fill out all fields correctly.' });
       Alert.alert('Error', 'Please fill out all fields correctly.');
     } else if (idError) {
       Alert.alert('Error', idError);
-    } else if (pinError) {
-      Alert.alert('Error', pinError);
+    } else if (phoneError) {
+      Alert.alert('Error', phoneError);
+    } else if (Object.keys(pinErrors).length > 0) {
+      Alert.alert('Error', pinErrors.pin || pinErrors.confirmPin);
     } else {
       try {
         const customerData = {
           CustID_Nr: idNumber,
           firstName,
           lastName,
-          phoneNumber,  // Include phone number
           loginPin: pin,
+          phoneNumber, // Include phone number in the customer data
         };
 
-        console.log('Customer data being submitted:', customerData);
-
-        // API call to create a customer
         const response = await axios.post(API_URL, customerData);
-        
-        console.log('API response:', response.data);
-
-       
-          Alert.alert('Success', 'Registration completed successfully!', [
+        Alert.alert(
+          'Success',
+          'Registration completed successfully!',
+          [
             {
               text: 'OK',
-              onPress: () => navigation.navigate('PersonalInfo', { CustID_Nr: idNumber }), // Navigate to PersonalInfo
+              onPress: () => navigation.navigate('PersonalInfo', { CustID_Nr: idNumber }),
             },
-          ]);
-          
-
+          ]
+        );
       } catch (error) {
-        // Improved error handling
-        console.error('Error creating customer:', error); 
         const errorMessage = error.response?.data?.message || error.message || 'There was an issue with the registration.';
         Alert.alert('Error', errorMessage);
       }
@@ -122,60 +103,70 @@ const Registration = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.formContainer}>
         <Text style={styles.headerText}>CREATE YOUR ACCOUNT</Text>
-        <Image source={require('../registrationAssets/user.png')} style={styles.userIcon} />
+        <Image source={userIcon} style={styles.userIcon} />
         <Text style={styles.subHeaderText}>It will only take you a few minutes!</Text>
 
-        {/* Form Fields */}
+        {/* First Name Input */}
         <View style={styles.inputWrapper}>
-          <Image source={require('../registrationAssets/avatar.png')} style={styles.icon} />
+          <Image source={userIcon} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your first name(s)"
             value={firstName}
             onChangeText={handleFirstNameChange}
             placeholderTextColor="#02457A"
+            autoCapitalize="words"
           />
         </View>
+        {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
 
+        {/* Last Name Input */}
         <View style={styles.inputWrapper}>
-          <Image source={require('../registrationAssets/avatar.png')} style={styles.icon} />
+          <Image source={userIcon} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your last name"
             value={lastName}
             onChangeText={handleLastNameChange}
             placeholderTextColor="#02457A"
+            autoCapitalize="words"
           />
         </View>
+        {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
 
+        {/* ID Input */}
         <View style={styles.inputWrapper}>
-          <Image source={require('../registrationAssets/email.png')} style={styles.icon} />
+          <Image source={idIcon} style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Enter your ID number"
+            placeholder="Enter your 13-digit ID"
             value={idNumber}
-            onChangeText={handleIdNumberChange}
+            onChangeText={handleIdChange}
             keyboardType="numeric"
-            maxLength={13}  // Limit input to 13 digits
+            maxLength={13}
             placeholderTextColor="#02457A"
           />
         </View>
+        {errors.id && <Text style={styles.errorText}>{errors.id}</Text>}
 
+        {/* Phone Number Input */}
         <View style={styles.inputWrapper}>
-          <Image source={require('../registrationAssets/email.png')} style={styles.icon} />
+          <Image source={phoneIcon} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Enter your phone number"
             value={phoneNumber}
-            onChangeText={handlePhoneNumberChange}
+            onChangeText={handlePhoneChange}
             keyboardType="numeric"
-            maxLength={10}  // Limit input to 10 digits
+            maxLength={10}
             placeholderTextColor="#02457A"
           />
         </View>
+        {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
 
+        {/* PIN Input */}
         <View style={styles.inputWrapper}>
-          <Image source={require('../registrationAssets/padlock.png')} style={styles.icon} />
+          <Image source={padlockIcon} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Please create your remote PIN"
@@ -187,9 +178,11 @@ const Registration = ({ navigation }) => {
             placeholderTextColor="#02457A"
           />
         </View>
+        {errors.pin && <Text style={styles.errorText}>{errors.pin}</Text>}
 
+        {/* Confirm PIN Input */}
         <View style={styles.inputWrapper}>
-          <Image source={require('../registrationAssets/padlock.png')} style={styles.icon} />
+          <Image source={padlockIcon} style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Confirm your remote PIN"
@@ -201,20 +194,19 @@ const Registration = ({ navigation }) => {
             placeholderTextColor="#02457A"
           />
         </View>
+        {errors.confirmPin && <Text style={styles.errorText}>{errors.confirmPin}</Text>}
 
-        {/* Checkbox and Submit Button */}
+        {/* Terms & Conditions */}
         <View style={styles.checkboxContainer}>
-          <CheckBox
-            checked={checked}
-            onPress={() => setChecked(!checked)}
-            containerStyle={styles.checkbox}
-          />
+          <CheckBox checked={checked} onPress={() => setChecked(!checked)} containerStyle={styles.checkbox} />
           <Text style={styles.checkboxText}>I have read and agree to the</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
             <Text style={styles.linkText}>Terms & Conditions</Text>
           </TouchableOpacity>
         </View>
+        {errors.form && <Text style={styles.errorText}>{errors.form}</Text>}
 
+        {/* Submit Button */}
         <TouchableOpacity
           style={[styles.button, !isFormValid() && styles.disabledButton]}
           onPress={handleSubmit}
@@ -223,10 +215,11 @@ const Registration = ({ navigation }) => {
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
 
+        {/* Login Link */}
         <View style={styles.loginContainer}>
           <Text style={styles.loginText}>Already have an account?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.loginLink}>Login here</Text>
+            <Text style={styles.linkText}>Login</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -239,13 +232,14 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#02457a',
+    backgroundColor: '#02457A',
     paddingVertical: 50,
+    paddingHorizontal: 20,
   },
   formContainer: {
-    width: '90%',
+    width: '100%',
     backgroundColor: '#fff',
-    padding: 45,
+    padding: 30,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -255,7 +249,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#02457A',
     textAlign: 'center',
@@ -264,84 +258,84 @@ const styles = StyleSheet.create({
   subHeaderText: {
     fontSize: 14,
     color: '#02457A',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
-  userIcon: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
     marginBottom: 20,
+    textAlign: 'center',
   },
   inputWrapper: {
-    width: '100%',
-    marginBottom: 15,
-  },
-  icon: {
-    position: 'absolute',
-    left: 10,
-    top: 10,
-    width: 20,
-    height: 20,
-    resizeMode: 'contain',
-  },
-  input: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#02457A',
     borderRadius: 5,
-    padding: 10,
-    paddingLeft: 40,
-    fontSize: 16,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
+    userIcon: {
+    width: 50, // Change as needed
+    height: 50, // Change as needed
+    resizeMode: 'contain',
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    height: 40,
     color: '#02457A',
+  },
+  errorText: {
+    fontSize: 12,
+    color: 'red',
+    marginBottom: 10,
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 15,
+    marginVertical: 20,
   },
   checkbox: {
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    marginRight: 5,
+    margin: 0,
+    padding: 0,
   },
   checkboxText: {
-    fontSize: 14,
     color: '#02457A',
   },
   linkText: {
-    fontSize: 14,
     color: '#02457A',
-    textDecorationLine: 'underline',
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
   button: {
     backgroundColor: '#02457A',
-    padding: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
+    marginBottom: 20,
   },
   disabledButton: {
-    backgroundColor: 'gray',
+    backgroundColor: '#7f9ba9',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
   },
   loginContainer: {
     flexDirection: 'row',
-    marginTop: 20,
+    alignItems: 'center',
   },
   loginText: {
-    fontSize: 14,
     color: '#02457A',
   },
   loginLink: {
-    fontSize: 14,
     color: '#02457A',
     fontWeight: 'bold',
     marginLeft: 5,
   },
 });
+
 
 export default Registration;

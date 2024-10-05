@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-const doneIcon = require('../assets/done.png');
+const doneIcon = require('../registrationAssets/done.png');
 
 const EmailVerificationScreen = () => {
   return (

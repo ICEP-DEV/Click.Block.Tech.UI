@@ -1,27 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient'; // Requires 'expo-linear-gradient' package for gradient
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const VerifyPhoneNumberScreen = () => {
-  const [verificationCode, setVerificationCode] = useState('');
-  const navigation = useNavigation(); // Initialize navigation hook
+  const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
+  const navigation = useNavigation();
 
-  // Handle verification code change
-  const handleCodeChange = (text) => {
-    // Limit the input to 6 digits
-    setVerificationCode(text.slice(0, 6));
+  const inputRefs = useRef([]);
+
+  const handleCodeChange = (text, index) => {
+    const newCode = [...verificationCode];
+    newCode[index] = text.slice(0, 1); // Allow only one character per input
+    setVerificationCode(newCode);
+
+    // Move to the next input if a value is entered
+    if (text && index < verificationCode.length - 1) {
+      inputRefs.current[index + 1].focus();
+    } else if (!text && index > 0) {
+      inputRefs.current[index - 1].focus(); // Move to previous input if deleted
+    }
   };
 
-  // Handle the "Next" button press
   const handleNext = () => {
-    if (verificationCode.length !== 6) {
+    const code = verificationCode.join('');
+    if (code.length !== 6) {
       alert('Please enter a valid 6-digit code.');
     } else {
-      console.log('Code is valid:', verificationCode);
-      // Navigate to the next screen
-      navigation.navigate('Success'); // Replace 'NextScreen' with your target screen name
+      console.log('Code is valid:', code);
+      navigation.navigate('Success');
     }
   };
 
@@ -29,8 +37,6 @@ const VerifyPhoneNumberScreen = () => {
     <SafeAreaView style={styles.safeContainer}>
       <LinearGradient colors={['#003366', '#003366', '#ffffff']} style={styles.gradient}>
         <View style={styles.formContainer}>
-          
-          {/* Progress Bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>1</Text></View>
             <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>2</Text></View>
@@ -38,30 +44,27 @@ const VerifyPhoneNumberScreen = () => {
             <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>4</Text></View>
           </View>
 
-          {/* Title and instructions */}
           <Text style={styles.title}>VERIFY EMAIL ACCOUNT</Text>
           <Text style={styles.subtitle}>
             We've sent a text message to your email account with a verification code. Please enter it in the field below to verify your email account.
           </Text>
 
-          {/* Phone Number Mask */}
-          <Text style={styles.phoneNumber}></Text>
-
-          {/* Verification Code Input */}
           <View style={styles.codeInputContainer}>
-            {Array(6).fill('').map((_, index) => (
+            {verificationCode.map((code, index) => (
               <TextInput
                 key={index}
+                ref={ref => inputRefs.current[index] = ref}
                 style={styles.codeInput}
-                value={verificationCode[index] || ''}
+                value={code}
                 keyboardType="numeric"
                 maxLength={1}
-                onChangeText={(text) => handleCodeChange(verificationCode.substr(0, index) + text + verificationCode.substr(index + 1))}
+                onChangeText={(text) => handleCodeChange(text, index)}
+                textAlign="center" // Center the text
+                mode="outlined" // Optional: gives it an outlined look
               />
             ))}
           </View>
 
-          {/* Next Button */}
           <Button mode="contained" onPress={handleNext} style={styles.button}>
             Next
           </Button>
@@ -106,11 +109,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#02457A',
   },
   activeProgressText: {
-    color: '#fff', // White text for active square
+    color: '#fff',
     fontWeight: 'bold',
   },
   inactiveProgressText: {
-    color: '#02457A', // Dark blue text for inactive square
+    color: '#02457A',
     fontWeight: 'bold',
   },
   title: {
@@ -126,34 +129,25 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  phoneNumber: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#02457A',
-  },
   codeInputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
   codeInput: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     borderWidth: 1,
     borderRadius: 5,
-    fontSize: 14,
+    fontSize: 20,
     backgroundColor: '#fff',
-    color: '#02457A', // Ensure the input text color is visible
-     padding: 0,
-     fontWeightnt: 'bold',
-   
+    color: '#02457A',
+    textAlign: 'center', // Ensure text is centered
+    padding: 0,
   },
   button: {
     backgroundColor: '#02457A',
     marginTop: 10,
-
   },
 });
 
