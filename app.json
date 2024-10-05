@@ -4,10 +4,10 @@
     "slug": "Click_Block_Tech_UI",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./registrationAssets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./registrationAssets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,12 +16,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./registrationAssets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.matsiemtri.Click_Block_Tech_UI"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./registrationAssets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "17bf094d-8bd4-4a64-a2b5-0d238a52e85f"
+      }
     }
   }
 }
