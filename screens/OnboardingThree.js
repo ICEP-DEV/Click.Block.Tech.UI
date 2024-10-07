@@ -11,14 +11,14 @@ const loadFonts = async () => {
     });
 };
 
-const OnboardingOne = () => {
+const OnboardingThree= () => {
     
     //OPM - Declare here
     const [fontsLoaded, setFontsLoaded] = useState(false); 
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(2);
     const [hoverIndex, setHoverIndex] = useState(null); // Track hover state
     const navigation = useNavigation();
-
+    
     // OPM - Load fonts on component mount
     useEffect(() => {
         loadFonts().then(() => setFontsLoaded(true)); 
@@ -29,51 +29,48 @@ const OnboardingOne = () => {
         return <ActivityIndicator size="large" color="#0000ff" />; 
     }
 
-    //OPM - Handling Pagination
-
-    const handleSquarePress = (index) => {
-        setActiveIndex(index);
-
-        // OPM - Navigating to the relevant screen based on the index
-        if (index === 0) {
-            navigation.navigate('OnboardingOne'); 
-            //console.log(index + " pressed");
-        } else if (index === 1) {
-            navigation.navigate('OnboardingTwo'); 
-            //console.log(index + " pressed");
-        } else if (index === 2) {
-            navigation.navigate('OnboardingThree'); 
-            //console.log(index + " pressed");
-        }
-    };
-
      // OPM - Handle the skip button action
      const handleSkip = () => {
         // OPM - Here you can implement navigation to the next screen or any action you want
         navigation.navigate('LoginOrSignup');
     };
 
+    //OPM - Handling Pagination
+
+    const handleSquarePress = (index) => {
+        setActiveIndex(index);
+        // OPM - Navigating to the relevant screen based on the index
+        if (index === 0) {
+            setActiveIndex(0);
+            navigation.navigate('OnboardingOne'); 
+        } else if (index === 1) {
+            navigation.navigate('OnboardingTwo'); 
+        } else if (index === 2) {
+            navigation.navigate('OnboardingThree');
+        }
+    };
+
     return (
         <ImageBackground
-            source={require('../assets/OnboardingGradient.jpg')} 
+            source={require('../assets/OnboardingGradient2.jpg')} 
             style={styles.background}
             resizeMode="cover"
         >
             <View style={styles.container}>
-                <Text style={styles.title}>Easy TopUp & Withdraw</Text>
+                <Text style={styles.title}>Security Features</Text>
                 <Text style={styles.description}>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.
+                In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus.
                 </Text>
 
                 <View style={styles.pagination}>
-                    {/* OPM - Dynamically rendering squares with rounded corners based on activeIndex */}
+                    {/* Dynamically rendering squares with rounded corners based on activeIndex */}
                     {[0, 1, 2].map((_, index) => (
                         <TouchableOpacity
                             key={index}
                             onPress={() => handleSquarePress(index)} // Set active index on press
                             onPressIn={() => setHoverIndex(index)} // Set hover index on press in
                             onPressOut={() => setHoverIndex(null)} // Reset hover index on press out
-                            activeOpacity={1} 
+                            activeOpacity={1} // Disable default opacity on press
                         >
                             <View
                                 style={[styles.square, 
@@ -89,7 +86,7 @@ const OnboardingOne = () => {
 
                 {/* OPM -Skip Button */}
                 <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-                    <Text style={styles.skipButtonText}>Skip</Text>
+                    <Text style={styles.skipButtonText}>Got it</Text>
                 </TouchableOpacity>
             </View>
         </ImageBackground>
@@ -163,4 +160,4 @@ const styles = StyleSheet.create({
     
 });
 
-export default OnboardingOne;
+export default OnboardingThree;

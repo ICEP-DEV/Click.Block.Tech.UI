@@ -1,22 +1,35 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, ImageBackground, Image, Animated } from 'react-native';
+import { StyleSheet, View, ImageBackground, Animated } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // OPM - Import useNavigation hook
 
 const LandingPage = () => {
-
+    
     // OPM - Initial value for scale and opacity
     const logoAnim = useRef(new Animated.Value(0)).current; 
 
+    // OPM - Using the navigation hook to handle screen transitions
+    const navigation = useNavigation(); 
+
     // OPM - Declaring opacity and duration for animation
     useEffect(() => {
+        // OPM - Starting animation for logo
         Animated.timing(logoAnim, {
             toValue: 1, 
             duration: 1000, 
             useNativeDriver: true,
         }).start();
-    }, [logoAnim]);
+
+        // OPM - Setting a timeout for 3 seconds before navigating to OnboardingOne.js
+        const timer = setTimeout(() => {
+            navigation.navigate('OnboardingOne'); // OPM - Navigate to OnboardingOne
+        }, 3000);
+
+        // OPM - Cleanup the timeout on component unmount
+        return () => clearTimeout(timer);
+    }, [logoAnim, navigation]);
 
     return (
-        //OPM - Adding background Image
+        // OPM - Adding background Image
         <ImageBackground
             source={require('../assets/LandingPicture.jpg')} 
             style={styles.background}
@@ -49,8 +62,8 @@ const styles = StyleSheet.create({
         flex: 1, 
     },
     logo: {
-        width: 350, 
-        height: 350, 
+        width: 300, 
+        height: 300, 
         marginBottom: 20, 
     },
 });

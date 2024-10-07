@@ -11,11 +11,11 @@ const loadFonts = async () => {
     });
 };
 
-const OnboardingOne = () => {
+const OnboardingTwo = () => {
     
     //OPM - Declare here
     const [fontsLoaded, setFontsLoaded] = useState(false); 
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(1);
     const [hoverIndex, setHoverIndex] = useState(null); // Track hover state
     const navigation = useNavigation();
 
@@ -29,51 +29,47 @@ const OnboardingOne = () => {
         return <ActivityIndicator size="large" color="#0000ff" />; 
     }
 
-    //OPM - Handling Pagination
-
-    const handleSquarePress = (index) => {
-        setActiveIndex(index);
-
-        // OPM - Navigating to the relevant screen based on the index
-        if (index === 0) {
-            navigation.navigate('OnboardingOne'); 
-            //console.log(index + " pressed");
-        } else if (index === 1) {
-            navigation.navigate('OnboardingTwo'); 
-            //console.log(index + " pressed");
-        } else if (index === 2) {
-            navigation.navigate('OnboardingThree'); 
-            //console.log(index + " pressed");
-        }
-    };
-
      // OPM - Handle the skip button action
      const handleSkip = () => {
         // OPM - Here you can implement navigation to the next screen or any action you want
         navigation.navigate('LoginOrSignup');
     };
 
+    //OPM - Handling Pagination
+
+    const handleSquarePress = (index) => {
+        setActiveIndex(index);
+        // OPM - Navigating to the relevant screen based on the index
+        if (index === 0) {
+            navigation.navigate('OnboardingOne'); 
+        } else if (index === 1) {
+            navigation.navigate('OnboardingTwo'); 
+        } else if (index === 2) {
+            navigation.navigate('OnboardingThree'); 
+        }
+    };
+
     return (
         <ImageBackground
-            source={require('../assets/OnboardingGradient.jpg')} 
+            source={require('../assets/OnboardingGradient1.jpg')} 
             style={styles.background}
             resizeMode="cover"
         >
             <View style={styles.container}>
-                <Text style={styles.title}>Easy TopUp & Withdraw</Text>
+                <Text style={styles.title}>Easy Payments</Text>
                 <Text style={styles.description}>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.
+                Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
                 </Text>
 
                 <View style={styles.pagination}>
-                    {/* OPM - Dynamically rendering squares with rounded corners based on activeIndex */}
+                    {/* Dynamically rendering squares with rounded corners based on activeIndex */}
                     {[0, 1, 2].map((_, index) => (
                         <TouchableOpacity
                             key={index}
                             onPress={() => handleSquarePress(index)} // Set active index on press
                             onPressIn={() => setHoverIndex(index)} // Set hover index on press in
                             onPressOut={() => setHoverIndex(null)} // Reset hover index on press out
-                            activeOpacity={1} 
+                            activeOpacity={1} // Disable default opacity on press
                         >
                             <View
                                 style={[styles.square, 
@@ -163,4 +159,4 @@ const styles = StyleSheet.create({
     
 });
 
-export default OnboardingOne;
+export default OnboardingTwo;
