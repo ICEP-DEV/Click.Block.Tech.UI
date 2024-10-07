@@ -4,7 +4,7 @@
     "slug": "Click_Block_Tech_UI",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./registrationAssets/icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./registrationAssets/splash.png",
