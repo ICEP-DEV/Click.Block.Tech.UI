@@ -1,22 +1,83 @@
-import React, { useState } from 'react';
-import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, ScrollView, Modal, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  Switch,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Dimensions,
+  ScrollView,
+  Modal,
+  StatusBar,
+  ActivityIndicator,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import BottomNavigation from './BottomNavigation';
-import { useNavigation } from '@react-navigation/native'; // Import navigation hook
-
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const { width } = Dimensions.get('window');
+const api = 'http://192.168.0.27:5000/api/';
+
+
 
 export default function ManageCard() {
   const [isCardDeactivated, setIsCardDeactivated] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const navigation = useNavigation(); // Access the navigation prop
+  const navigation = useNavigation();
 
+  const [loading, setLoading] = useState(true);
+  const [customerDetails, setCustomerDetails] = useState(null);
+  const [cardDetails, setCardDetails] = useState(null);
   const toggleModal = () => setIsModalVisible(!isModalVisible);
 
   const toggleCardDeactivation = () => {
-    setIsCardDeactivated(prev => !prev);
+    setIsCardDeactivated((prev) => !prev);
   };
+
+  const cardID = 2;
+
+  useEffect(() => {
+    const fetchCardAndCustomerData = async () => {
+      try {
+        const response = await axios.get(`${api}bankcards/${cardID}/customer`);
+        const data = response.data;
+
+        setCustomerDetails({
+          firstName: data.FirstName,
+          lastName: data.LastName,
+        });
+
+        setCardDetails({
+          cardNumber: data.CardNumber,
+          cvv: data.CVV,
+          expirationDate: data.ExpirationDate,
+        });
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching card or customer data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchCardAndCustomerData();
+  }, [cardID]);
+
+  // Format the expiration date
+  const formatExpirationDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const year = String(date.getFullYear()).slice(-2); // Get last two digits of the year
+    return `${month}/${year}`;
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,7 +85,7 @@ export default function ManageCard() {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-        <TouchableOpacity onPress={() => console.log('Back pressed')}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.headerText}>MANAGE CARD</Text>
@@ -69,45 +130,60 @@ export default function ManageCard() {
         onRequestClose={toggleModal}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+          <View style={styles.updatedModalContent}>
             <Text style={styles.modalTitle}>CARD DETAILS</Text>
             <Image
               source={require('../assets/ManageCard/card_p.png')}
-              style={styles.modalCardImage}
+              style={styles.updatedModalCardImage}
             />
             <Text style={styles.modalCardType}>Debit Card</Text>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Account Holder</Text>
-              <View style={styles.detailValueContainer}>
-                <Text style={styles.detailValue}>Mr Jonathan Moatshe</Text>
+              <View style={styles.updatedDetailValueContainer}>
+                <Text style={styles.updatedDetailValue}>
+                  {customerDetails
+                    ? `${customerDetails.firstName} ${customerDetails.lastName}`
+                    : 'Loading...'}
+                </Text>
               </View>
             </View>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Card Number</Text>
-              <View style={styles.detailValueContainer}>
-                <Text style={styles.detailValue}>1234 5678 9101 8765</Text>
+              <View style={styles.updatedDetailValueContainer}>
+                <Text style={styles.updatedDetailValue}>
+                  {cardDetails ? cardDetails.cardNumber : 'Loading...'}
+                </Text>
               </View>
             </View>
-            
+
             <View style={styles.detailRowHalf}>
               <View style={styles.halfWidth}>
                 <Text style={styles.detailLabel}>CVV</Text>
-                <View style={styles.detailValueContainer}>
-                  <Text style={styles.detailValue}>123</Text>
+                <View style={styles.updatedDetailValueContainer}>
+                  <Text style={styles.updatedDetailValue}>
+                    {cardDetails ? cardDetails.cvv : 'Loading...'}
+                  </Text>
                 </View>
               </View>
               <View style={styles.halfWidth}>
                 <Text style={styles.detailLabel}>Expiry Date</Text>
-                <View style={styles.detailValueContainer}>
-                  <Text style={styles.detailValue}>10/28</Text>
+                <View style={styles.updatedDetailValueContainer}>
+                  <Text style={styles.updatedDetailValue}>
+                    {cardDetails
+                      ? formatExpirationDate(cardDetails.expirationDate)
+                      : 'Loading...'}
+                  </Text>
                 </View>
               </View>
             </View>
 
-            <TouchableOpacity style={styles.backButton} onPress={toggleModal}>
-              <Text style={styles.backButtonText}>Back</Text>
+            <TouchableOpacity
+              style={styles.updatedBackButton}
+              onPress={toggleModal}
+            >
+              <Text style={styles.updatedBackButtonText}>Back</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -193,30 +269,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContent: {
+  updatedModalContent: {
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 20,
     width: '90%',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#02457A',
-    marginBottom: 20,
-  },
-  modalCardImage: {
-    width: '100%',
-    height: 200,
+  updatedModalCardImage: {
+    width: '80%',
+    height: 150,
     resizeMode: 'contain',
     marginBottom: 20,
   },
-  modalCardType: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  updatedDetailValueContainer: {
+    borderWidth: 1,
+    borderColor: '#02457A',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#F5F5F5',
+    width: '100%',
+    marginBottom: 10,
+  },
+  updatedDetailValue: {
+    fontSize: 16,
     color: '#02457A',
-    marginBottom: 20,
+  },
+  updatedBackButton: {
+    backgroundColor: '#02457A',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginTop: 20,
+    width: '100%',
+    alignItems: 'center',
+  },
+  updatedBackButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   detailRow: {
     width: '100%',
@@ -225,8 +322,8 @@ const styles = StyleSheet.create({
   detailRowHalf: {
     flexDirection: 'row',
     width: '100%',
-    marginBottom: 15,
     justifyContent: 'space-between',
+    marginBottom: 15,
   },
   halfWidth: {
     width: '48%',
@@ -236,21 +333,5 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 5,
   },
-  detailValueContainer: {
-    borderWidth: 1,
-    borderColor: '#02457A',
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: 'white',
-  },
-  detailValue: {
-    fontSize: 16,
-    color: '#02457A',
-    fontWeight: '600',
-  },
-  backButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
 });
+
