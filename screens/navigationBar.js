@@ -5,8 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import styles from './style';
 
 // Import screens
-import HomeScreen from './homeScreen'; // Previously MainScreen
-import ManageScreen from './manageScreen';
+import HomeScreen from './homeScreen';
+import ManageCard from './ManageCard';
 import NotificationsScreen from './notificationsScreen';
 import TransactScreen from './transactScreen';
 
@@ -70,14 +70,14 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   );
 };
 
-export const NavigationBar = () => {
+const NavigationBar = () => {
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
-      tabBar={(props) => <CustomTabBar {...props} />} // Ensure this is passed in the right place
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Manage" component={ManageScreen} />
+      <Tab.Screen name="Manage" component={ManageCard} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
       <Tab.Screen name="Transact" component={TransactScreen} />
     </Tab.Navigator>
@@ -85,11 +85,3 @@ export const NavigationBar = () => {
 };
 
 export default NavigationBar;
-
-
-
-
-
-
-
-

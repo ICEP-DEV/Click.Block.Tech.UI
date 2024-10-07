@@ -14,9 +14,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import BottomNavigation from './BottomNavigation';
 import { useNavigation } from '@react-navigation/native';
+import NavigationBar from './navigationBar';
 import axios from 'axios';
+
 
 const { width } = Dimensions.get('window');
 const api = 'http://192.168.0.27:5000/api/';
@@ -190,7 +191,7 @@ export default function ManageCard() {
       </Modal>
 
       {/* Bottom Navigation */}
-      <BottomNavigation />
+      <NavigationBar/> 
     </SafeAreaView>
   );
 }
