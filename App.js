@@ -1,20 +1,6 @@
-import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import NavigationBar from './screens/navigationBar'; 
-import { createStackNavigator } from '@react-navigation/stack';
-import Registration from './registrationScreens/Registration';
-import PersonalInfoForm from './registrationScreens/PersonalInfoForm';
-import ContactDetailsScreen from './registrationScreens/ContactDetailsScreen'; // Adjust the path based on where your file is located
-import VerifyEmailScreen from './registrationScreens/VerifyEmailScreen';
-import SuccessScreen from './registrationScreens/RegistrationSuccessScreen';
-import TermsScreen from './registrationScreens/TermsScreen';
-import NavigationBar from './screens/navigationBar'; 
-import Login from './screens/Login';
-
-// Create a Stack Navigator
-const Stack = createStackNavigator();
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export default function App() {
   return (
