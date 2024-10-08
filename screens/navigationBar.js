@@ -73,6 +73,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 const NavigationBar = () => {
   return (
     <Tab.Navigator
+      initialRouteName="Manage" // Start with the Manage tab, optional
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
@@ -83,5 +84,6 @@ const NavigationBar = () => {
     </Tab.Navigator>
   );
 };
+
 
 export default NavigationBar;
