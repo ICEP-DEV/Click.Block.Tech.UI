@@ -11,6 +11,11 @@ import TermsScreen from './registrationScreens/TermsScreen';
 import Login from './screens/Login';
 import IdentityVerificationScreen from './screens/IdentityVerificationScreen';
 import EmailVerificationScreen from './registrationScreens/RegistrationSuccessScreen'; 
+import LandingPage from './screens/LandingPage';
+import OnboardingOne from './screens/OnboardingOne';
+import OnboardingTwo from './screens/OnboardingTwo';
+import OnboardingThree from './screens/OnboardingThree';
+import LoginOrSignup from './screens/LoginOrSignup';
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
@@ -18,8 +23,10 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Registration">
+      <Stack.Navigator initialRouteName="LandingPage">
       <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
+      <Stack.Screen name="LoginOrSignup"  component={LoginOrSignup} options={{headerShown: false}}/>
+      <Stack.Screen name="LandingPage"  component={LandingPage} options={{headerShown: false}}/>
       <Stack.Screen name="Registration" component={Registration}  options={{ headerShown: false }}  />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoForm}  options={{ headerShown: false }} />
       <Stack.Screen name="ContactDetails" component={ContactDetailsScreen}  options={{ headerShown: false }} />
@@ -27,6 +34,9 @@ export default function App() {
       <Stack.Screen name="emailSuccess" component={EmailVerificationScreen}  options={{ headerShown: false }} />
       <Stack.Screen name="Success" component={SuccessScreen}  options={{ headerShown: false }} />
       <Stack.Screen name="Terms" component={TermsScreen}  options={{ headerShown: false }} />
+      <Stack.Screen name="OnboardingOne" component={OnboardingOne} options={{ headerShown: false }} />
+      <Stack.Screen name="OnboardingTwo" component={OnboardingTwo} options={{ headerShown: false }} />
+      <Stack.Screen name="OnboardingThree" component={OnboardingThree} options={{ headerShown: false }} />
       <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen}  options={{ headerShown: false }} />
       </Stack.Navigator>
       {/* <NavigationBar /> */}
