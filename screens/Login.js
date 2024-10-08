@@ -53,7 +53,7 @@ const showToastMsg= (msg) => {
     <View style={styles.container}>
    
       <Image
-        source={require('../assets/logo.png')}
+        source={require('../assets/Logo.png')}
         style={styles.logo}
       />
       <View style={styles.background} />
