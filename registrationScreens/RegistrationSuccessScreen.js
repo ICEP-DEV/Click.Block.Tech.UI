@@ -1,9 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { useNavigation,useRoute } from '@react-navigation/native';
 
 const doneIcon = require('../registrationAssets/done.png');
 
 const EmailVerificationScreen = () => {
+  const route = useRoute();  
+  const {CustID} = route.params;
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.verificationContainer}>
@@ -11,7 +15,7 @@ const EmailVerificationScreen = () => {
         <Image source={doneIcon} style={styles.icon} />
         <Text style={styles.successText}>Your Email Address has been verified successfully!</Text>
         {/* Next button */}
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('IdentityVerification',{custID_Nr:CustID})}>
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
       </View>

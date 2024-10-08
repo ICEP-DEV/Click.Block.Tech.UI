@@ -5,13 +5,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.18.2:5000/api/customers';
+const API_URL = 'http://168.172.187.202:5000/api/customers';
 
 const VerifyEmailScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const navigation = useNavigation();
   const route = useRoute();
   const { Email } = route.params; // Assuming email is passed from the previous page
+  const {CustID_Nr} = route.params;
 
   // Handle verification code change
   const handleCodeChange = (text) => {
@@ -35,7 +36,7 @@ const VerifyEmailScreen = () => {
       console.log(otpData);
       console.log('Verification successful:', response.data);
       Alert.alert('Success', 'Email verified successfully!'); // Show success alert
-      navigation.navigate('Success'); // Navigate to the next screen
+      navigation.navigate('emailSuccess',{CustID:CustID_Nr}); // Navigate to the next screen
 
     } catch (error) {
       console.error('Error verifying OTP:', error.response.data);

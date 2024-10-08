@@ -12,7 +12,7 @@ import transferIcon from '../assets/Homepage/transfer.png';
 import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
  
-const api = 'http://10.0.2.2:5000/api/';
+const api = 'http://168.172.187.202:5000/api/';
 
 const HomeScreen = () => { // Previously MainScreen
   const [firstName, setFirstName] = useState('');

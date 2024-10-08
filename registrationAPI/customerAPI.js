@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/customers';
+const API_URL = 'http://168.172.187.202:5000/api/customers';
 
 const customerApi = {
   createCustomer: async (customerData) => {

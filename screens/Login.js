@@ -20,7 +20,7 @@ const showToastMsg= (msg) => {
     setIsLoading(true);
     //fetching user account data using account number
     if(inputPin){
-      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
+      await axios.get(`http://168.172.187.202:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
         
         const userData = response.data;
         setUser(userData);

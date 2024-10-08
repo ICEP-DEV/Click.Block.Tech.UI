@@ -75,7 +75,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
     };
 
     try {
-      const response = await axios.patch(`http://192.168.18.2:5000/api/customers/${CustID_Nr}`, personalInfo);
+      const response = await axios.patch(`http://168.172.187.202:5000/api/customers/${CustID_Nr}`, personalInfo);
       if (response.status === 200) {
         Alert.alert('Success', 'Personal information updated!', [
           { text: 'OK', onPress: () => navigation.navigate('ContactDetails', { CustID: CustID_Nr }) },
