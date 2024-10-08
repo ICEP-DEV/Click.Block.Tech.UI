@@ -12,7 +12,7 @@ import transferIcon from '../assets/Homepage/transfer.png';
 import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
  
-const api = 'http://10.0.2.2:5000/api/';
+const api = 'http://10.7.33.167:5000/api/';
 
 const HomeScreen = () => { // Previously MainScreen
   const [firstName, setFirstName] = useState('');
@@ -20,12 +20,12 @@ const HomeScreen = () => { // Previously MainScreen
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const custID_Nr = '0207170585088';
+  const custID_Nr = '9801128456083';
 
   useEffect(() => {
     const fetchCustomerAndAccountData = async () => {
       try {
-        const response = await axios.get(`${api}customer/${custID_Nr}`);
+        const response = await axios.get(`${api}get_customer/${custID_Nr}`);
         const customerData = response.data;
         console.log('Customer Data:', customerData);
 

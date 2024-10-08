@@ -4,8 +4,8 @@ import axios from 'axios';
 import styles from './style';
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 
-const api = 'http://10.0.2.2:5000/api/';
-const custID_Nr = '0707170585088';
+const api = 'http://10.7.33.167:5000/api/';
+const custID_Nr = '9801128456083';
 
 const ManageScreen = () => {
   const [firstName, setFirstName] = useState('');
@@ -16,7 +16,7 @@ const ManageScreen = () => {
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
-        const response = await axios.get(`${api}customer/${custID_Nr}`);
+        const response = await axios.get(`${api}get_customer/${custID_Nr}`);
         const customerData = response.data;
         console.log('Customer Data:', customerData);
 

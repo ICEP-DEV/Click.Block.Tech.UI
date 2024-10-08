@@ -19,7 +19,7 @@ import axios from 'axios';
 
 
 const { width } = Dimensions.get('window');
-const api = 'http://192.168.56.1:5000/api/';
+const api = 'http://10.7.33.167:5000/api/';
 
 
 
@@ -37,7 +37,8 @@ export default function ManageCard() {
     setIsCardDeactivated((prev) => !prev);
   };
 
-  const cardID = 2;
+// Get By Card Number
+  const cardID = 1;
 
   useEffect(() => {
     const fetchCardAndCustomerData = async () => {

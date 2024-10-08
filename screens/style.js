@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 10,
-    elevation: 2,
+
   },
   serviceIcon: {
     width: 30,
@@ -138,11 +138,9 @@ const styles = StyleSheet.create({
     padding: 20, // Increased padding for better icon visibility
     borderWidth: 4,
     borderColor: 'white',
-    shadowColor: 'white', // Added shadow for a more 3D effect
     shadowOffset: { width: 88, height: 78 },
     shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5, // For Android shadow
+    
   },
 });
 
