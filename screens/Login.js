@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import axios from "axios";
 import LottieView from 'lottie-react-native';
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // `navigation` is passed as a prop when using React Navigation
+
 export default function Login ({ navigation }){
-const [user, setUser] = useState(null);
 const [inputPin, setInputPin] = useState('');
 const [isLoading, setIsLoading] = useState(false);
 
@@ -16,6 +16,37 @@ const showToastMsg= (msg) => {
     ToastAndroid.CENTER,
   );
 };
+ async function setItem (key, value) {
+  console.log(`in set: ${value} key: ${key}`);
+  const accIDString = JSON.stringify(value);
+  console.log(`after: ${accIDString}`);
+  try {
+    await AsyncStorage.setItem(key, accIDString);
+  } catch (error) {
+    console.error('Error setting item:', error);
+  }
+};
+async function getItem(key) {
+  
+  try {
+    const value = await AsyncStorage.getItem(key);
+    if (value !== null) {
+      try {
+        return JSON.parse(value);
+      } catch (parseError) {
+        console.error('Error parsing item:', parseError);
+        return null;
+      }
+    } else {
+      console.log('No value found for key: accountID');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting item:', error);
+    return null;
+  }
+};
+
   async function  handleLogin (){
     setIsLoading(true);
     //fetching user account data using account number
@@ -23,13 +54,19 @@ const showToastMsg= (msg) => {
       await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
         
         const userData = response.data;
-        setUser(userData);
         console.log(userData);
+        
+        const accID = userData._AccountID;
+        console.log(`habe data: ${accID}`);
+        setItem('accountID',accID);
         //check if the user data is not null
         if (userData) {
-          //!!!!!!!route to home page/Dashboard!!!!!!! 
           showToastMsg('Successfully logged in');
+            //!!!!!!!route to home page/Dashboard!!!!!!! 
+         
+           navigation.navigate('Home')
           setIsLoading(false);
+          
         } else {
           showToastMsg('Wrong remote pin');
           setIsLoading(false);
@@ -91,7 +128,7 @@ const showToastMsg= (msg) => {
       )}
         </View>
             
-        <View style={styles.signupTxtBtn}>
+        <View style={styles.signupTxtBtn} onPress={()=>{}}>
           <Text>Don't have an account?</Text>
           <Text style={styles.signupTxt}>Sign up!</Text>
         </View>

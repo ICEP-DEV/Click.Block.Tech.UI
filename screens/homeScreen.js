@@ -11,6 +11,8 @@ import electricityIcon from '../assets/Homepage/electricity.png';
 import transferIcon from '../assets/Homepage/transfer.png';
 import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';import { isLoading } from 'expo-font';
+;
  
 const api = 'http://10.0.2.2:5000/api/';
 
@@ -19,16 +21,44 @@ const HomeScreen = () => { // Previously MainScreen
   const [accountType, setAccountType] = useState('');
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [accountID, setAccountID] = useState('');
 
-  const custID_Nr = '0207170585088';
+  
+  const getItem = async () => {
+  
+    try {
+      const value = await AsyncStorage.getItem('accountID');
+      if (value !== null) {
+        try {
+          setLoading(true);
+          setAccountID(JSON.parse(value));
+          if(accountID){
+            console.log(`this is: ${accountID}`);
+            setLoading(false);
+            
+          }
+         
+        } catch (parseError) {
+          console.error('Error parsing item:', parseError);
+          return null;
+        }
+      } else {
+        console.log('No value found for key: accountID');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error getting item:', error);
+      return null;
+    }
+  };
+  getItem();
+ 
 
   useEffect(() => {
     const fetchCustomerAndAccountData = async () => {
       try {
-        const response = await axios.get(`${api}customer/${custID_Nr}`);
+        const response = await axios.get(`${api}get_customer/${accountID}`);
         const customerData = response.data;
-        console.log('Customer Data:', customerData);
-
         setFirstName(customerData.FirstName || '');
         const accountType = customerData.BankAccount.AccountType || 'Savings';
         const balance = customerData.BankAccount.Balance || 0;
@@ -44,7 +74,7 @@ const HomeScreen = () => { // Previously MainScreen
     };
 
     fetchCustomerAndAccountData();
-  }, [custID_Nr]);
+  }, [accountID]);
 
   if (loading) {
     return (
