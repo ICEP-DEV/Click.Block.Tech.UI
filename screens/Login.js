@@ -53,7 +53,7 @@ const showToastMsg= (msg) => {
     <View style={styles.container}>
    
       <Image
-        source={require('../assets/logo.png')}
+        source={require('../assets/Logo.png')}
         style={styles.logo}
       />
       <View style={styles.background} />
@@ -87,8 +87,13 @@ const showToastMsg= (msg) => {
       ) : (
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
-          </TouchableOpacity>
+        </TouchableOpacity>
       )}
+        </View>
+            
+        <View style={styles.signupTxtBtn}>
+          <Text>Don't have an account?</Text>
+          <Text style={styles.signupTxt}>Sign up!</Text>
         </View>
       </View>
      
@@ -102,6 +107,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f7f7f7',
+  },
+  signupTxtBtn: {
+    flexDirection: 'row',
+    
+  },
+  signupTxt:{
+    marginLeft: 5,
+    fontWeight: '600'
   },
   logo: {
     width: 108,
@@ -189,7 +202,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 150,
     alignItems: 'center',
-    marginBottom: 65,
+    marginBottom: 15,
   },
   loginButtonText: {
     color: 'white',
