@@ -4,9 +4,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import styles from './style';
 
-// Import screens
+// Import screens and stacks
 import HomeScreen from './homeScreen';
-import ManageCard from './ManageCard';
+import ManageStack from './ManageStack';
 import NotificationsScreen from './notificationsScreen';
 import TransactScreen from './transactScreen';
 
@@ -73,17 +73,16 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 const NavigationBar = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Manage" // Start with the Manage tab, optional
+      initialRouteName="Home"
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Manage" component={ManageCard} />
+      <Tab.Screen name="Manage" component={ManageStack} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
       <Tab.Screen name="Transact" component={TransactScreen} />
     </Tab.Navigator>
   );
 };
-
 
 export default NavigationBar;

@@ -304,7 +304,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     marginTop: 20,
-    width: '100%',
     alignItems: 'center',
   },
   updatedBackButtonText: {

@@ -1,25 +1,25 @@
-// manageScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
-import styles from './style'; // Reusing styles from style.js
+import styles from './style';
+import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 
-const api = 'http://10.0.2.2:5000/api/'; // Your base API URL
-const custID_Nr = '0707170585088'; // Replace with the actual CustID_Nr
+const api = 'http://10.0.2.2:5000/api/';
+const custID_Nr = '0707170585088';
 
 const ManageScreen = () => {
   const [firstName, setFirstName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigation = useNavigation(); // Use navigation hook
 
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
         const response = await axios.get(`${api}customer/${custID_Nr}`);
         const customerData = response.data;
-        console.log('Customer Data:', customerData);  // Log to see the data structure
+        console.log('Customer Data:', customerData);
 
-        // Update state with the retrieved customer FirstName
         setFirstName(customerData.FirstName || '');
       } catch (error) {
         console.error('Error fetching customer data:', error);
@@ -43,7 +43,7 @@ const ManageScreen = () => {
   if (error) {
     return (
       <View style={styles.fullScreenContainer}>
-        <Text>{error}</Text> {/* Display error message to the user */}
+        <Text>{error}</Text>
       </View>
     );
   }
@@ -65,7 +65,10 @@ const ManageScreen = () => {
           <Text style={styles.balanceText}>View and update information</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.accountBox}>
+        <TouchableOpacity
+          style={styles.accountBox}
+          onPress={() => navigation.navigate('ManageCard')} // Navigate to ManageCard
+        >
           <View style={styles.accountRow}>
             <Text style={styles.accountText}>CARD MANAGEMENT</Text>
           </View>
@@ -84,6 +87,3 @@ const ManageScreen = () => {
 };
 
 export default ManageScreen;
-
-
-
