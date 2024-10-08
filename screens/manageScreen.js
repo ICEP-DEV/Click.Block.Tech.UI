@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import styles from './style'; // Reusing styles from style.js
 
-const api = 'http://10.0.2.2:5000/api/'; // Your base API URL
+const api = 'http://168.172.187.202:5000/api/'; // Your base API URL
 const custID_Nr = '0707170585088'; // Replace with the actual CustID_Nr
 
 const ManageScreen = () => {

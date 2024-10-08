@@ -38,7 +38,7 @@ const LandingPage = () => {
             <View style={styles.container}>
                 {/* OPM - Declaring opacity and duration for animation */}
                 <Animated.Image
-                    source={require('../assets/Logo.png')} 
+                    source={require('../assets/logo.png')} 
                     style={[styles.logo, { 
                         opacity: logoAnim, 
                         transform: [{ scale: logoAnim }] 

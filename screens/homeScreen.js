@@ -14,7 +14,7 @@ import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';import { isLoading } from 'expo-font';
 ;
  
-const api = 'http://10.0.2.2:5000/api/';
+const api = 'http://168.172.187.202:5000/api/';
 
 const HomeScreen = () => { // Previously MainScreen
   const [firstName, setFirstName] = useState('');

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-//import DropDownPicker from 'react-native-dropdown-picker'; --please fix
+import DropDownPicker from 'react-native-dropdown-picker'; 
 import moment from 'moment';
-//import DateTimePicker from '@react-native-community/datetimepicker'; --please fix
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 import axios from 'axios';
 
 const PersonalInfoForm = ({ route, navigation }) => {
@@ -75,7 +75,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
     };
 
     try {
-      const response = await axios.patch(`http://192.168.18.2:5000/api/customers/${CustID_Nr}`, personalInfo);
+      const response = await axios.patch(`http://168.172.187.202:5000/api/customers/${CustID_Nr}`, personalInfo);
       if (response.status === 200) {
         Alert.alert('Success', 'Personal information updated!', [
           { text: 'OK', onPress: () => navigation.navigate('ContactDetails', { CustID: CustID_Nr }) },

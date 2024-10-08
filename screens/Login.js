@@ -51,7 +51,7 @@ async function getItem(key) {
     setIsLoading(true);
     //fetching user account data using account number
     if(inputPin){
-      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
+      await axios.get(`http://168.172.187.202:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
         
         const userData = response.data;
         console.log(userData);
@@ -90,7 +90,7 @@ async function getItem(key) {
     <View style={styles.container}>
    
       <Image
-        source={require('../assets/Logo.png')}
+        source={require('../assets/logo.png')}
         style={styles.logo}
       />
       <View style={styles.background} />

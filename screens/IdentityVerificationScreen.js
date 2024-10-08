@@ -7,17 +7,19 @@ import Stepper from './Stepper';
 import axios from 'axios';
 import api from '../API/API'
 // Import Navigation props
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function IdentityVerificationScreen() {
-  const [idNumber, setIdNumber] = useState('');
+  const route = useRoute();  
+  const {custID_Nr} = route.params;
+  const [idNumber, setIdNumber] = useState(custID_Nr);
   const [idDocument, setIdDocument] = useState(null);
   const [idDocumentName, setIdDocumentName] = useState('');
   const [selfie, setSelfie] = useState(null);
   const [currentStep, setCurrentStep] = useState(3);
   const [fontsLoaded] = useFonts({
-    'BebasNeue': require('../assets/fonts/BebasNeue-Regular.ttf'),
-    'PoppinsMedium': require('../assets/fonts/Poppins-Medium.ttf'),
+    'BebasNeue': require('../assets/Fonts/BebasNeue-Regular.ttf'),
+    'PoppinsMedium': require('../assets/Fonts/Poppins-Medium.ttf'),
   });
   const [error, setError] = useState('');
 
@@ -173,7 +175,7 @@ export default function IdentityVerificationScreen() {
       });
   
       // Make the POST request
-      const response = await axios.post('http://192.168.134.147:5000/api/upload', formData, {
+      const response = await axios.post('http://168.172.187.202:5000/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -211,6 +213,7 @@ export default function IdentityVerificationScreen() {
           placeholderTextColor="#02457A"
           keyboardType="numeric"
           maxLength={13}
+          editable={false}
         />
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 

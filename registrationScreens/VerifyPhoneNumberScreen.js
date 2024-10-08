@@ -29,7 +29,7 @@ const VerifyPhoneNumberScreen = () => {
       alert('Please enter a valid 6-digit code.');
     } else {
       console.log('Code is valid:', code);
-      navigation.navigate('Success');
+      navigation.navigate('emailSuccess');
     }
   };
 

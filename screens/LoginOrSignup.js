@@ -29,13 +29,12 @@ const LoginOrSignup = () => {
 
      // OPM - Handle the Login and Signup button action
      const handleLogin = () => {
-        // OPM - Navigate to login screen or handle login logic
-        console.log("Login button pressed");
+        navigation.navigate('Login');
     };
     
     const handleSignup = () => {
         // OPM -Navigate to signup screen or handle signup logic
-        console.log("Signup button pressed");
+        navigation.navigate('Registration');
     };
 
     return (

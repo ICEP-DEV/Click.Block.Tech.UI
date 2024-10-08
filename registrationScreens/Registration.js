@@ -9,7 +9,7 @@ const idIcon = require('../registrationAssets/id.png');
 const padlockIcon = require('../registrationAssets/padlock.png');
 const phoneIcon = require('../registrationAssets/email.png'); // Add phone icon if available
 
-const API_URL = 'http://192.168.18.2:5000/api/customers';
+const API_URL = 'http://168.172.187.202:5000/api/customers';
 
 const Registration = ({ navigation }) => {
   const [checked, setChecked] = useState(false);
