@@ -8,20 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Login ({ navigation }){
 const [inputPin, setInputPin] = useState('');
 const [isLoading, setIsLoading] = useState(false);
-
+const storage = require('../async_storage');
 const showToastMsg= (msg) => {
   ToastAndroid.showWithGravity(
     msg,
     ToastAndroid.SHORT,
     ToastAndroid.CENTER,
   );
-};
-async function setItem (key, id){
-  try {
-    await AsyncStorage.setItem(key, JSON.stringify(id));
-  } catch (error) {
-    console.error('Error setting item:', error);
-  }
 };
 
   async function  handleLogin (){
@@ -35,8 +28,8 @@ async function setItem (key, id){
         //check if the user data is not null
         if (userData) {
           showToastMsg('Successfully logged in');
-            //!!!!!!!route to home page/Dashboard!!!!!!! 
-            setItem('accountID',userData._AccountID);
+            //inserting the accountID of the customer to be used in the home page
+            storage.setItem('accountID',userData._AccountID);
            navigation.navigate('Home')
           setIsLoading(false);
           

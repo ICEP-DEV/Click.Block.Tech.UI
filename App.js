@@ -1,4 +1,5 @@
-import * as React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import NavigationBar from './screens/navigationBar'; 
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,19 +17,36 @@ import OnboardingOne from './screens/OnboardingOne';
 import OnboardingTwo from './screens/OnboardingTwo';
 import OnboardingThree from './screens/OnboardingThree';
 import LoginOrSignup from './screens/LoginOrSignup';
-import VerifyApp from './screens/activateApp_screen';
-import HomeScreen from './screens/homeScreen';
+import ActivateApp from './screens/activateApp_screen';
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
 
-export default function App() {
+export default  function App() {
+  var route = '';
+  const storage = require('./async_storage.js');
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const value = await storage.getItem('accountNumber'); 
+     console.log(value)
+      if(value !== null){
+        route = 'Login';
+        console.log(route);
+      }else{       
+         route = 'LandingPage';
+         console.log(route);
+      }
+    };
+    fetchData();
+  }, []);
+  console.log(route);
   return (
     <NavigationContainer>
       
-      <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
+      <Stack.Navigator initialRouteName={route}>
       <Stack.Screen name="LoginOrSignup"  component={LoginOrSignup} options={{headerShown: false}}/>
+      <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
       <Stack.Screen name="LandingPage"  component={LandingPage} options={{headerShown: false}}/>
       <Stack.Screen name="Registration" component={Registration}  options={{ headerShown: false }}  />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoForm}  options={{ headerShown: false }} />
@@ -41,7 +59,7 @@ export default function App() {
       <Stack.Screen name="OnboardingTwo" component={OnboardingTwo} options={{ headerShown: false }} />
       <Stack.Screen name="OnboardingThree" component={OnboardingThree} options={{ headerShown: false }} />
       <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen}  options={{ headerShown: false }} />
-      <Stack.Screen name="VerifyApp" component={VerifyApp}  options={{ headerShown: false }} />
+      <Stack.Screen name="VerifyApp" component={ActivateApp}  options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={NavigationBar}  options={{ headerShown: false }} />
       </Stack.Navigator>
       {/* <NavigationBar /> */}

@@ -29,7 +29,7 @@ const LoginOrSignup = () => {
 
      // OPM - Handle the Login and Signup button action
      const handleLogin = () => {
-        navigation.navigate('Login');
+        navigation.navigate('VerifyApp');
     };
     
     const handleSignup = () => {
@@ -53,7 +53,7 @@ const LoginOrSignup = () => {
             <View style={styles.buttonContainer}>
                 {/* OPM - Login Button */}
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                     <Text style={styles.loginButtonText}>Login</Text>
+                     <Text style={styles.loginButtonText}>Activate</Text>
                 </TouchableOpacity>
 
                 {/* OPM - Signup Button */}
