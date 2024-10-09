@@ -24,30 +24,10 @@ const HomeScreen = () => { // Previously MainScreen
   const [accountID, setAccountID] = useState('');
 
   //this function get the account ID in the local storage
-  async function getItem (){
-    try {
-      const value = await AsyncStorage.getItem('accountID');
-      if (value !== null) {
-        try {
-          setLoading(true);
-          return JSON.parse(value);
-          
-        } catch (parseError) {
-          console.error('Error parsing item:', parseError);
-          return null;
-        }
-      } 
-    } catch (error) {
-      console.error('Error getting item:', error);
-      return null;
-    }
-  };
-  setAccountID(getItem());
-  if(accountID){
     useEffect(() => {
       const fetchCustomerAndAccountData = async () => {
         try {
-          const response = await axios.get(`${api}get_customer/${accountID}`);
+          const response = await axios.get(`${api}get_customer/${1}`);
           const customerData = response.data;
          
           setFirstName(customerData.FirstName || '');
@@ -66,9 +46,9 @@ const HomeScreen = () => { // Previously MainScreen
       };
   
       fetchCustomerAndAccountData();
-    }, [accountID]);
+    }, []);
 
-  }
+  
 
   
 
