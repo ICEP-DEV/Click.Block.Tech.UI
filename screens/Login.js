@@ -37,7 +37,7 @@ async function setItem (key, id){
           showToastMsg('Successfully logged in');
             //!!!!!!!route to home page/Dashboard!!!!!!! 
             setItem('accountID',userData._AccountID);
-           //navigation.navigate('Home')
+           navigation.navigate('Home')
           setIsLoading(false);
           
         } else {
