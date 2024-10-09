@@ -9,19 +9,13 @@ export default function ActivateApp({navigation}){
     const [accountNumber, setAccountNumber] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
+    const storage = require('../async_storage');
     const showToastMsg= (msg) => {
       ToastAndroid.showWithGravity(
         msg,
         ToastAndroid.SHORT,
         ToastAndroid.CENTER,
       );
-    };
-    async function setItem (key, accNumber){
-      try {
-        await AsyncStorage.setItem(key, JSON.stringify(accNumber));
-      } catch (error) {
-        console.error('Error setting item:', error);
-      }
     };
     async function  activateApp (){
       setIsLoading(true);
@@ -37,15 +31,15 @@ export default function ActivateApp({navigation}){
           //check if the user data is not null
           if (userData) {
             showToastMsg('Successfully logged in');
-              //!!!!!!!route to home page/Dashboard!!!!!!! 
             setIsLoading(false);
             setInputPin(''),
             setAccountNumber('');
             setUser(userData);
-            setItem('accountNumber', accountNumber);
-             //storing accountID locally to be used in the homepage
-            //navigation.navigate('Home')
-            
+            //Inserting the account number of the customer to be stored for future verification
+            storage.setItem('accountNumber',accountNumber);
+            //storing the account ID of the customer to the used on the next page
+            storage.setItem('accountID',userData._AccountID);
+            navigation.navigate('Home')
           } else {
             showToastMsg('Wrong remote pin');
             setIsLoading(false);

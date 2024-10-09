@@ -22,12 +22,16 @@ const HomeScreen = () => { // Previously MainScreen
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
   const [accountID, setAccountID] = useState('');
-
+  const storage = require('../async_storage');
   //this function get the account ID in the local storage
+ 
     useEffect(() => {
       const fetchCustomerAndAccountData = async () => {
+        
         try {
-          const response = await axios.get(`${api}get_customer/${1}`);
+          const value = await storage.getItem('accountID'); 
+          console.log(`The value is: ${value}`)
+          const response = await axios.get(`${api}get_customer/${value}`);
           const customerData = response.data;
          
           setFirstName(customerData.FirstName || '');
@@ -47,11 +51,6 @@ const HomeScreen = () => { // Previously MainScreen
   
       fetchCustomerAndAccountData();
     }, []);
-
-  
-
-  
-
   if (loading) {
     return (
       <View style={styles.fullScreenContainer}>
