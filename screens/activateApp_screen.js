@@ -16,9 +16,9 @@ export default function ActivateApp({navigation}){
         ToastAndroid.CENTER,
       );
     };
-    async function setItem (key, id){
+    async function setItem (key, accNumber){
       try {
-        await AsyncStorage.setItem(key, JSON.stringify(id));
+        await AsyncStorage.setItem(key, JSON.stringify(accNumber));
       } catch (error) {
         console.error('Error setting item:', error);
       }
@@ -42,14 +42,13 @@ export default function ActivateApp({navigation}){
             setInputPin(''),
             setAccountNumber('');
             setUser(userData);
-            setItem('accountID', userData._AccountID);
+            setItem('accountNumber', accountNumber);
              //storing accountID locally to be used in the homepage
             //navigation.navigate('Home')
             
           } else {
             showToastMsg('Wrong remote pin');
             setIsLoading(false);
-           
           }
           }).catch((error)=>{
           
