@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ImageBackground, Text, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
+import SquareNavigator from '../components/SquareNavigator';
 
 // OPM - Function to load fonts
 const loadFonts = async () => {
     await Font.loadAsync({
-        'Poppins-Bold': require('../assets/Fonts/Poppins-Bold.ttf'), 
-        'Poppins-Medium': require('../assets/Fonts/Poppins-Medium.ttf'),
+        'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'), 
+        'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
     });
 };
 
@@ -29,24 +30,6 @@ const OnboardingOne = () => {
         return <ActivityIndicator size="large" color="#0000ff" />; 
     }
 
-    //OPM - Handling Pagination
-
-    const handleSquarePress = (index) => {
-        setActiveIndex(index);
-
-        // OPM - Navigating to the relevant screen based on the index
-        if (index === 0) {
-            navigation.navigate('OnboardingOne'); 
-            //console.log(index + " pressed");
-        } else if (index === 1) {
-            navigation.navigate('OnboardingTwo'); 
-            //console.log(index + " pressed");
-        } else if (index === 2) {
-            navigation.navigate('OnboardingThree'); 
-            //console.log(index + " pressed");
-        }
-    };
-
      // OPM - Handle the skip button action
      const handleSkip = () => {
         // OPM - Here you can implement navigation to the next screen or any action you want
@@ -55,43 +38,29 @@ const OnboardingOne = () => {
 
     return (
         <ImageBackground
-            source={require('../assets/OnboardingGradient.jpg')} 
+            source={require('../assets/Onboarding/OnboardingGradient.jpg')} 
             style={styles.background}
             resizeMode="cover"
         >
             <View style={styles.container}>
+
                 <Text style={styles.title}>Easy TopUp & Withdraw</Text>
+
                 <Text style={styles.description}>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.
+                     Quickly and securely top up your account or withdraw funds with just a few taps. Enjoy seamless transactions and manage your money effortlessly, anytime, anywhere.
                 </Text>
 
-                <View style={styles.pagination}>
-                    {/* OPM - Dynamically rendering squares with rounded corners based on activeIndex */}
-                    {[0, 1, 2].map((_, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            onPress={() => handleSquarePress(index)} // Set active index on press
-                            onPressIn={() => setHoverIndex(index)} // Set hover index on press in
-                            onPressOut={() => setHoverIndex(null)} // Reset hover index on press out
-                            activeOpacity={1} 
-                        >
-                            <View
-                                style={[styles.square, 
-                                    index === activeIndex 
-                                        ? styles.activeSquare 
-                                        : hoverIndex === index 
-                                            ? styles.hoverSquare 
-                                            : styles.inactiveSquare]}
-                            />
-                        </TouchableOpacity>
-                    ))}
-                </View>
 
                 {/* OPM -Skip Button */}
                 <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
                     <Text style={styles.skipButtonText}>Skip</Text>
                 </TouchableOpacity>
             </View>
+            
+            <View style={styles.navigator}>
+                <SquareNavigator />
+            </View>
+
         </ImageBackground>
     );
 };
@@ -106,43 +75,32 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flex: 1,
         padding: 20,
-        marginTop: 200,
+        marginTop: 300,
     },
     title: {
         fontSize: 26,
         fontFamily: 'Poppins-Bold', 
         color: 'white',
-        marginTop: 160,
+        marginTop: 120,
         marginBottom: 10,
         textAlign: 'center',
         textShadowColor: 'rgba(0, 0, 0, 0.5)', 
         textShadowOffset: { width: 0, height: 2 }, 
         textShadowRadius: 3,
     },
-    pagination: {
+    navigator: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20,
+        marginTop: -20,
+        marginBottom: 10,
     },
-    square: {
-        width:15,
-        height:15,
-        borderRadius: 3,
-        backgroundColor: '#4BABCF',
-        marginHorizontal: 5,
-        opacity: 0.4,
-    },
-    activeSquare: {
-        opacity: 1,
-    },
-    
     skipButton: {
         borderWidth: 1,
         borderColor: 'white',
         borderRadius: 3,
         paddingVertical: 6,
         paddingHorizontal: 30,
-        marginTop: 50,
+        marginTop: 60,
         alignSelf: 'center',
     },
     skipButtonText: {

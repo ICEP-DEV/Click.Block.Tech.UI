@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ImageBackground, Text, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
 import * as Font from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
+import SquareNavigator from '../components/SquareNavigator';
 
 // OPM - Function to load fonts
 const loadFonts = async () => {
     await Font.loadAsync({
-        'Poppins-Bold': require('../assets/Fonts/Poppins-Bold.ttf'), 
-        'Poppins-Medium': require('../assets/Fonts/Poppins-Medium.ttf'),
+        'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'), 
+        'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
     });
 };
 
@@ -35,60 +36,28 @@ const OnboardingThree= () => {
         navigation.navigate('LoginOrSignup');
     };
 
-    //OPM - Handling Pagination
-
-    const handleSquarePress = (index) => {
-        setActiveIndex(index);
-        // OPM - Navigating to the relevant screen based on the index
-        if (index === 0) {
-            setActiveIndex(0);
-            navigation.navigate('OnboardingOne'); 
-        } else if (index === 1) {
-            navigation.navigate('OnboardingTwo'); 
-        } else if (index === 2) {
-            navigation.navigate('OnboardingThree');
-        }
-    };
-
     return (
         <ImageBackground
-            source={require('../assets/OnboardingGradient2.jpg')} 
+            source={require('../assets/Onboarding/OnboardingGradient2.jpg')} 
             style={styles.background}
             resizeMode="cover"
         >
             <View style={styles.container}>
                 <Text style={styles.title}>Security Features</Text>
                 <Text style={styles.description}>
-                In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus.
+                Protect your account with advanced security measures. From encryption to multi-factor authentication, we ensure your data and transactions are safe at all times.
                 </Text>
-
-                <View style={styles.pagination}>
-                    {/* Dynamically rendering squares with rounded corners based on activeIndex */}
-                    {[0, 1, 2].map((_, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            onPress={() => handleSquarePress(index)} // Set active index on press
-                            onPressIn={() => setHoverIndex(index)} // Set hover index on press in
-                            onPressOut={() => setHoverIndex(null)} // Reset hover index on press out
-                            activeOpacity={1} // Disable default opacity on press
-                        >
-                            <View
-                                style={[styles.square, 
-                                    index === activeIndex 
-                                        ? styles.activeSquare 
-                                        : hoverIndex === index 
-                                            ? styles.hoverSquare 
-                                            : styles.inactiveSquare]}
-                            />
-                        </TouchableOpacity>
-                    ))}
-                </View>
 
                 {/* OPM -Skip Button */}
                 <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
                     <Text style={styles.skipButtonText}>Got it</Text>
                 </TouchableOpacity>
             </View>
+
+            <View style={styles.navigator}>
+                <SquareNavigator />
+            </View>
+
         </ImageBackground>
     );
 };
@@ -103,43 +72,32 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flex: 1,
         padding: 20,
-        marginTop: 200,
+        marginTop: 300,
     },
     title: {
         fontSize: 26,
         fontFamily: 'Poppins-Bold', 
         color: 'white',
-        marginTop: 160,
+        marginTop: 120,
         marginBottom: 10,
         textAlign: 'center',
         textShadowColor: 'rgba(0, 0, 0, 0.5)', 
         textShadowOffset: { width: 0, height: 2 }, 
         textShadowRadius: 3,
     },
-    pagination: {
+    navigator: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20,
+        marginTop: -20,
+        marginBottom: 10,
     },
-    square: {
-        width:15,
-        height:15,
-        borderRadius: 3,
-        backgroundColor: '#4BABCF',
-        marginHorizontal: 5,
-        opacity: 0.4,
-    },
-    activeSquare: {
-        opacity: 1,
-    },
-    
     skipButton: {
         borderWidth: 1,
         borderColor: 'white',
         borderRadius: 3,
         paddingVertical: 6,
         paddingHorizontal: 30,
-        marginTop: 50,
+        marginTop: 60,
         alignSelf: 'center',
     },
     skipButtonText: {
@@ -154,6 +112,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         marginTop: 10,
+        marginBottom: 20,
         marginLeft:40,
         marginRight:40,
     },

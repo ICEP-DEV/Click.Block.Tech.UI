@@ -31,14 +31,14 @@ const LandingPage = () => {
     return (
         // OPM - Adding background Image
         <ImageBackground
-            source={require('../assets/LandingPicture.jpg')} 
+            source={require('../assets/Landing/LandingPicture.jpg')} 
             style={styles.background}
             resizeMode="cover"
         >
             <View style={styles.container}>
                 {/* OPM - Declaring opacity and duration for animation */}
                 <Animated.Image
-                    source={require('../assets/Logo.png')} 
+                    source={require('../assets/Landing/logo.png')} 
                     style={[styles.logo, { 
                         opacity: logoAnim, 
                         transform: [{ scale: logoAnim }] 

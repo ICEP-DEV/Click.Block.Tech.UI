@@ -6,8 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 // OPM - Function to load fonts
 const loadFonts = async () => {
     await Font.loadAsync({
-        'Poppins-Bold': require('../assets/Fonts/Poppins-Bold.ttf'), 
-        'Poppins-Medium': require('../assets/Fonts/Poppins-Medium.ttf'),
+        'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'), 
+        'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
     });
 };
 
@@ -40,14 +40,14 @@ const LoginOrSignup = () => {
 
     return (
         <ImageBackground
-            source={require('../assets/OnboardingGradient3.jpg')} 
+            source={require('../assets/Onboarding/OnboardingGradient3.jpg')} 
             style={styles.background}
             resizeMode="cover"
         >
             <View style={styles.container}>
                 <Text style={styles.title}>Welcome to Nexis</Text>
                 <Text style={styles.description}>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.
+                Join our community and unlock a world of possibilities. Whether you're looking to connect, collaborate, or explore, Nexis is here for you.
                 </Text>
             </View>
 
