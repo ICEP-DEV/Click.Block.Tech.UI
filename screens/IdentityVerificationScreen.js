@@ -18,8 +18,8 @@ export default function IdentityVerificationScreen() {
   const [selfie, setSelfie] = useState(null);
   const [currentStep, setCurrentStep] = useState(3);
   const [fontsLoaded] = useFonts({
-    'BebasNeue': require('../assets/Fonts/BebasNeue-Regular.ttf'),
-    'PoppinsMedium': require('../assets/Fonts/Poppins-Medium.ttf'),
+    'BebasNeue': require('../assets/fonts/BebasNeue-Regular.ttf'),
+    'PoppinsMedium': require('../assets/fonts/Poppins-Medium.ttf'),
   });
   const [error, setError] = useState('');
 

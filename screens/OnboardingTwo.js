@@ -6,8 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 // OPM - Function to load fonts
 const loadFonts = async () => {
     await Font.loadAsync({
-        'Poppins-Bold': require('../assets/Fonts/Poppins-Bold.ttf'), 
-        'Poppins-Medium': require('../assets/Fonts/Poppins-Medium.ttf'),
+        'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'), 
+        'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
     });
 };
 
