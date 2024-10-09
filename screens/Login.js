@@ -16,55 +16,28 @@ const showToastMsg= (msg) => {
     ToastAndroid.CENTER,
   );
 };
- async function setItem (key, value) {
-  console.log(`in set: ${value} key: ${key}`);
-  const accIDString = JSON.stringify(value);
-  console.log(`after: ${accIDString}`);
+async function setItem (key, id){
   try {
-    await AsyncStorage.setItem(key, accIDString);
+    await AsyncStorage.setItem(key, JSON.stringify(id));
   } catch (error) {
     console.error('Error setting item:', error);
-  }
-};
-async function getItem(key) {
-  
-  try {
-    const value = await AsyncStorage.getItem(key);
-    if (value !== null) {
-      try {
-        return JSON.parse(value);
-      } catch (parseError) {
-        console.error('Error parsing item:', parseError);
-        return null;
-      }
-    } else {
-      console.log('No value found for key: accountID');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error getting item:', error);
-    return null;
   }
 };
 
   async function  handleLogin (){
     setIsLoading(true);
+    console.log(inputPin);
     //fetching user account data using account number
     if(inputPin){
-      await axios.get(`http://192.168.18.2:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
-        
+      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
         const userData = response.data;
         console.log(userData);
-        
-        const accID = userData._AccountID;
-        console.log(`habe data: ${accID}`);
-        setItem('accountID',accID);
         //check if the user data is not null
         if (userData) {
           showToastMsg('Successfully logged in');
             //!!!!!!!route to home page/Dashboard!!!!!!! 
-         
-           navigation.navigate('Home')
+            setItem('accountID',userData._AccountID);
+           //navigation.navigate('Home')
           setIsLoading(false);
           
         } else {

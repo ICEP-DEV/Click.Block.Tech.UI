@@ -44,7 +44,7 @@ export default function ActivateApp({navigation}){
             setUser(userData);
             setItem('accountID', userData._AccountID);
              //storing accountID locally to be used in the homepage
-            navigation.navigate('Home')
+            //navigation.navigate('Home')
             
           } else {
             showToastMsg('Wrong remote pin');
