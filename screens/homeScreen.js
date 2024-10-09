@@ -11,40 +11,46 @@ import electricityIcon from '../assets/Homepage/electricity.png';
 import transferIcon from '../assets/Homepage/transfer.png';
 import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';import { isLoading } from 'expo-font';
+;
  
-const api = 'http://10.7.33.167:5000/api/';
+const api = 'http://192.168.56.1:5000/api/';
 
 const HomeScreen = () => { // Previously MainScreen
   const [firstName, setFirstName] = useState('');
   const [accountType, setAccountType] = useState('');
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [accountID, setAccountID] = useState('');
 
-  const custID_Nr = '9801128456083';
+  //this function get the account ID in the local storage
+    useEffect(() => {
+      const fetchCustomerAndAccountData = async () => {
+        try {
+          const response = await axios.get(`${api}get_customer/${1}`);
+          const customerData = response.data;
+         
+          setFirstName(customerData.FirstName || '');
+          console.log(firstName);
+          const accountType = customerData.BankAccount.AccountType || 'Savings';
+          const balance = customerData.BankAccount.Balance || 0;
+  
+          setAccountType(accountType.toUpperCase());
+          setBalance(balance);
+  
+          setLoading(false);
+        } catch (error) {
+          console.error('Error fetching customer or account data:', error);
+          setLoading(false);
+        }
+      };
+  
+      fetchCustomerAndAccountData();
+    }, []);
 
-  useEffect(() => {
-    const fetchCustomerAndAccountData = async () => {
-      try {
-        const response = await axios.get(`${api}get_customer/${custID_Nr}`);
-        const customerData = response.data;
-        console.log('Customer Data:', customerData);
+  
 
-        setFirstName(customerData.FirstName || '');
-        const accountType = customerData.BankAccount.AccountType || 'Savings';
-        const balance = customerData.BankAccount.Balance || 0;
-
-        setAccountType(accountType.toUpperCase());
-        setBalance(balance);
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching customer or account data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchCustomerAndAccountData();
-  }, [custID_Nr]);
+  
 
   if (loading) {
     return (
