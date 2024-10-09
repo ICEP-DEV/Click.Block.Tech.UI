@@ -25,7 +25,8 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="VerifyApp">
+      
+      <Stack.Navigator initialRouteName="LandingPage">
       <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
       <Stack.Screen name="LoginOrSignup"  component={LoginOrSignup} options={{headerShown: false}}/>
       <Stack.Screen name="LandingPage"  component={LandingPage} options={{headerShown: false}}/>
