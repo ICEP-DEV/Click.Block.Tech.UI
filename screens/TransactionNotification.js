@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    color: '#02457a', // Added blue highlight color
   },
   notificationText: {
     fontSize: 16,

@@ -1,45 +1,74 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const PinEntryScreen = ({ navigation }) => {
+const PinEntry = () => {
   const [pin, setPin] = useState('');
+  const [approved, setApproved] = useState(false); // State to track if the transaction is approved
+  const [loading, setLoading] = useState(false); // State to track loading state
+  const [currentDateTime, setCurrentDateTime] = useState(''); // State to hold current date and time
+  const navigation = useNavigation();
 
-  const handleSubmit = () => {
-    const correctPin = '12345'; // Set the correct PIN here
-
-    if (pin === correctPin) {
-      Alert.alert("Transaction Approved", "You have approved the transaction.");
-      // You can navigate or perform other actions here
-      navigation.goBack();
-    } else {
-      Alert.alert("Invalid PIN", "The PIN you entered is incorrect. Please try again.");
+  // Update current date and time when approved
+  useEffect(() => {
+    if (approved) {
+      const date = new Date();
+      const formattedDate = date.toLocaleDateString(); // e.g., 10/09/2024
+      const formattedTime = date.toLocaleTimeString(); // e.g., 14:34:21
+      setCurrentDateTime(`on ${formattedDate} at ${formattedTime}`);
     }
+  }, [approved]); // This ensures the date and time are set after approval state changes
+
+  const handlePinSubmit = () => {
+    setLoading(true); // Start loading when submit is pressed
+
+    // Simulate network delay (e.g., verifying PIN)
+    setTimeout(() => {
+      setApproved(true); // Approve the transaction regardless of the PIN
+      setLoading(false); // Stop loading after approval
+    }, 2000); // Simulate 2 seconds of delay
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.pinBox}>
-        <Text style={styles.pinTitle}>APPROVE OR DECLINE</Text>
-        <Text style={styles.pinDescription}>
-          You are withdrawing R500 from Soshanguve Crossing (07/10/2023 12:30PM). 
-          Enter your PIN to approve the withdrawal.
-        </Text>
-
-        <TextInput
-          style={styles.pinInput}
-          value={pin}
-          onChangeText={setPin}
-          secureTextEntry
-          keyboardType="numeric"
-          maxLength={5} // Assuming a 4-digit PIN
-          placeholder="Enter PIN"
-          placeholderTextColor="#999"
-        />
-
-        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
-      </View>
+      {!approved ? (
+        <View style={styles.pinBox}>
+          {!loading ? (
+            <>
+              <Text style={styles.notificationText}>
+                A withdrawal of R500 at Soshanguve Crossing is awaiting your approval.
+              </Text>
+              <Text style={styles.pinTitle}>Enter PIN</Text>
+              <TextInput
+                style={styles.pinInput}
+                secureTextEntry
+                keyboardType="numeric"
+                value={pin}
+                onChangeText={setPin}
+                placeholder="Enter 5-digit PIN"
+                maxLength={5} // Set the PIN input to allow 5 digits
+              />
+              <TouchableOpacity onPress={handlePinSubmit} style={styles.submitButton}>
+                <Text style={styles.buttonText}>Submit</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            // Show loading indicator while waiting
+            <ActivityIndicator size="large" color="#007aff" />
+          )}
+        </View>
+      ) : (
+        // This is where the success message appears after correct PIN is entered
+        <View style={styles.approvedBox}>
+          <Text style={styles.approvedTitle}>TRANSACTION APPROVED</Text>
+          <Text style={styles.approvedText}>
+            Your transaction of R500 has been approved {currentDateTime}. Take your money out at an ATM and start spending.
+          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.doneButton}>
+            <Text style={styles.buttonText}>Done</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -49,48 +78,79 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay for modal effect
+    backgroundColor: '#02457a',
   },
   pinBox: {
-    width: '85%',
+    width: '80%',
     padding: 20,
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 15,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 5, // For Android shadow effect
+    elevation: 5,
     alignItems: 'center',
+  },
+  notificationText: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 20,
   },
   pinTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#02457a', // The dark blue color from your design
     marginBottom: 10,
+    textAlign: 'center',
+    color: '#02457a',
   },
-  pinDescription: {
+  pinInput: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  submitButton: {
+    backgroundColor: '#007aff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  approvedBox: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+    alignItems: 'center',
+  },
+  approvedTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: '#4caf50',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  approvedText: {
     fontSize: 14,
     color: '#555',
     textAlign: 'center',
     marginBottom: 20,
   },
-  pinInput: {
-    width: '100%',
-    padding: 10,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    textAlign: 'center',
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  submitButton: {
-    backgroundColor: '#007aff', // Blue button
+  doneButton: {
+    backgroundColor: '#007aff',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
-    alignItems: 'center',
-    width: '100%',
   },
   buttonText: {
     color: 'white',
@@ -99,4 +159,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PinEntryScreen;
+export default PinEntry;
