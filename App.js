@@ -16,6 +16,8 @@ import OnboardingOne from './screens/OnboardingOne';
 import OnboardingTwo from './screens/OnboardingTwo';
 import OnboardingThree from './screens/OnboardingThree';
 import LoginOrSignup from './screens/LoginOrSignup';
+import VerifyApp from './screens/activateApp_screen';
+import HomeScreen from './screens/homeScreen';
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
@@ -23,7 +25,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="LandingPage">
+      <Stack.Navigator initialRouteName="VerifyApp">
       <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
       <Stack.Screen name="LoginOrSignup"  component={LoginOrSignup} options={{headerShown: false}}/>
       <Stack.Screen name="LandingPage"  component={LandingPage} options={{headerShown: false}}/>
@@ -38,6 +40,8 @@ export default function App() {
       <Stack.Screen name="OnboardingTwo" component={OnboardingTwo} options={{ headerShown: false }} />
       <Stack.Screen name="OnboardingThree" component={OnboardingThree} options={{ headerShown: false }} />
       <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen}  options={{ headerShown: false }} />
+      <Stack.Screen name="VerifyApp" component={VerifyApp}  options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={HomeScreen}  options={{ headerShown: false }} />
       </Stack.Navigator>
       {/* <NavigationBar /> */}
     </NavigationContainer>

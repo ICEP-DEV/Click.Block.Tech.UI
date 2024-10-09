@@ -14,7 +14,7 @@ import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';import { isLoading } from 'expo-font';
 ;
  
-const api = 'http://168.172.187.202:5000/api/';
+const api = 'http://192.168.56.1:5000/api/';
 
 const HomeScreen = () => { // Previously MainScreen
   const [firstName, setFirstName] = useState('');
@@ -23,58 +23,54 @@ const HomeScreen = () => { // Previously MainScreen
   const [loading, setLoading] = useState(true);
   const [accountID, setAccountID] = useState('');
 
-  
-  const getItem = async () => {
-  
+  //this function get the account ID in the local storage
+  async function getItem (){
     try {
       const value = await AsyncStorage.getItem('accountID');
       if (value !== null) {
         try {
           setLoading(true);
-          setAccountID(JSON.parse(value));
-          if(accountID){
-            console.log(`this is: ${accountID}`);
-            setLoading(false);
-            
-          }
-         
+          return JSON.parse(value);
+          
         } catch (parseError) {
           console.error('Error parsing item:', parseError);
           return null;
         }
-      } else {
-        console.log('No value found for key: accountID');
-        return null;
-      }
+      } 
     } catch (error) {
       console.error('Error getting item:', error);
       return null;
     }
   };
-  getItem();
- 
+  setAccountID(getItem());
+  if(accountID){
+    useEffect(() => {
+      const fetchCustomerAndAccountData = async () => {
+        try {
+          const response = await axios.get(`${api}get_customer/${accountID}`);
+          const customerData = response.data;
+         
+          setFirstName(customerData.FirstName || '');
+          console.log(firstName);
+          const accountType = customerData.BankAccount.AccountType || 'Savings';
+          const balance = customerData.BankAccount.Balance || 0;
+  
+          setAccountType(accountType.toUpperCase());
+          setBalance(balance);
+  
+          setLoading(false);
+        } catch (error) {
+          console.error('Error fetching customer or account data:', error);
+          setLoading(false);
+        }
+      };
+  
+      fetchCustomerAndAccountData();
+    }, [accountID]);
 
-  useEffect(() => {
-    const fetchCustomerAndAccountData = async () => {
-      try {
-        const response = await axios.get(`${api}get_customer/${accountID}`);
-        const customerData = response.data;
-        setFirstName(customerData.FirstName || '');
-        const accountType = customerData.BankAccount.AccountType || 'Savings';
-        const balance = customerData.BankAccount.Balance || 0;
+  }
 
-        setAccountType(accountType.toUpperCase());
-        setBalance(balance);
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching customer or account data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchCustomerAndAccountData();
-  }, [accountID]);
+  
 
   if (loading) {
     return (

@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import LottieView from 'lottie-react-native';
 import axios from "axios";
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
-export default function ActivateApp(){
+import AsyncStorage from '@react-native-async-storage/async-storage';
+export default function ActivateApp({navigation}){
 
     const [inputPin, setInputPin] = useState('');
     const [accountNumber, setAccountNumber] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [user, setUser] = useState(null);
     const showToastMsg= (msg) => {
       ToastAndroid.showWithGravity(
         msg,
@@ -14,14 +16,23 @@ export default function ActivateApp(){
         ToastAndroid.CENTER,
       );
     };
+    async function setItem (key, id){
+      try {
+        await AsyncStorage.setItem(key, JSON.stringify(id));
+      } catch (error) {
+        console.error('Error setting item:', error);
+      }
+    };
     async function  activateApp (){
       setIsLoading(true);
       //fetching user account data using account number
       if(inputPin && accountNumber){
        
-        await axios.get(`http://192.168.18.2:5000/api/get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
+        await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
           
           const userData = response.data;
+         
+          
           console.log(userData);
           //check if the user data is not null
           if (userData) {
@@ -30,6 +41,10 @@ export default function ActivateApp(){
             setIsLoading(false);
             setInputPin(''),
             setAccountNumber('');
+            setUser(userData);
+            setItem('accountID', userData._AccountID);
+             //storing accountID locally to be used in the homepage
+            navigation.navigate('Home')
             
           } else {
             showToastMsg('Wrong remote pin');
