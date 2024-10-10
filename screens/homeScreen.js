@@ -30,7 +30,6 @@ const HomeScreen = () => { // Previously MainScreen
         
         try {
           const value = await storage.getItem('accountID'); 
-          console.log(`The value is: ${value}`)
           const response = await axios.get(`${api}get_customer/${value}`);
           const customerData = response.data;
          
