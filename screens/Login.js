@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import LottieView from 'lottie-react-native';
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 // `navigation` is passed as a prop when using React Navigation
 
 export default function Login ({ navigation }){
 const [inputPin, setInputPin] = useState('');
 const [isLoading, setIsLoading] = useState(false);
+const [accNumber, setAccNumber] = useState(0);
+const [userLoading, setUserLoading] = useState(false);
+const [customerData, setCustomerData] = useState(null);
 const storage = require('../async_storage');
 const showToastMsg= (msg) => {
   ToastAndroid.showWithGravity(
@@ -16,20 +18,52 @@ const showToastMsg= (msg) => {
     ToastAndroid.CENTER,
   );
 };
+useEffect(() => {
+  const fetchData = async () => {
+    const value = await storage.getItem('accountNumber'); 
+
+    if(value !== null){
+      setAccNumber(value)
+    }
+  };
+  fetchData();
+  
+}, []);
+useEffect(() => {
+  const fetchCustomerAndAccountData = async () => {
+    setUserLoading(true);
+    try {
+      const value = await storage.getItem('accountID'); 
+      const response = await axios.get(`http://192.168.56.1:5000/api/get_customer/${value}`);
+      const customerData = response.data;
+      if(customerData){
+        console.log(customerData.FirstName);
+        setCustomerData(customerData);
+        setUserLoading(false);
+      }
+      
+    } catch (error) {
+      console.error('Error fetching customer or account data:', error);
+      setUserLoading(false);
+    }
+  };
+
+  fetchCustomerAndAccountData();
+  
+}, []);
 
   async function  handleLogin (){
     setIsLoading(true);
     console.log(inputPin);
     //fetching user account data using account number
     if(inputPin){
-      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${1562848965}/${inputPin}`,).then((response)=>{
+      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
         const userData = response.data;
         console.log(userData);
         //check if the user data is not null
         if (userData) {
           showToastMsg('Successfully logged in');
             //inserting the accountID of the customer to be used in the home page
-            storage.setItem('accountID',userData._AccountID);
            navigation.navigate('Home')
           setIsLoading(false);
           
@@ -67,9 +101,12 @@ const showToastMsg= (msg) => {
           style={styles.user}
           resizeMode="contain"
         />
-        <Text style={styles.greeting}>
-          Hello<Text style={styles.name}></Text>
-        </Text>
+       {
+        userLoading ? (<ActivityIndicator size="large" color="#0000ff" /> ):
+        (<Text style={styles.greeting}>
+          Hello <Text>{customerData.FirstName}</Text><Text style={styles.name}></Text>
+        </Text>)
+       } 
         <Text style={styles.label}>Enter Remote Pin</Text>
         <TextInput
           style={styles.input}
@@ -165,10 +202,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,
   },
-  name: {
-    fontWeight: 'normal',
-    color: '#02457A',
-  },
+  
   label: {
     fontSize: 16,
     color: '#02457A',
