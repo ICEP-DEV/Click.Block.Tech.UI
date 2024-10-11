@@ -34,8 +34,9 @@ useEffect(() => {
     setUserLoading(true);
     try {
       const value = await storage.getItem('accountID'); 
-      const response = await axios.get(`http://192.168.56.1:5000/api/get_customer/${value}`);
+      const response = await axios.get(`http://168.172.187.202:5000/api/get_customer/${value}`);
       const customerData = response.data;
+      console.log(customerData);
       if(customerData){
         console.log(customerData.FirstName);
         setCustomerData(customerData);
@@ -57,7 +58,7 @@ useEffect(() => {
     console.log(inputPin);
     //fetching user account data using account number
     if(inputPin){
-      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
+      await axios.get(`http://168.172.187.202:5000/api/get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
         const userData = response.data;
         console.log(userData);
         //check if the user data is not null

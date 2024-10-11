@@ -58,7 +58,7 @@ const OnboardingTwo = () => {
             <View style={styles.container}>
                 <Text style={styles.title}>Easy Payments</Text>
                 <Text style={styles.description}>
-                Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
+                Make hassle-free payments in seconds. Whether you're shopping online or paying bills, our platform ensures secure and fast transactions, giving you peace of mind every time.
                 </Text>
 
                 <View style={styles.pagination}>

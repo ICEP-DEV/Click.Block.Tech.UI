@@ -62,7 +62,7 @@ const OnboardingOne = () => {
             <View style={styles.container}>
                 <Text style={styles.title}>Easy TopUp & Withdraw</Text>
                 <Text style={styles.description}>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.
+                Quickly and securely top up your account or withdraw funds with just a few taps. Enjoy seamless transactions and manage your money effortlessly, anytime, anywhere.
                 </Text>
 
                 <View style={styles.pagination}>

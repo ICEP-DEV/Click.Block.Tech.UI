@@ -48,7 +48,7 @@ export default  function App() {
      {isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" /> // Display a loading indicator while data is being fetched
       ) : (
-        <Stack.Navigator initialRouteName={route}>
+        <Stack.Navigator initialRouteName={"LandingPage"}>
           <Stack.Screen name="LoginOrSignup"  component={LoginOrSignup} options={{headerShown: false}}/>
           <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
           <Stack.Screen name="LandingPage"  component={LandingPage} options={{headerShown: false}}/>
