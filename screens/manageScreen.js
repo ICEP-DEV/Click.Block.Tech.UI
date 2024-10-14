@@ -4,7 +4,7 @@ import axios from 'axios';
 import styles from './style';
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 
-const api = 'http://192.168.56.1:5000/api/'; // Your base API URL
+const api = 'http://168.172.187.202:5000/api/'; // Your base API URL
 const custID_Nr = '1'; // Replace with the actual CustID_Nr
 
 const ManageScreen = () => {

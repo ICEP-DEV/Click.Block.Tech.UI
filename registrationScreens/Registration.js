@@ -7,7 +7,7 @@ import axios from 'axios';
 const userIcon = require('../registrationAssets/user.png');
 const idIcon = require('../registrationAssets/id.png');
 const padlockIcon = require('../registrationAssets/padlock.png');
-const phoneIcon = require('../registrationAssets/email.png'); // Add phone icon if available
+const phoneIcon = require('../registrationAssets/telephone.png'); // Add phone icon if available
 
 const API_URL = 'http://192.168.56.1:5000/api/customers';
 
@@ -218,6 +218,7 @@ const Registration = ({ navigation }) => {
         {/* Login Link */}
         <View style={styles.loginContainer}>
           <Text style={styles.loginText}>Already have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('VerifyApp')}>
           <TouchableOpacity onPress={() => navigation.navigate('VerifyApp')}>
             <Text style={styles.linkText}>Login</Text>
           </TouchableOpacity>

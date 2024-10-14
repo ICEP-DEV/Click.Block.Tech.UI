@@ -1,7 +1,13 @@
  import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SuccessScreen() {
+  const navigation = useNavigation();
+
+  const handleSubmit = () => {
+    navigation.navigate('LoginOrSignup'); // Navigate to LoginOrSubmit screen
+  };
   return (
     <View style={styles.container}>
       <View style={styles.background} />
@@ -14,7 +20,7 @@ export default function SuccessScreen() {
           Thank you for uploading your documents as required.
           Your documents will be verified within 24 hours!
         </Text>
-        <TouchableOpacity style={styles.submitButton} >
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Next</Text>
         </TouchableOpacity>
       </View>

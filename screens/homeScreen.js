@@ -14,7 +14,7 @@ import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';import { isLoading } from 'expo-font';
 ;
  
-const api = 'http://192.168.56.1:5000/api/';
+const api = 'http://168.172.187.202:5000/api/';
 
 const HomeScreen = () => { // Previously MainScreen
   const [firstName, setFirstName] = useState('');
@@ -63,7 +63,7 @@ const HomeScreen = () => { // Previously MainScreen
       <View style={styles.header}>
         <Image source={accountIcon} style={styles.accountIcon} />
         <Text style={styles.greeting}>
-          WELCOME BACK, {firstName ? firstName.toUpperCase() : 'Guest'}
+          WELCOME BACK, {firstName ? firstName.toUpperCase() : 'Jonathan'}
         </Text>
         <Pressable onPress={storage.setItem('accountNumber',null)}>Reset</Pressable>
         <Text style={styles.subGreeting}>How can we help you today?</Text>

@@ -46,7 +46,7 @@ const LoginOrSignup = () => {
             <View style={styles.container}>
                 <Text style={styles.title}>Welcome to Nexis</Text>
                 <Text style={styles.description}>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.
+                    Your trusted partner for financial security and personal protection, all in one app!
                 </Text>
             </View>
 

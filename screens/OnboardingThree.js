@@ -59,7 +59,7 @@ const OnboardingThree= () => {
             <View style={styles.container}>
                 <Text style={styles.title}>Security Features</Text>
                 <Text style={styles.description}>
-                In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus.
+                Protect your account with advanced security measures. From encryption to multi-factor authentication, we ensure your data and transactions are safe at all times.
                 </Text>
 
                 <View style={styles.pagination}>

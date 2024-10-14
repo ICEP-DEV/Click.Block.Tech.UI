@@ -22,7 +22,7 @@ export default function ActivateApp({navigation}){
       //fetching user account data using account number
       if(inputPin && accountNumber){
        
-        await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
+        await axios.get(`http://168.172.187.202:5000/api/get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
           
           const userData = response.data;
          

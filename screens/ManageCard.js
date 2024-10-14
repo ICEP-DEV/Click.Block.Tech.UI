@@ -19,7 +19,7 @@ import axios from 'axios';
 
 
 const { width } = Dimensions.get('window');
-const api = 'http://192.168.56.1:5000/api/';
+const api = 'http://168.172.187.202:5000/api/';
 
 
 
