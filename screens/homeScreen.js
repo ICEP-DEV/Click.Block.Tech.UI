@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator, Pressable } from 'react-native';
 import axios from 'axios';
 import styles from './style';
  
@@ -65,6 +65,7 @@ const HomeScreen = () => { // Previously MainScreen
         <Text style={styles.greeting}>
           WELCOME BACK, {firstName ? firstName.toUpperCase() : 'Guest'}
         </Text>
+        <Pressable onPress={storage.setItem('accountNumber',null)}>Reset</Pressable>
         <Text style={styles.subGreeting}>How can we help you today?</Text>
       </View>
 

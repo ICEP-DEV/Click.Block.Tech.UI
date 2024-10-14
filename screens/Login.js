@@ -104,7 +104,7 @@ useEffect(() => {
        {
         userLoading ? (<ActivityIndicator size="large" color="#0000ff" /> ):
         (<Text style={styles.greeting}>
-          Hello <Text>{customerData.FirstName}</Text><Text style={styles.name}></Text>
+          Hello Jonathan<Text style={styles.name}></Text>
         </Text>)
        } 
         <Text style={styles.label}>Enter Remote Pin</Text>
@@ -131,10 +131,10 @@ useEffect(() => {
       )}
         </View>
             
-        <View style={styles.signupTxtBtn} onPress={()=>{}}>
+        <TouchableOpacity style={styles.signupTxtBtn} onPress={ navigation.navigate('Registration')}>
           <Text>Don't have an account?</Text>
           <Text style={styles.signupTxt}>Sign up!</Text>
-        </View>
+        </TouchableOpacity>
       </View>
      
     </View>

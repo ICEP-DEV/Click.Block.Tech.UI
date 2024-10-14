@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 
-const API_URL = 'http://168.172.187.202:5000/api/customers';
+const API_URL = 'http://192.168.56.1:5000/api/customers';
 
 const VerifyEmailScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');
