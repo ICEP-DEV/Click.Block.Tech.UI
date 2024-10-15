@@ -5,6 +5,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
 import axios from 'axios';
+import { BASE_URL } from '../API/API';
 
 const PersonalInfoForm = ({ route, navigation }) => {
   const { CustID_Nr } = route.params;
@@ -75,7 +76,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
     };
 
     try {
-      const response = await axios.patch(`http://192.168.56.1:5000/api/customers/${CustID_Nr}`, personalInfo);
+      const response = await axios.patch(`${BASE_URL}/customers/${CustID_Nr}`, personalInfo);
       if (response.status === 200) {
         Alert.alert('Success', 'Personal information updated!', [
           { text: 'OK', onPress: () => navigation.navigate('ContactDetails', { CustID: CustID_Nr }) },

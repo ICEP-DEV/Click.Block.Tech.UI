@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useFonts } from 'expo-font';
 import Stepper from './Stepper';
 import axios from 'axios';
-import api from '../API/API'
+import { BASE_URL } from '../API/API'
 // Import Navigation props
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -175,7 +175,7 @@ export default function IdentityVerificationScreen() {
       });
   
       // Make the POST request
-      const response = await axios.post('http://168.172.187.202:5000/api/upload', formData, {
+      const response = await axios.post(`${BASE_URL}upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

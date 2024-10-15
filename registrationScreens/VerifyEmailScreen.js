@@ -4,8 +4,9 @@ import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
+import { BASE_URL } from '../API/API';
 
-const API_URL = 'http://192.168.56.1:5000/api/customers';
+const API_URL = `${BASE_URL}/customers`;
 
 const VerifyEmailScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');

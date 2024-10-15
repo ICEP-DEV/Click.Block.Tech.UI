@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import LottieView from 'lottie-react-native';
 import axios from "axios";
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { BASE_URL } from '../API/API';
 export default function ActivateApp({navigation}){
 
     const [inputPin, setInputPin] = useState('');
@@ -16,15 +17,16 @@ export default function ActivateApp({navigation}){
       );
     };
     async function  activateApp (){
+      
       setIsLoading(true);
       //fetching user account data using account number
       if(inputPin && accountNumber){
        
-        await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
+        await axios.get(`${BASE_URL}get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
           
           const userData = response.data;
          
-          setIsLoading(false);
+     
           console.log(userData);
           //check if the user data is not null
           if (userData) {
@@ -96,7 +98,7 @@ export default function ActivateApp({navigation}){
               {isLoading ? (
             <LottieView style={{ width: 100, height: 100,alignItems: 'center', marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
           ) : (
-            <TouchableOpacity style={styles.loginButton} onPress={()=>activateApp}>
+            <TouchableOpacity style={styles.loginButton} onPress={activateApp}>
               <Text style={styles.loginButtonText}>Continue</Text>
             </TouchableOpacity>
           )}
