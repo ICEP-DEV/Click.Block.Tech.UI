@@ -65,6 +65,7 @@ export default  function App() {
           <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="VerifyApp" component={ActivateApp}  options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={NavigationBar}  options={{ headerShown: false }} />
+          
           </Stack.Navigator>
       )}
     </NavigationContainer>
