@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import LottieView from 'lottie-react-native';
 import axios from "axios";
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function ActivateApp({navigation}){
 
     const [inputPin, setInputPin] = useState('');
     const [accountNumber, setAccountNumber] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-    const [user, setUser] = useState(null);
     const storage = require('../async_storage');
     const showToastMsg= (msg) => {
       ToastAndroid.showWithGravity(
@@ -22,11 +20,11 @@ export default function ActivateApp({navigation}){
       //fetching user account data using account number
       if(inputPin && accountNumber){
        
-        await axios.get(`http://168.172.187.202:5000/api/get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
+        await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
           
           const userData = response.data;
          
-          
+          setIsLoading(false);
           console.log(userData);
           //check if the user data is not null
           if (userData) {
@@ -34,7 +32,6 @@ export default function ActivateApp({navigation}){
             setIsLoading(false);
             setInputPin(''),
             setAccountNumber('');
-            setUser(userData);
             //Inserting the account number of the customer to be stored for future verification
             storage.setItem('accountNumber',accountNumber);
             //storing the account ID of the customer to the used on the next page
@@ -99,15 +96,15 @@ export default function ActivateApp({navigation}){
               {isLoading ? (
             <LottieView style={{ width: 100, height: 100,alignItems: 'center', marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
           ) : (
-            <TouchableOpacity style={styles.loginButton} onPress={activateApp}>
+            <TouchableOpacity style={styles.loginButton} onPress={()=>activateApp}>
               <Text style={styles.loginButtonText}>Continue</Text>
             </TouchableOpacity>
           )}
             </View>
-            <View style={styles.signupTxtBtn} onPress={()=>{}}>
+            <TouchableOpacity style={styles.signupTxtBtn} onPress={()=>navigation.navigate('Registration')}>
               <Text>Don't have an account?</Text>
               <Text style={styles.signupTxt}>Sign up!</Text>
-             </View>
+             </TouchableOpacity>
           </View>
           
          
