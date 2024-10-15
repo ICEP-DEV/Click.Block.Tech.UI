@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ImageBackground, Text, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
 import * as Font from 'expo-font';
-import { useNavigation } from '@react-navigation/native';
 
 // OPM - Function to load fonts
 const loadFonts = async () => {
@@ -11,11 +10,10 @@ const loadFonts = async () => {
     });
 };
 
-const LoginOrSignup = () => {
+export default function LoginOrSignup ({navigation}){
     
     //OPM - Declare here
     const [fontsLoaded, setFontsLoaded] = useState(false); 
-    const navigation = useNavigation();
 
     // OPM - Load fonts on component mount
     useEffect(() => {
@@ -26,16 +24,6 @@ const LoginOrSignup = () => {
     if (!fontsLoaded) {
         return <ActivityIndicator size="large" color="#0000ff" />; 
     }
-
-     // OPM - Handle the Login and Signup button action
-     const handleLogin = () => {
-        navigation.navigate('VerifyApp');
-    };
-    
-    const handleSignup = () => {
-        // OPM -Navigate to signup screen or handle signup logic
-        navigation.navigate('Registration');
-    };
 
     return (
         <ImageBackground
@@ -52,12 +40,12 @@ const LoginOrSignup = () => {
 
             <View style={styles.buttonContainer}>
                 {/* OPM - Login Button */}
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <TouchableOpacity style={styles.loginButton} onPress={()=>navigation.navigate('VerifyApp')}>
                      <Text style={styles.loginButtonText}>Activate</Text>
                 </TouchableOpacity>
 
                 {/* OPM - Signup Button */}
-                <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
+                <TouchableOpacity style={styles.signupButton} onPress={()=>navigation.navigate('Registration')}>
                      <Text style={styles.signupButtonText}>Signup</Text>
                 </TouchableOpacity>
             </View>
@@ -138,5 +126,3 @@ const styles = StyleSheet.create({
     },
     
 });
-
-export default LoginOrSignup;

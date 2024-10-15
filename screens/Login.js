@@ -34,9 +34,8 @@ useEffect(() => {
     setUserLoading(true);
     try {
       const value = await storage.getItem('accountID'); 
-      const response = await axios.get(`http://168.172.187.202:5000/api/get_customer/${value}`);
+      const response = await axios.get(`http://192.168.56.1:5000/api/get_customer/${value}`);
       const customerData = response.data;
-      console.log(customerData);
       if(customerData){
         console.log(customerData.FirstName);
         setCustomerData(customerData);
@@ -58,7 +57,7 @@ useEffect(() => {
     console.log(inputPin);
     //fetching user account data using account number
     if(inputPin){
-      await axios.get(`http://168.172.187.202:5000/api/get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
+      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
         const userData = response.data;
         console.log(userData);
         //check if the user data is not null
@@ -105,7 +104,7 @@ useEffect(() => {
        {
         userLoading ? (<ActivityIndicator size="large" color="#0000ff" /> ):
         (<Text style={styles.greeting}>
-          Hello <Text>{customerData.FirstName}</Text><Text style={styles.name}></Text>
+          Hello Jonathan<Text style={styles.name}></Text>
         </Text>)
        } 
         <Text style={styles.label}>Enter Remote Pin</Text>
@@ -132,10 +131,10 @@ useEffect(() => {
       )}
         </View>
             
-        <View style={styles.signupTxtBtn} onPress={()=>{}}>
+        <TouchableOpacity style={styles.signupTxtBtn} onPress={ navigation.navigate('Registration')}>
           <Text>Don't have an account?</Text>
           <Text style={styles.signupTxt}>Sign up!</Text>
-        </View>
+        </TouchableOpacity>
       </View>
      
     </View>

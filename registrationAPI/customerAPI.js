@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { BASE_URL } from '../API/API';
 
-const API_URL = 'http://168.172.187.202:5000/api/customers';
+const API_URL = `${BASE_URL}/customers`;
 
 const customerApi = {
   createCustomer: async (customerData) => {

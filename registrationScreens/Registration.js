@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
-
+import { BASE_URL } from '../API/API';
 // Import images
 const userIcon = require('../registrationAssets/user.png');
 const idIcon = require('../registrationAssets/id.png');
 const padlockIcon = require('../registrationAssets/padlock.png');
 const phoneIcon = require('../registrationAssets/telephone.png'); // Add phone icon if available
 
-const API_URL = 'http://168.172.187.202:5000/api/customers';
+const API_URL = `${BASE_URL}/customers`;
 
 const Registration = ({ navigation }) => {
   const [checked, setChecked] = useState(false);

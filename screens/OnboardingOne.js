@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ImageBackground, Text, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
 import * as Font from 'expo-font';
-import { useNavigation } from '@react-navigation/native';
 
 // OPM - Function to load fonts
-const loadFonts = async () => {
-    await Font.loadAsync({
-        'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'), 
-        'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
-    });
-};
 
-const OnboardingOne = () => {
+
+export default function OnboardingOne ({navigation}) {
     
     //OPM - Declare here
     const [fontsLoaded, setFontsLoaded] = useState(false); 
     const [activeIndex, setActiveIndex] = useState(0);
     const [hoverIndex, setHoverIndex] = useState(null); // Track hover state
-    const navigation = useNavigation();
 
+    const loadFonts = async () => {
+        await Font.loadAsync({
+            'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'), 
+            'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
+        });
+    };
     // OPM - Load fonts on component mount
     useEffect(() => {
         loadFonts().then(() => setFontsLoaded(true)); 
@@ -45,12 +44,6 @@ const OnboardingOne = () => {
             navigation.navigate('OnboardingThree'); 
             //console.log(index + " pressed");
         }
-    };
-
-     // OPM - Handle the skip button action
-     const handleSkip = () => {
-        // OPM - Here you can implement navigation to the next screen or any action you want
-        navigation.navigate('LoginOrSignup');
     };
 
     return (
@@ -88,7 +81,7 @@ const OnboardingOne = () => {
                 </View>
 
                 {/* OPM -Skip Button */}
-                <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+                <TouchableOpacity style={styles.skipButton} onPress={()=>navigation.navigate('LoginOrSignup')}>
                     <Text style={styles.skipButtonText}>Skip</Text>
                 </TouchableOpacity>
             </View>
@@ -162,5 +155,3 @@ const styles = StyleSheet.create({
     },
     
 });
-
-export default OnboardingOne;

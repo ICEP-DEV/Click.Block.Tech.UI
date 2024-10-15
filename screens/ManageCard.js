@@ -16,10 +16,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { BASE_URL } from '../API/API';
 
 
 const { width } = Dimensions.get('window');
-const api = 'http://168.172.187.202:5000/api/';
 
 
 
@@ -43,7 +43,7 @@ export default function ManageCard() {
   useEffect(() => {
     const fetchCardAndCustomerData = async () => {
       try {
-        const response = await axios.get(`${api}bankcards/${cardID}/customer`);
+        const response = await axios.get(`${BASE_URL}bankcards/${cardID}/customer`);
         const data = response.data;
 
         setCustomerDetails({

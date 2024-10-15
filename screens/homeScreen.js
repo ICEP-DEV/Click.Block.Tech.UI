@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator, Pressable } from 'react-native';
 import axios from 'axios';
 import styles from './style';
  
@@ -11,10 +11,7 @@ import electricityIcon from '../assets/Homepage/electricity.png';
 import transferIcon from '../assets/Homepage/transfer.png';
 import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
-import AsyncStorage from '@react-native-async-storage/async-storage';import { isLoading } from 'expo-font';
-;
- 
-const api = 'http://168.172.187.202:5000/api/';
+import { BASE_URL } from '../API/API';
 
 const HomeScreen = () => { // Previously MainScreen
   const [firstName, setFirstName] = useState('');
@@ -30,7 +27,7 @@ const HomeScreen = () => { // Previously MainScreen
         
         try {
           const value = await storage.getItem('accountID'); 
-          const response = await axios.get(`${api}get_customer/${value}`);
+          const response = await axios.get(`${BASE_URL}get_customer/${value}`);
           const customerData = response.data;
          
           setFirstName(customerData.FirstName || '');
@@ -65,6 +62,7 @@ const HomeScreen = () => { // Previously MainScreen
         <Text style={styles.greeting}>
           WELCOME BACK, {firstName ? firstName.toUpperCase() : 'Jonathan'}
         </Text>
+        <Pressable onPress={storage.setItem('accountNumber',null)}>Reset</Pressable>
         <Text style={styles.subGreeting}>How can we help you today?</Text>
       </View>
 
