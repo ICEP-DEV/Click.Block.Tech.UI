@@ -27,8 +27,10 @@ const HomeScreen = () => { // Previously MainScreen
         
         try {
           const value = await storage.getItem('accountID'); 
+          console.log(value);
           const response = await axios.get(`${BASE_URL}get_customer/${value}`);
           const customerData = response.data;
+          console.log(customerData.FirstName);
          
           setFirstName(customerData.FirstName || '');
           console.log(firstName);
@@ -59,10 +61,9 @@ const HomeScreen = () => { // Previously MainScreen
     <View style={styles.fullScreenContainer}>
       <View style={styles.header}>
         <Image source={accountIcon} style={styles.accountIcon} />
-        <Text style={styles.greeting}>
-          WELCOME BACK, {firstName ? firstName.toUpperCase() : 'Jonathan'}
-        </Text>
-        <Pressable onPress={storage.setItem('accountNumber',null)}>Reset</Pressable>
+        <Text style={styles.greeting}> WELCOME BACK, </Text>
+<Text style={styles.greeting}>{firstName.toUpperCase()} </Text>
+        
         <Text style={styles.subGreeting}>How can we help you today?</Text>
       </View>
 
