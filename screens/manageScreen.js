@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import styles from './style';
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
+import { BASE_URL } from '../API/API';
 
-const api = 'http://168.172.187.202:5000/api/'; // Your base API URL
 const custID_Nr = '1'; // Replace with the actual CustID_Nr
 
 const ManageScreen = () => {
@@ -16,7 +16,7 @@ const ManageScreen = () => {
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
-        const response = await axios.get(`${api}get_customer/${custID_Nr}`);
+        const response = await axios.get(`${BASE_URL}get_customer/${custID_Nr}`);
         const customerData = response.data;
         console.log('Customer Data:', customerData);
 

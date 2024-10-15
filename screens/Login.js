@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import LottieView from 'lottie-react-native';
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { BASE_URL } from '../API/API';
 // `navigation` is passed as a prop when using React Navigation
 
 export default function Login ({ navigation }){
@@ -34,7 +35,7 @@ useEffect(() => {
     setUserLoading(true);
     try {
       const value = await storage.getItem('accountID'); 
-      const response = await axios.get(`http://192.168.56.1:5000/api/get_customer/${value}`);
+      const response = await axios.get(`${BASE_URL}get_customer/${value}`);
       const customerData = response.data;
       if(customerData){
         console.log(customerData.FirstName);
@@ -57,7 +58,7 @@ useEffect(() => {
     console.log(inputPin);
     //fetching user account data using account number
     if(inputPin){
-      await axios.get(`http://192.168.56.1:5000/api/get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
+      await axios.get(`${BASE_URL}get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
         const userData = response.data;
         console.log(userData);
         //check if the user data is not null
