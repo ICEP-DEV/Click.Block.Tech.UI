@@ -64,7 +64,13 @@ const PinEntry = () => {
           <Text style={styles.approvedText}>
             Your transaction of R500 has been approved {currentDateTime}. Take your money out at an ATM and start spending.
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.doneButton}>
+          <TouchableOpacity
+            onPress={() => navigation.reset({
+              index: 0, // Start at the first screen of the stack
+              routes: [{ name: 'Home' }] // Reset the stack to only have the 'Home' screen
+            })}
+            style={styles.doneButton}
+          >
             <Text style={styles.buttonText}>Done</Text>
           </TouchableOpacity>
         </View>
