@@ -26,14 +26,10 @@ const HomeScreen = () => { // Previously MainScreen
       const fetchCustomerAndAccountData = async () => {
         
         try {
-          const value = await storage.getItem('accountID'); 
-          console.log(value);
+          const value = await storage.getItem('CustID_Nr'); 
           const response = await axios.get(`${BASE_URL}get_customer/${value}`);
           const customerData = response.data;
-          console.log(customerData.FirstName);
-         
           setFirstName(customerData.FirstName || '');
-          console.log(firstName);
           const accountType = customerData.BankAccount.AccountType || 'Savings';
           const balance = customerData.BankAccount.Balance || 0;
   

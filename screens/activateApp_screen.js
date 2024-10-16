@@ -25,9 +25,6 @@ export default function ActivateApp({navigation}){
         await axios.get(`${BASE_URL}get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
           
           const userData = response.data;
-         
-     
-          console.log(userData);
           //check if the user data is not null
           if (userData) {
             showToastMsg('Successfully logged in');
@@ -37,8 +34,8 @@ export default function ActivateApp({navigation}){
             //Inserting the account number of the customer to be stored for future verification
             storage.setItem('accountNumber',accountNumber);
             //storing the account ID of the customer to the used on the next page
-            storage.setItem('accountID',userData._AccountID);
-            navigation.navigate('Home')
+            storage.setItem('CustID_Nr',userData._CustID_Nr);
+            navigation.navigate('Home');
           } else {
             showToastMsg('Wrong remote pin');
             setIsLoading(false);

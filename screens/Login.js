@@ -10,7 +10,7 @@ const [inputPin, setInputPin] = useState('');
 const [isLoading, setIsLoading] = useState(false);
 const [accNumber, setAccNumber] = useState(0);
 const [userLoading, setUserLoading] = useState(false);
-const [customerData, setCustomerData] = useState(null);
+const [customerName, setCustomerName] = useState('');
 const storage = require('../async_storage');
 const showToastMsg= (msg) => {
   ToastAndroid.showWithGravity(
@@ -30,16 +30,19 @@ useEffect(() => {
   fetchData();
   
 }, []);
+
 useEffect(() => {
   const fetchCustomerAndAccountData = async () => {
-    setUserLoading(true);
     try {
-      const value = await storage.getItem('accountID'); 
+
+      setUserLoading(true);
+      const value = await storage.getItem('CustID_Nr'); 
       const response = await axios.get(`${BASE_URL}get_customer/${value}`);
       const customerData = response.data;
+      
       if(customerData){
-        console.log(customerData.FirstName);
-        setCustomerData(customerData);
+    
+        setCustomerName(customerData.FirstName);
         setUserLoading(false);
       }
       
@@ -104,9 +107,10 @@ useEffect(() => {
         />
        {
         userLoading ? (<ActivityIndicator size="large" color="#0000ff" /> ):
-        (<Text style={styles.greeting}>
-          Hello Jonathan<Text style={styles.name}></Text>
-        </Text>)
+        (<View style={styles.greetingsContainer}>
+          <Text style={styles.greeting1}>WELCOME BACK</Text>
+          <Text style={styles.greeting2}>{customerName.toUpperCase()}</Text>
+        </View>)
        } 
         <Text style={styles.label}>Enter Remote Pin</Text>
         <TextInput
@@ -117,7 +121,7 @@ useEffect(() => {
           onChangeText={setInputPin}
         />
         <View style={styles.forgotPinContainer}>
-          <TouchableOpacity onPress={handleForgotPin}>
+          <TouchableOpacity onPress={()=>handleForgotPin}>
             <Text style={styles.forgotPin}>Forgot PIN</Text>
           </TouchableOpacity>
         </View>
@@ -126,13 +130,13 @@ useEffect(() => {
           {isLoading ? (
         <LottieView style={{ width: 100, height: 100,alignItems: 'center', marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
       ) : (
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <TouchableOpacity style={styles.loginButton} onPress={()=>handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
       )}
         </View>
             
-        <TouchableOpacity style={styles.signupTxtBtn} onPress={ navigation.navigate('Registration')}>
+        <TouchableOpacity style={styles.signupTxtBtn} onPress={ ()=>navigation.navigate('Registration')}>
           <Text>Don't have an account?</Text>
           <Text style={styles.signupTxt}>Sign up!</Text>
         </TouchableOpacity>
@@ -194,14 +198,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#02457A',
     zIndex: -1,
   },
-  greeting: {
-    fontSize: 20,
+  greetingsContainer:{
+    alignItems: 'center',
+    
+  },
+  greeting1: {
+    fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 5,
     color: '#02457A',
     textShadowColor: '#888',
     textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
+    textShadowRadius: 0,
+  },
+  greeting2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#02457A',
+    textShadowColor: '#888',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 1,
   },
   
   label: {

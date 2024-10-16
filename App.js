@@ -31,6 +31,7 @@ export default  function App() {
     setIsLoading(true);
     const fetchData = async () => {
       const value = await storage.getItem('accountNumber'); 
+      console.log(value);
       if(value !== null){
         setRoute('Login');
         setIsLoading(false);
@@ -48,7 +49,7 @@ export default  function App() {
      {isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" /> // Display a loading indicator while data is being fetched
       ) : (
-        <Stack.Navigator initialRouteName={"LandingPage"}>
+        <Stack.Navigator initialRouteName={route}>
           <Stack.Screen name="LoginOrSignup"  component={LoginOrSignup} options={{headerShown: false}}/>
           <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
           <Stack.Screen name="LandingPage"  component={LandingPage} options={{headerShown: false}}/>
