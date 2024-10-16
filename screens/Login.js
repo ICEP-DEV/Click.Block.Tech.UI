@@ -108,7 +108,7 @@ useEffect(() => {
        {
         userLoading ? (<ActivityIndicator size="large" color="#0000ff" /> ):
         (<View style={styles.greetingsContainer}>
-          <Text style={styles.greeting1}>WELCOME BACK</Text>
+          <Text style={styles.greeting1}>WELCOME BACK,</Text>
           <Text style={styles.greeting2}>{customerName.toUpperCase()}</Text>
         </View>)
        } 
