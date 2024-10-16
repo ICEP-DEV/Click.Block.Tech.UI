@@ -130,7 +130,7 @@ useEffect(() => {
           {isLoading ? (
         <LottieView style={{ width: 100, height: 100,alignItems: 'center', marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
       ) : (
-        <TouchableOpacity style={styles.loginButton} onPress={()=>handleLogin}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
       )}
