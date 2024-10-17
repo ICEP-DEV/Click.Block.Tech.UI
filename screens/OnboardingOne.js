@@ -17,7 +17,6 @@ const OnboardingOne = () => {
     //OPM - Declare here
     const [fontsLoaded, setFontsLoaded] = useState(false); 
     const [activeIndex, setActiveIndex] = useState(0);
-    const [hoverIndex, setHoverIndex] = useState(null); // Track hover state
     const navigation = useNavigation();
 
     // OPM - Load fonts on component mount
@@ -58,7 +57,7 @@ const OnboardingOne = () => {
             </View>
             
             <View style={styles.navigator}>
-                <SquareNavigator />
+            <SquareNavigator activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
             </View>
 
         </ImageBackground>

@@ -1,39 +1,65 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { GestureHandlerRootView, PanGestureHandler, State } from 'react-native-gesture-handler'; // Import gesture handler
 import { useNavigation } from '@react-navigation/native';
 
-const SquareNavigator = () => {
+const SquareNavigator = ({ activeIndex, setActiveIndex }) => {
     const navigation = useNavigation();
-    const [activeIndex, setActiveIndex] = useState(null);
-
+    
+    // Screens array to manage your onboarding screens
     const screens = ['OnboardingOne', 'OnboardingTwo', 'OnboardingThree'];
-
+    
     const handleSquarePress = (index) => {
-        setActiveIndex(index);
         navigation.navigate(screens[index]);
+        setActiveIndex(index);
+    };
+    
+    // Handle swipe left/right
+    const handleSwipe = (event) => {
+        if (event.nativeEvent.state === State.END) {
+            const { translationX } = event.nativeEvent;
+
+            if (translationX > 50) {
+                // Swiped right
+                const newIndex = Math.max(0, activeIndex - 1); // Prevent going below 0
+                setActiveIndex(newIndex); // Update the active index
+            } else if (translationX < -50) {
+                // Swiped left
+                const newIndex = Math.min(screens.length - 1, activeIndex + 1); // Prevent going above max
+                setActiveIndex(newIndex); // Update the active index
+            }
+        }
     };
 
     return (
-        <View style={styles.pagination}>
-            {[0, 1, 2].map((_, index) => (
-                <TouchableOpacity
-                    key={index}
-                    onPress={() => handleSquarePress(index)}
-                    accessible={true}
-                    accessibilityLabel={`Navigate to onboarding step ${index + 1}`}
-                    activeOpacity={1}
-                >
-                    <View
-                        style={[
-                            styles.square,
-                            index === activeIndex
-                                ? styles.activeSquare
-                                : styles.inactiveSquare
-                        ]}
-                    />
-                </TouchableOpacity>
-            ))}
-        </View>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <PanGestureHandler onHandlerStateChange={handleSwipe}>
+                <View style={styles.pagination}>
+                    {[0, 1, 2].map((_, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => {
+                                // setActiveIndex(index);
+                                navigation.navigate(screens[index]);
+                            }}
+                                
+                            accessible={true}
+                            accessibilityLabel={`Navigate to onboarding step ${index + 1}`}
+                            activeOpacity={1}
+                        >
+                            <View
+                                style={[
+                                    styles.square,
+                                    index === activeIndex
+                                        ? styles.activeSquare
+                                        : styles.inactiveSquare
+                                ]}
+                            />
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </PanGestureHandler>
+        </GestureHandlerRootView>
     );
 };
 

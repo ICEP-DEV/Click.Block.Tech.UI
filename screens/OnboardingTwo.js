@@ -58,7 +58,7 @@ const OnboardingTwo = () => {
             </View>
 
             <View style={styles.navigator}>
-                <SquareNavigator />
+                <SquareNavigator activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
             </View>
 
         </ImageBackground>

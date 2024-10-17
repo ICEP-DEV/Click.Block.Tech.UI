@@ -12,7 +12,7 @@
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
-    "expo": "~51.0.37",
+    "expo": "~51.0.38",
     "expo-status-bar": "~1.12.1",
     "is-directory": "^0.3.1",
     "react": "18.2.0",
