@@ -32,16 +32,17 @@ export default function ManageCard() {
   const [customerDetails, setCustomerDetails] = useState(null);
   const [cardDetails, setCardDetails] = useState(null);
   const toggleModal = () => setIsModalVisible(!isModalVisible);
-
+  const storage = require('../async_storage');
   const toggleCardDeactivation = () => {
     setIsCardDeactivated((prev) => !prev);
   };
 
 // Get By Card Number
-  const cardID = 1;
+  
 
   useEffect(() => {
     const fetchCardAndCustomerData = async () => {
+      const cardNr = await storage.getItem('CustID_Nr');
       try {
         const response = await axios.get(`${BASE_URL}bankcards/${cardID}/customer`);
         const data = response.data;

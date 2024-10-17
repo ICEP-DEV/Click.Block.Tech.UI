@@ -66,43 +66,6 @@ export default function IdentityVerificationScreen() {
     }
   };
   
-
-  const validateIdNumber = (number) => {
-    if (!/^\d{13}$/.test(number)) {
-      return false;
-    }
-
-    const birthDate = number.substring(0, 6);
-    const genderCode = number.substring(6, 10);
-    const citizenshipCode = number[10];
-    const checksumDigit = number[12];
-
-    const year = parseInt(birthDate.substring(0, 2), 10);
-    const month = parseInt(birthDate.substring(2, 4), 10);
-    const day = parseInt(birthDate.substring(4, 6), 10);
-
-    const fullYear = year >= 0 && year <= 22 ? 2000 + year : 1900 + year;
-
-    const date = new Date(fullYear, month - 1, day);
-    if (date.getFullYear() !== fullYear || date.getMonth() !== month - 1 || date.getDate() !== day) {
-      return false;
-    }
-
-    const genderCodeInt = parseInt(genderCode, 10);
-    if (isNaN(genderCodeInt) || genderCodeInt < 0 || genderCodeInt > 9999) {
-      return false;
-    }
-
-    if (citizenshipCode !== '0' && citizenshipCode !== '1') {
-      return false;
-    }
-
-    const idWithoutChecksum = number.substring(0, 12);
-    const computedChecksum = calculateLuhnChecksum(idWithoutChecksum);
-
-    return computedChecksum === parseInt(checksumDigit, 10);
-  };
-
   const calculateLuhnChecksum = (number) => {
     let sum = 0;
     let shouldDouble = true;
@@ -124,74 +87,57 @@ export default function IdentityVerificationScreen() {
     return (10 - (sum % 10)) % 10;
   };
 
-  const handleIdNumberChange = (text) => {
-    const sanitizedText = text.replace(/\D/g, '');
-
-    if (sanitizedText.length <= 13) {
-      setIdNumber(sanitizedText);
-
-      if (sanitizedText.length === 13 && !validateIdNumber(sanitizedText)) {
-        setError('Invalid ID Number');
-      } else {
-        setError('');
-      }
-    }
-  };
-
   const handleSubmit = async () => {
     // Validate the inputs
-    if (!validateIdNumber(idNumber)) {
-      Alert.alert('Invalid ID Number', 'Please enter a valid South African ID number.');
-      return;
-    }
+
   
     if (!idDocument) {
       Alert.alert('Document Missing', 'Please upload your ID document.');
       return;
-    }
-  
-    if (!selfie) {
+    }else if (!selfie) {
       Alert.alert('Selfie Missing', 'Please take a selfie.');
       return;
-    }
-  
-    try {
-      // Prepare form data
-      const formData = new FormData();
-      formData.append('CustID_Nr', idNumber);
-      
-      // Append the document as a file
-      formData.append('ID_Document', {
-        uri: idDocument,
-        name: idDocumentName,
-        type: 'application/pdf',
-      });
-      
-      // Append the selfie
-      formData.append('Selfie_With_ID', {
-        uri: selfie.uri,  // Ensure correct URI
-        name: 'selfie.jpg',
-        type: 'image/jpeg',
-      });
-  
-      // Make the POST request
-      const response = await axios.post(`${BASE_URL}upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-  
-      // Check for success response
-      if (response.status === 200) {
-        Alert.alert('Success', 'Your details have been uploaded successfully!');
-        navigation.navigate('Success');
-      } else {
-        Alert.alert('Error', 'Something went wrong. Please try again.');
+    }else{
+      try {
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('CustID_Nr', idNumber);
+        
+        // Append the document as a file
+        formData.append('ID_Document', {
+          uri: idDocument,
+          name: idDocumentName,
+          type: 'application/pdf',
+        });
+        
+        // Append the selfie
+        formData.append('Selfie_With_ID', {
+          uri: selfie.uri,  // Ensure correct URI
+          name: 'selfie.jpg',
+          type: 'image/jpeg',
+        });
+    
+        // Make the POST request
+        const response = await axios.post(`${BASE_URL}upload`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+    
+        // Check for success response
+        if (response.status === 200) {
+          Alert.alert('Success', 'Your details have been uploaded successfully!');
+          navigation.navigate('Success');
+        } else {
+          Alert.alert('Error', 'Something went wrong. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error uploading details:', error.response || error.message);
+        Alert.alert('Error', 'Failed to upload details. Please try again.');
       }
-    } catch (error) {
-      console.error('Error uploading details:', error.response || error.message);
-      Alert.alert('Error', 'Failed to upload details. Please try again.');
     }
+  
+    
   };
   
   
@@ -208,7 +154,6 @@ export default function IdentityVerificationScreen() {
         <TextInput
           style={[styles.input, error ? styles.inputError : {}]}
           value={idNumber}
-          onChangeText={handleIdNumberChange}
           placeholder="Enter your Identity Number"
           placeholderTextColor="#02457A"
           keyboardType="numeric"

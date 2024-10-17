@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput,ToastAndroid, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import axios from 'axios';
 import { BASE_URL } from '../API/API';
@@ -23,22 +23,72 @@ const Registration = ({ navigation }) => {
 
   const handleFirstNameChange = (text) => setFirstName(text.replace(/[^a-zA-Z\s]/g, ''));
   const handleLastNameChange = (text) => setLastName(text.replace(/[^a-zA-Z\s]/g, ''));
-  const handleIdChange = (text) => setIdNumber(text.replace(/[^0-9]/g, '').slice(0, 13));
   const handlePinChange = (text) => setPin(text.replace(/[^0-9]/g, '').slice(0, 5));
   const handleConfirmPinChange = (text) => setConfirmPin(text.replace(/[^0-9]/g, '').slice(0, 5));
   const handlePhoneChange = (text) => setPhoneNumber(text.replace(/[^0-9]/g, '').slice(0, 10)); // Phone number max 10 digits
 
+  const showToastMsg= (msg) => {
+    ToastAndroid.showWithGravity(
+      msg,
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
+  };
   const validatePins = () => {
     let pinErrors = {};
     if (pin.length !== 5) pinErrors.pin = 'You must enter exactly five digits for the PIN.';
     if (pin !== confirmPin) pinErrors.confirmPin = 'PINs do not match.';
     return pinErrors;
   };
+  const handleIdNumberChange = (text) => {
+    const sanitizedText = text.replace(/\D/g, '');
 
-  const validateIdNumber = () => {
-    if (idNumber.length !== 13) return 'ID number must be exactly 13 digits.';
-    return '';
+    if (sanitizedText.length <= 13) {
+      setIdNumber(sanitizedText);
+
+      if (sanitizedText.length === 13 && !validateIdNumber(sanitizedText)) {
+        showToastMsg('Invalid ID Number');
+      } else {
+        showToastMsg('');
+      }
+    }
   };
+  const validateIdNumber = (number) => {
+    if (!/^\d{13}$/.test(number)) {
+      return false;
+    }
+
+    const birthDate = number.substring(0, 6);
+    const genderCode = number.substring(6, 10);
+    const citizenshipCode = number[10];
+    const checksumDigit = number[12];
+
+    const year = parseInt(birthDate.substring(0, 2), 10);
+    const month = parseInt(birthDate.substring(2, 4), 10);
+    const day = parseInt(birthDate.substring(4, 6), 10);
+
+    const fullYear = year >= 0 && year <= 22 ? 2000 + year : 1900 + year;
+
+    const date = new Date(fullYear, month - 1, day);
+    if (date.getFullYear() !== fullYear || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      return false;
+    }
+
+    const genderCodeInt = parseInt(genderCode, 10);
+    if (isNaN(genderCodeInt) || genderCodeInt < 0 || genderCodeInt > 9999) {
+      return false;
+    }
+
+    if (citizenshipCode !== '0' && citizenshipCode !== '1') {
+      return false;
+    }
+
+    const idWithoutChecksum = number.substring(0, 12);
+    const computedChecksum = calculateLuhnChecksum(idWithoutChecksum);
+
+    return computedChecksum === parseInt(checksumDigit, 10);
+  };
+
 
   const validatePhoneNumber = () => {
     if (phoneNumber.length !== 10) return 'Phone number must be exactly 10 digits.';
@@ -59,18 +109,18 @@ const Registration = ({ navigation }) => {
 
   const handleSubmit = async () => {
     const pinErrors = validatePins();
-    const idError = validateIdNumber();
+    const idError = validateIdNumber(idNumber);
     const phoneError = validatePhoneNumber();
 
     if (!isFormValid()) {
       setErrors({ form: 'Please fill out all fields correctly.' });
-      Alert.alert('Error', 'Please fill out all fields correctly.');
-    } else if (idError) {
-      Alert.alert('Error', idError);
+      showToastMsg('Error', 'Please fill out all fields correctly.');
+    } else if (!idError) {
+      showToastMsg('Invalid ID Number', 'Please enter a valid South African ID number.', idError);
     } else if (phoneError) {
-      Alert.alert('Error', phoneError);
+      showToastMsg('Error', phoneError);
     } else if (Object.keys(pinErrors).length > 0) {
-      Alert.alert('Error', pinErrors.pin || pinErrors.confirmPin);
+      showToastMsg('Error', pinErrors.pin || pinErrors.confirmPin);
     } else {
       try {
         const customerData = {
@@ -141,7 +191,7 @@ const Registration = ({ navigation }) => {
             style={styles.input}
             placeholder="Enter your 13-digit ID"
             value={idNumber}
-            onChangeText={handleIdChange}
+            onChangeText={handleIdNumberChange}
             keyboardType="numeric"
             maxLength={13}
             placeholderTextColor="#02457A"
