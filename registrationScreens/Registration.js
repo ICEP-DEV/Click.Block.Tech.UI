@@ -49,15 +49,36 @@ const Registration = ({ navigation }) => {
       if (sanitizedText.length === 13 && !validateIdNumber(sanitizedText)) {
         showToastMsg('Invalid ID Number');
       } else {
-        showToastMsg('');
       }
     }
   };
-  const validateIdNumber = (number) => {
-    if (!/^\d{13}$/.test(number)) {
-      return false;
+  const calculateLuhnChecksum = (number) => {
+    let sum = 0;
+    let shouldDouble = true;
+
+    for (let i = number.length - 1; i >= 0; i--) {
+      let digit = parseInt(number.charAt(i), 10);
+
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+
+      sum += digit;
+      shouldDouble = !shouldDouble;
     }
 
+    return (10 - (sum % 10)) % 10;
+  };
+  const validateIdNumber = (number) => {
+    
+    if (!/^\d{13}$/.test(number)) {
+     
+      return false;
+    }
+   
     const birthDate = number.substring(0, 6);
     const genderCode = number.substring(6, 10);
     const citizenshipCode = number[10];
@@ -71,6 +92,7 @@ const Registration = ({ navigation }) => {
 
     const date = new Date(fullYear, month - 1, day);
     if (date.getFullYear() !== fullYear || date.getMonth() !== month - 1 || date.getDate() !== day) {
+     
       return false;
     }
 
@@ -80,22 +102,28 @@ const Registration = ({ navigation }) => {
     }
 
     if (citizenshipCode !== '0' && citizenshipCode !== '1') {
+      
       return false;
     }
 
     const idWithoutChecksum = number.substring(0, 12);
     const computedChecksum = calculateLuhnChecksum(idWithoutChecksum);
-
+    console.log(computedChecksum);
     return computedChecksum === parseInt(checksumDigit, 10);
   };
 
 
   const validatePhoneNumber = () => {
-    if (phoneNumber.length !== 10) return 'Phone number must be exactly 10 digits.';
-    return '';
+    if (phoneNumber.length !== 10) {
+      return 'Phone number must be exactly 10 digits.';
+    }else{
+      return '';
+    }
+
   };
 
   const isFormValid = () => {
+  
     return (
       checked &&
       firstName.trim() !== '' &&
@@ -110,17 +138,18 @@ const Registration = ({ navigation }) => {
   const handleSubmit = async () => {
     const pinErrors = validatePins();
     const idError = validateIdNumber(idNumber);
+    console.log(idError);
     const phoneError = validatePhoneNumber();
-
+    
     if (!isFormValid()) {
       setErrors({ form: 'Please fill out all fields correctly.' });
       showToastMsg('Error', 'Please fill out all fields correctly.');
     } else if (!idError) {
       showToastMsg('Invalid ID Number', 'Please enter a valid South African ID number.', idError);
-    } else if (phoneError) {
-      showToastMsg('Error', phoneError);
+    } else if (phoneError !== '') {
+      showToastMsg(phoneError);
     } else if (Object.keys(pinErrors).length > 0) {
-      showToastMsg('Error', pinErrors.pin || pinErrors.confirmPin);
+      showToastMsg(`Error, ${pinErrors.pin} || ${pinErrors.confirmPin}`);
     } else {
       try {
         const customerData = {
