@@ -77,7 +77,6 @@ export default function IdentityVerificationScreen() {
   
     if (!result.canceled) {
       const size = result.assets[0];
-      console.log(size.fileSize/(1024*1024) );
       setSelfie(result.assets[0]);  // Update this to store the image correctly
     } else {
       Alert.alert('No photo taken');
@@ -118,7 +117,6 @@ export default function IdentityVerificationScreen() {
       });
   
       // Make the POST request
-      console.log('befor every!')
       const response = await axios.post(`${BASE_URL}upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
