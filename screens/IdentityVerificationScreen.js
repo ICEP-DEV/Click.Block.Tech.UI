@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Image, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View,ToastAndroid, TextInput, Image, Alert, TouchableOpacity } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useFonts } from 'expo-font';
@@ -21,6 +21,13 @@ export default function IdentityVerificationScreen() {
     'BebasNeue': require('../assets/fonts/BebasNeue-Regular.ttf'),
     'PoppinsMedium': require('../assets/fonts/Poppins-Medium.ttf'),
   });
+  const showToastMsg= (msg) => {
+    ToastAndroid.showWithGravity(
+      msg,
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
+  };
   const [error, setError] = useState('');
 
   // Get navigation prop
@@ -40,8 +47,17 @@ export default function IdentityVerificationScreen() {
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const document = result.assets[0];
+      //This prevents uploads of files that are larger the specified size in Multi config
+      //The if statement also prevents the server error 404 that will be triggered by multi
+      if((document.size /(1024 * 1024 ))>1){
+        showToastMsg('File size must be at least 1MB or less.');
+        return;
+      }else{
       setIdDocument(document.uri);
       setIdDocumentName(document.name);
+
+      }
+      
     } else {
       Alert.alert('No file selected');
     }
@@ -60,89 +76,68 @@ export default function IdentityVerificationScreen() {
     });
   
     if (!result.canceled) {
+      const size = result.assets[0];
+      console.log(size.fileSize/(1024*1024) );
       setSelfie(result.assets[0]);  // Update this to store the image correctly
     } else {
       Alert.alert('No photo taken');
     }
   };
   
-  const calculateLuhnChecksum = (number) => {
-    let sum = 0;
-    let shouldDouble = true;
-
-    for (let i = number.length - 1; i >= 0; i--) {
-      let digit = parseInt(number.charAt(i), 10);
-
-      if (shouldDouble) {
-        digit *= 2;
-        if (digit > 9) {
-          digit -= 9;
-        }
-      }
-
-      sum += digit;
-      shouldDouble = !shouldDouble;
-    }
-
-    return (10 - (sum % 10)) % 10;
-  };
 
   const handleSubmit = async () => {
     // Validate the inputs
 
-  
     if (!idDocument) {
       Alert.alert('Document Missing', 'Please upload your ID document.');
       return;
-    }else if (!selfie) {
-      Alert.alert('Selfie Missing', 'Please take a selfie.');
-      return;
-    }else{
-      try {
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('CustID_Nr', idNumber);
-        
-        // Append the document as a file
-        formData.append('ID_Document', {
-          uri: idDocument,
-          name: idDocumentName,
-          type: 'application/pdf',
-        });
-        
-        // Append the selfie
-        formData.append('Selfie_With_ID', {
-          uri: selfie.uri,  // Ensure correct URI
-          name: 'selfie.jpg',
-          type: 'image/jpeg',
-        });
-    
-        // Make the POST request
-        const response = await axios.post(`${BASE_URL}upload`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-    
-        // Check for success response
-        if (response.status === 200) {
-          Alert.alert('Success', 'Your details have been uploaded successfully!');
-          navigation.navigate('Success');
-        } else {
-          Alert.alert('Error', 'Something went wrong. Please try again.');
-        }
-      } catch (error) {
-        console.error('Error uploading details:', error.response || error.message);
-        Alert.alert('Error', 'Failed to upload details. Please try again.');
-      }
     }
   
-    
+    if (!selfie) {
+      Alert.alert('Selfie Missing', 'Please take a selfie.');
+      return;
+    }
+  
+    try {
+      // Prepare form data
+      const formData = new FormData();
+      formData.append('CustID_Nr', idNumber);
+      
+      // Append the document as a file
+      formData.append('ID_Document', {
+        uri: idDocument,
+        name: idDocumentName,
+        type: 'application/pdf',
+      });
+      
+      // Append the selfie
+      formData.append('Selfie_With_ID', {
+        uri: selfie.uri,  // Ensure correct URI
+        name: 'selfie.jpg',
+        type: 'image/jpeg',
+      });
+  
+      // Make the POST request
+      console.log('befor every!')
+      const response = await axios.post(`${BASE_URL}upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      // Check for success response
+      if (response.status === 200) {
+        Alert.alert('Success', 'Your details have been uploaded successfully!');
+        navigation.navigate('Success');
+      } else {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error uploading details:', error.message);
+      Alert.alert('Error', 'Failed to upload details. Please try again.');
+    }
   };
   
-  
-  
-
   return (
     <View style={styles.container}>
       <View style={styles.background} />
