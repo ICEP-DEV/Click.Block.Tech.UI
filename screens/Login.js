@@ -68,7 +68,8 @@ useEffect(() => {
         if (userData) {
           showToastMsg('Successfully logged in');
             //inserting the accountID of the customer to be used in the home page
-           navigation.navigate('Home')
+           setInputPin('');
+            navigation.navigate('Home')
           setIsLoading(false);
           
         } else {
@@ -115,6 +116,7 @@ useEffect(() => {
         <Text style={styles.label}>Enter Remote Pin</Text>
         <TextInput
           style={styles.input}
+          value={inputPin}
           secureTextEntry
           keyboardType="numeric"
           placeholder="Remote pin"
@@ -136,10 +138,6 @@ useEffect(() => {
       )}
         </View>
             
-        <TouchableOpacity style={styles.signupTxtBtn} onPress={ ()=>navigation.navigate('Registration')}>
-          <Text>Don't have an account?</Text>
-          <Text style={styles.signupTxt}>Sign up!</Text>
-        </TouchableOpacity>
       </View>
      
     </View>
