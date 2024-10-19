@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
 import axios from 'axios'; 
 import { BASE_URL } from '../API/API';
 
@@ -11,6 +12,7 @@ const API_URL = `${BASE_URL}/customers`;
 const ContactDetailsScreen = () => {
   const [email, setEmail] = useState('');
   const navigation = useNavigation();
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const route = useRoute();  // Get the route object to access params
   const { CustID } = route.params; // Destructure CustID_Nr from route.params
 
@@ -28,10 +30,12 @@ const ContactDetailsScreen = () => {
 
   // Handle the "Next" button press
   const handleNext = async () => {
+    setIsSendingOtp(true);
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      isSendingOtp(false);
       return;
     }
 
@@ -48,6 +52,7 @@ const ContactDetailsScreen = () => {
 
     
       if (response.status === 200) {
+        setIsSendingOtp(false);
           Alert.alert('Success', 'Email sent. Check otp', [
               { text: 'OK', onPress: () => navigation.navigate('VerifyEmail', { Email: email, CustID_Nr: CustID}) }
           ]);
@@ -94,9 +99,14 @@ const ContactDetailsScreen = () => {
             keyboardType="email-address"
             autoCapitalize="none" // To prevent auto-capitalizing the first letter of email
           />
-          <Button mode="contained" onPress={handleNext} style={styles.button}>
-            Next
-          </Button>
+          {
+            isSendingOtp ? (
+              <LottieView style={{ width: 100, height: 100,marginLeft: 115, marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
+            ) : (<Button mode="contained" onPress={handleNext} style={styles.button}>
+              Next
+            </Button>)
+          }
+          
         </View>
       </LinearGradient>
     </SafeAreaView>
