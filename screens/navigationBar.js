@@ -9,6 +9,7 @@ import HomeScreen from './homeScreen';
 import ManageStack from './ManageStack';
 import NotificationsScreen from './notificationsScreen';
 import TransactScreen from './transactScreen';
+import ManageCard from './ManageCard';
 
 const Tab = createBottomTabNavigator();
 
@@ -78,7 +79,7 @@ const NavigationBar = () => {
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Manage" component={ManageStack} />
+      <Tab.Screen name="Manage" component={ManageCard} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
       <Tab.Screen name="Transact" component={TransactScreen} />
     </Tab.Navigator>
