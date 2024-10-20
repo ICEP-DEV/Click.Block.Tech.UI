@@ -35,6 +35,7 @@ export default function ActivateApp({navigation}){
             storage.setItem('accountNumber',accountNumber);
             //storing the account ID of the customer to the used on the next page
             storage.setItem('CustID_Nr',userData._CustID_Nr);
+            storage.setItem('accountID',userData._AccountID);
             navigation.navigate('Home');
           } else {
             showToastMsg('Wrong remote pin');
