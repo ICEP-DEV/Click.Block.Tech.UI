@@ -41,10 +41,12 @@ export default function ManageCard() {
   
 
   useEffect(() => {
+    
     const fetchCardAndCustomerData = async () => {
-      const cardNr = await storage.getItem('CustID_Nr');
+      const accountID = await storage.getItem('accountID');
       try {
-        const response = await axios.get(`${BASE_URL}bankcards/${cardID}/customer`);
+        console.log(`Hello: ${accountID}`);
+        const response = await axios.get(`${BASE_URL}/bankcards/${28}/customer`);
         const data = response.data;
 
         setCustomerDetails({
@@ -66,7 +68,7 @@ export default function ManageCard() {
     };
 
     fetchCardAndCustomerData();
-  }, [cardID]);
+  }, []);
 
   // Format the expiration date
   const formatExpirationDate = (dateString) => {
