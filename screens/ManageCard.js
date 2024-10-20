@@ -45,8 +45,7 @@ export default function ManageCard() {
     const fetchCardAndCustomerData = async () => {
       const accountID = await storage.getItem('accountID');
       try {
-        console.log(`Hello: ${accountID}`);
-        const response = await axios.get(`${BASE_URL}/bankcards/${28}/customer`);
+        const response = await axios.get(`${BASE_URL}/bankcards/${accountID}/customer`);
         const data = response.data;
 
         setCustomerDetails({
