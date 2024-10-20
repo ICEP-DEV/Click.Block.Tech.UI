@@ -69,7 +69,7 @@ useEffect(() => {
           showToastMsg('Successfully logged in');
             //inserting the accountID of the customer to be used in the home page
            setInputPin('');
-            navigation.navigate('Home')
+            navigation.navigate('Home');
           setIsLoading(false);
           
         } else {
@@ -137,7 +137,10 @@ useEffect(() => {
         </TouchableOpacity>
       )}
         </View>
-            
+        <TouchableOpacity style={styles.signupTxtBtn} onPress={ ()=>navigation.navigate('Registration')}>
+          <Text>Don't have an account?</Text>
+          <Text style={styles.signupTxt}>Sign up!</Text>
+        </TouchableOpacity>
       </View>
      
     </View>
