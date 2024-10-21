@@ -89,7 +89,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
 
   return (
     <LinearGradient colors={['#001F54', '#FFFFFF']} style={styles.background}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      
         <View style={styles.formContainer}>
           <View style={styles.stepContainer}>
             <View style={[styles.stepSquare, styles.activeStep]}>
@@ -207,7 +207,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+   
     </LinearGradient>
   );
 };
@@ -233,8 +233,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
-    width: '100%',
     alignItems: 'center',
+    marginTop: 150,
+    margin: 20,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
