@@ -18,6 +18,10 @@ import OnboardingTwo from './screens/OnboardingTwo';
 import OnboardingThree from './screens/OnboardingThree';
 import LoginOrSignup from './screens/LoginOrSignup';
 import ActivateApp from './screens/activateApp_screen';
+import CardSettings from './screens/CardSettings';
+import UpdatePin from './screens/UpdatePin';
+import PinEntry from './screens/PinEntry';
+
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
@@ -66,7 +70,21 @@ export default  function App() {
           <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="VerifyApp" component={ActivateApp}  options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={NavigationBar}  options={{ headerShown: false }} />
-          
+          <Stack.Screen
+          name="CardSettings"
+          component={CardSettings}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UpdatePin"
+          component={UpdatePin}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PinEntry"
+          component={PinEntry} // Add the PinEntry screen here
+          options={{ headerShown: false }} 
+        />
           </Stack.Navigator>
       )}
     </NavigationContainer>
@@ -76,6 +94,4 @@ export default  function App() {
 
 
 
-      
-
-  
+    
