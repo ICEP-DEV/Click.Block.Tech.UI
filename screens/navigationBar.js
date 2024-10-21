@@ -21,7 +21,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         const isFocused = state.index === index;
 
         let iconName;
-        if (route.name === 'Home') iconName = 'home-outline';
+        if (route.name === 'Dashboard') iconName = 'home-outline';
         if (route.name === 'Manage') iconName = 'settings-outline';
         if (route.name === 'Notifications') iconName = 'notifications-outline';
         if (route.name === 'Transact') iconName = 'swap-horizontal-outline';
@@ -74,11 +74,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 const NavigationBar = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Dashboard"
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Dashboard" component={HomeScreen} />
       <Tab.Screen name="Manage" component={ManageCard} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
       <Tab.Screen name="Transact" component={TransactScreen} />
