@@ -17,12 +17,4 @@ const ManageStack = () => {
 
 export default ManageStack;
 
-import CardSettings from "./CardSettings";
-import UpdatePin from "./UpdatePin";
-
-// Inside your Stack Navigator
-<Stack.Navigator initialRouteName="CardSettings">
- 
-</Stack.Navigator>
-
 

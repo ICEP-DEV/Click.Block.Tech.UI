@@ -119,7 +119,7 @@ export default function ManageCard() {
             />
           </View>
 
-          <TouchableOpacity style={styles.option}>
+          <TouchableOpacity style={styles.option} onPress={()=>navigation.navigate('CardSettings')}> 
             <Text style={styles.optionText}>Card Settings</Text>
           </TouchableOpacity>
         </ScrollView>

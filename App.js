@@ -20,7 +20,7 @@ import LoginOrSignup from './screens/LoginOrSignup';
 import ActivateApp from './screens/activateApp_screen';
 import CardSettings from './screens/CardSettings';
 import UpdatePin from './screens/UpdatePin';
-import PinEntry from './screens/PinEntry';
+import PinEntry from './screens/pinEntry.js';
 
 
 // Create a Stack Navigator
