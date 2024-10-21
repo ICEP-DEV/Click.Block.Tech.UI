@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import CardSettings from './screens/CardSettings';
 import UpdatePin from './screens/UpdatePin';
-import PinEntry from './screens/pinEntry';
+import PinEntry from './screens/PinEntry';
 
 const Stack = createStackNavigator();
 

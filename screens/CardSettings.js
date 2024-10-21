@@ -36,6 +36,8 @@ export default function CardSettings() {
           <Text style={styles.cardType}>Debit Card</Text>
 
           {/* Card Options */}
+
+         
           <View style={styles.option}>
             <Text style={styles.optionText}>View Balance</Text>
             <Switch
@@ -47,6 +49,10 @@ export default function CardSettings() {
             />
           </View>
 
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PinEntry', { pinType: 'panic' })}>
+          <Text style={styles.optionText}>Create Panic PIN</Text>
+          </TouchableOpacity>
+          
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('UpdatePin')}>
             <Text style={styles.optionText}>Update PIN</Text>
           </TouchableOpacity>

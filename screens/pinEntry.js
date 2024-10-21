@@ -7,7 +7,7 @@ import BottomNavigation from './BottomNavigation'; // Import BottomNavigation
 export default function PinEntry() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { pinType } = route.params; // Access pinType passed from UpdatePin.js
+  const { pinType } = route.params || { pinType: 'panic' }; // Default to panic if pinType is not provided
 
   const handleBackPress = () => {
     navigation.goBack(); // Allow navigation back to the previous screen
@@ -24,7 +24,7 @@ export default function PinEntry() {
           <TouchableOpacity onPress={handleBackPress}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerText}>{`UPDATE ${pinType.toUpperCase()} PIN`}</Text>
+          <Text style={styles.headerText}>{`CREATE PANIC PIN`}</Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -33,21 +33,14 @@ export default function PinEntry() {
           <View style={styles.card}>
             <TextInput
               style={styles.input}
-              placeholder={`Enter your current ${pinType.toLowerCase()} PIN`}
+              placeholder={`Enter your new 5-digit panic PIN`}
               secureTextEntry
               keyboardType="numeric"
               maxLength={5}
             />
             <TextInput
               style={styles.input}
-              placeholder={`Choose your new 5-digit ${pinType.toLowerCase()} PIN`}
-              secureTextEntry
-              keyboardType="numeric"
-              maxLength={5}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm new PIN"
+              placeholder="Confirm new Panic PIN"
               secureTextEntry
               keyboardType="numeric"
               maxLength={5}
@@ -55,22 +48,21 @@ export default function PinEntry() {
 
             {/* Tips Section */}
             <View style={styles.tipsBox}>
-              <Text style={styles.tipsText}>Tips for a secure {pinType} PIN:</Text>
+              <Text style={styles.tipsText}>Tips for creating a secure Panic PIN:</Text>
               <Text style={styles.tip}>• Use a complex PIN</Text>
               <Text style={styles.tip}>• Avoid sequential numbers (e.g., 12345)</Text>
-              <Text style={styles.tip}>• Use a unique PIN for each account</Text>
-              <Text style={styles.tip}>• Avoid using easily guessable info (e.g., birthdates)</Text>
+              <Text style={styles.tip}>• Avoid easily guessable numbers (e.g., birthdates)</Text>
             </View>
 
             {/* Submit Button */}
             <TouchableOpacity style={styles.submitButton}>
-              <Text style={styles.submitButtonText}>{`Update ${pinType} PIN`}</Text>
+              <Text style={styles.submitButtonText}>{`Create Panic PIN`}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
       
-        {/* Bottom Navigation */}
+      {/* Bottom Navigation */}
       <BottomNavigation />
     </SafeAreaView>
   );
