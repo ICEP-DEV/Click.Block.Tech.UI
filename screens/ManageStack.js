@@ -10,8 +10,19 @@ const ManageStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ManageScreen" component={ManageScreen} />
       <Stack.Screen name="ManageCard" component={ManageCard} />
+      
     </Stack.Navigator>
   );
 };
 
 export default ManageStack;
+
+import CardSettings from "./CardSettings";
+import UpdatePin from "./UpdatePin";
+
+// Inside your Stack Navigator
+<Stack.Navigator initialRouteName="CardSettings">
+ 
+</Stack.Navigator>
+
+

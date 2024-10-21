@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, ScrollView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import BottomNavigation from './BottomNavigation';
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
+import NavigationBar from './navigationBar';
 
 const { width } = Dimensions.get('window');
 
-export default function CardSettings() {
+export default function CardSettings({navigation}) {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
-  const navigation = useNavigation(); // Access the navigation prop
+
 
   const toggleBalanceVisibility = () => {
     setIsBalanceVisible(prev => !prev);
@@ -68,7 +68,7 @@ export default function CardSettings() {
       </View>
 
       {/* Bottom Navigation */}
-      <BottomNavigation />
+      
     </SafeAreaView>
   );
 }

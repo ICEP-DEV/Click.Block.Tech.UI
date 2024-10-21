@@ -63,7 +63,7 @@ export default function PinEntry() {
       </View>
       
       {/* Bottom Navigation */}
-      <BottomNavigation />
+    
     </SafeAreaView>
   );
 }
