@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, ScrollView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native'; // Import navigation hook
-import NavigationBar from './navigationBar';
+
 
 const { width } = Dimensions.get('window');
 
@@ -20,7 +19,7 @@ export default function CardSettings({navigation}) {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => console.log('Back pressed')}>
+          <TouchableOpacity onPress={() => navigation.navigate('ManageScreen')}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.headerText}>CARD SETTINGS</Text>

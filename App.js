@@ -23,6 +23,7 @@ import UpdatePin from './screens/UpdatePin';
 import PinEntry from './screens/pinEntry.js';
 import PersonalInfoScreen from './screens/PersonalInfoScreen.js';
 import ManageCard from './screens/ManageCard.js';
+import ManageScreen from './screens/manageScreen.js';
 
 
 // Create a Stack Navigator
@@ -74,6 +75,7 @@ export default  function App() {
           <Stack.Screen name="Home" component={NavigationBar}  options={{ headerShown: false }} />
           <Stack.Screen name="PersonalInfoScreen" component={PersonalInfoScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="ManageCard" component={ManageCard}  options={{ headerShown: false }} />
+          <Stack.Screen name="ManageScreen" component={ManageScreen}  options={{ headerShown: false }} />
           <Stack.Screen
           name="CardSettings"
           component={CardSettings}

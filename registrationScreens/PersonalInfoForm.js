@@ -160,9 +160,11 @@ const PersonalInfoForm = ({ route, navigation }) => {
             setItems={setItems}
             placeholder="Select your country"
             style={styles.dropdown}
-            placeholderStyle={{ color: '#ccc' }}
+            placeholderStyle={{ color: '#02457A' }}
             textStyle={{ color: '#02457A' }}
             containerStyle={{ marginBottom: 15 }}
+        
+        
           />
 
           <TextInput
@@ -170,7 +172,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
             placeholder="Address Line 1"
             value={addressLine1}
             onChangeText={setAddressLine1}
-            placeholderTextColor="#ccc"
+            placeholderTextColor="#02457A"
           />
 
           <TextInput
@@ -178,7 +180,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
             placeholder="Address Line 2 (Optional)"
             value={addressLine2}
             onChangeText={setAddressLine2}
-            placeholderTextColor="#ccc"
+            placeholderTextColor="#02457A"
           />
 
           <View style={styles.rowContainer}>
@@ -187,7 +189,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
               placeholder="City"
               value={city}
               onChangeText={setCity}
-              placeholderTextColor="#ccc"
+              placeholderTextColor="#02457A"
             />
             <TextInput
               style={[styles.input, styles.halfInput]}
@@ -198,7 +200,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
                   setZipCode(text);
                 }
               }}
-              placeholderTextColor="#ccc"
+              placeholderTextColor="#02457A"
               keyboardType="numeric"
             />
           </View>
@@ -280,10 +282,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 15,
     color: '#02457A',
+    borderWidth: 2,
+    borderColor: "#02457A",
   },
   dropdown: {
     borderColor: '#ccc',
     borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#02457A",
   },
   dateContainer: {
     flexDirection: 'row',
