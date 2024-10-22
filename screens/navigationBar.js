@@ -10,6 +10,7 @@ import ManageStack from './ManageStack';
 import NotificationsScreen from './notificationsScreen';
 import TransactScreen from './transactScreen';
 import ManageCard from './ManageCard';
+import ManageScreen from './manageScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -65,7 +66,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       <TouchableOpacity style={styles.qrContainer}>
         <View style={styles.qrCircle}>
           <Ionicons name="qr-code-outline" size={24} color="white" />
-        </View>
+        </View> 
       </TouchableOpacity>
     </View>
   );
@@ -79,7 +80,7 @@ const NavigationBar = () => {
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="Dashboard" component={HomeScreen} />
-      <Tab.Screen name="Manage" component={ManageCard} />
+      <Tab.Screen name="Manage" component={ManageScreen} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
       <Tab.Screen name="Transact" component={TransactScreen} />
     </Tab.Navigator>

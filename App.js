@@ -21,6 +21,8 @@ import ActivateApp from './screens/activateApp_screen';
 import CardSettings from './screens/CardSettings';
 import UpdatePin from './screens/UpdatePin';
 import PinEntry from './screens/pinEntry.js';
+import PersonalInfoScreen from './screens/PersonalInfoScreen.js';
+import ManageCard from './screens/ManageCard.js';
 
 
 // Create a Stack Navigator
@@ -70,6 +72,8 @@ export default  function App() {
           <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="VerifyApp" component={ActivateApp}  options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={NavigationBar}  options={{ headerShown: false }} />
+          <Stack.Screen name="PersonalInfoScreen" component={PersonalInfoScreen}  options={{ headerShown: false }} />
+          <Stack.Screen name="ManageCard" component={ManageCard}  options={{ headerShown: false }} />
           <Stack.Screen
           name="CardSettings"
           component={CardSettings}

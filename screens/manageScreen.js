@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
-import styles from './style';
-import { useNavigation } from '@react-navigation/native'; // Import navigation hook
+import styles from './style';// Import navigation hook
 import { BASE_URL } from '../API/API';
 
-const custID_Nr = '1'; // Replace with the actual CustID_Nr
+ // Replace with the actual CustID_Nr
 
-const ManageScreen = () => {
+const ManageScreen = ({navigation}) => {
   const [firstName, setFirstName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigation = useNavigation(); // Use navigation hook
-
+  const storage = require('../async_storage');
   useEffect(() => {
     const fetchCustomerData = async () => {
+      const custID_Nr = await storage.getItem('CustID_Nr');
       try {
         const response = await axios.get(`${BASE_URL}get_customer/${custID_Nr}`);
         const customerData = response.data;
@@ -58,7 +57,7 @@ const ManageScreen = () => {
 
       {/* Content section with buttons */}
       <View style={styles.accountContainer}>
-        <TouchableOpacity style={styles.accountBox}>
+        <TouchableOpacity style={styles.accountBox} onPress={() => navigation.navigate('PersonalInfoScreen')}>
           <View style={styles.accountRow}>
             <Text style={styles.accountText}>PERSONAL INFORMATION</Text>
           </View>
