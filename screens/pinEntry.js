@@ -1,16 +1,100 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, StyleSheet, StatusBar, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, SafeAreaView, StyleSheet, StatusBar, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native'; // Use navigation and route hooks
 import BottomNavigation from './BottomNavigation'; // Import BottomNavigation
+import axios from 'axios'; // Add Axios for making HTTP requests
+import { BASE_URL } from '../API/API'; // Ensure BASE_URL is set correctly
+import storage from '../async_storage'; // Import your AsyncStorage functions
 
 export default function PinEntry() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { pinType } = route.params || { pinType: 'panic' }; // Default to panic if pinType is not provided
+  
+  const [custID_Nr, setCustID_Nr] = useState(null); // State for customer ID
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const { pinType } = route.params || { pinType: 'panic' }; // Get pinType from the navigation parameters
 
-  const handleBackPress = () => {
-    navigation.goBack(); // Allow navigation back to the previous screen
+  // Define the titles, placeholders, and tips based on the pinType
+  const pinDetails = {
+    remote: {
+      title: 'UPDATE REMOTE PIN',
+      placeholder: 'Enter your new 5-digit remote PIN',
+      confirmPlaceholder: 'Confirm new Remote PIN',
+      tips: [
+        'Use a complex PIN',
+        'Avoid sequential numbers (e.g., 12345)',
+        'Use a unique PIN for each account',
+      ],
+      submitButtonText: 'Update Remote PIN',
+      pinKey: 'loginPin', // This is where we update the LoginPin for Remote PIN
+    },
+    alert: {
+      title: 'UPDATE ALERT PIN',
+      placeholder: 'Enter your new 5-digit alert PIN',
+      confirmPlaceholder: 'Confirm new Alert PIN',
+      tips: [
+        'Use a complex PIN',
+        'Avoid easily guessable numbers (e.g., birthdates)',
+        'Use a unique PIN for each account',
+      ],
+      submitButtonText: 'Update Alert PIN',
+      pinKey: 'alertPin', // This is where we update the AlertPin
+    },
+  };
+
+  const selectedPin = pinDetails[pinType.toLowerCase()] || pinDetails.remote;
+
+  // Fetch custID_Nr from AsyncStorage
+  useEffect(() => {
+    const fetchCustID = async () => {
+      try {
+        const storedCustID = await storage.getItem('CustID_Nr'); // Get the custID_Nr from storage
+        if (storedCustID) {
+          setCustID_Nr(storedCustID); // Set customer ID in state
+        } else {
+          Alert.alert('Error', 'Customer ID not found. Please log in again.');
+        }
+      } catch (error) {
+        console.error('Failed to fetch CustID_Nr from storage:', error);
+        Alert.alert('Error', 'Unable to retrieve customer ID.');
+      }
+    };
+
+    fetchCustID();
+  }, []);
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    if (!custID_Nr) {
+      Alert.alert('Error', 'Customer ID is required.');
+      return;
+    }
+    if (newPin !== confirmPin) {
+      Alert.alert('Error', 'PINs do not match.');
+      return;
+    }
+
+    try {
+      // Prepare data to send to the backend
+      const updateData = {
+        [selectedPin.pinKey]: newPin,
+      };
+
+      // Send PUT request to the backend
+      const response = await axios.put(`${BASE_URL}customers/${custID_Nr}`, updateData);
+
+      if (response.status === 200) {
+        Alert.alert('Success', 'PIN updated successfully');
+        navigation.goBack(); // Go back to the previous screen
+      } else {
+        Alert.alert('Error', 'Failed to update PIN.');
+      }
+    } catch (error) {
+      console.error('Error updating PIN:', error);
+      Alert.alert('Error', 'An error occurred while updating the PIN.');
+    }
   };
 
   return (
@@ -21,10 +105,10 @@ export default function PinEntry() {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={handleBackPress}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerText}>{`CREATE PANIC PIN`}</Text>
+          <Text style={styles.headerText}>{selectedPin.title}</Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -33,37 +117,41 @@ export default function PinEntry() {
           <View style={styles.card}>
             <TextInput
               style={styles.input}
-              placeholder={`Enter your new 5-digit panic PIN`}
+              placeholder={selectedPin.placeholder}
               secureTextEntry
               keyboardType="numeric"
               maxLength={5}
+              value={newPin}
+              onChangeText={setNewPin}
             />
             <TextInput
               style={styles.input}
-              placeholder="Confirm new Panic PIN"
+              placeholder={selectedPin.confirmPlaceholder}
               secureTextEntry
               keyboardType="numeric"
               maxLength={5}
+              value={confirmPin}
+              onChangeText={setConfirmPin}
             />
 
             {/* Tips Section */}
             <View style={styles.tipsBox}>
-              <Text style={styles.tipsText}>Tips for creating a secure Panic PIN:</Text>
-              <Text style={styles.tip}>• Use a complex PIN</Text>
-              <Text style={styles.tip}>• Avoid sequential numbers (e.g., 12345)</Text>
-              <Text style={styles.tip}>• Avoid easily guessable numbers (e.g., birthdates)</Text>
+              <Text style={styles.tipsText}>Tips for a secure PIN:</Text>
+              {selectedPin.tips.map((tip, index) => (
+                <Text key={index} style={styles.tip}>• {tip}</Text>
+              ))}
             </View>
 
             {/* Submit Button */}
-            <TouchableOpacity style={styles.submitButton}>
-              <Text style={styles.submitButtonText}>{`Create Panic PIN`}</Text>
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+              <Text style={styles.submitButtonText}>{selectedPin.submitButtonText}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
       
       {/* Bottom Navigation */}
-    
+      <BottomNavigation />
     </SafeAreaView>
   );
 }
