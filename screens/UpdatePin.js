@@ -46,13 +46,10 @@ export default function UpdatePin() {
             <Text style={styles.optionText}>Alert PIN</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PinEntry', { pinType: 'Panic' })}>
-            <Text style={styles.optionText}>Create Panic PIN</Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
 
-      {/* Bottom Navigation */}
+     
       
     </SafeAreaView>
   );
