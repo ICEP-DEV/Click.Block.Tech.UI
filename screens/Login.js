@@ -1,151 +1,158 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import LottieView from 'lottie-react-native';
-import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ToastAndroid, StyleSheet, Image, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { BASE_URL } from '../API/API';
-// `navigation` is passed as a prop when using React Navigation
 
-export default function Login ({ navigation }){
-const [inputPin, setInputPin] = useState('');
-const [isLoading, setIsLoading] = useState(false);
-const [accNumber, setAccNumber] = useState(0);
-const [userLoading, setUserLoading] = useState(false);
-const [customerName, setCustomerName] = useState('');
-const storage = require('../async_storage');
-const showToastMsg= (msg) => {
-  ToastAndroid.showWithGravity(
-    msg,
-    ToastAndroid.SHORT,
-    ToastAndroid.CENTER,
-  );
-};
-useEffect(() => {
-  const fetchData = async () => {
-    const value = await storage.getItem('accountNumber'); 
+export default function Login ({ navigation }) {
+  const [inputPin, setInputPin] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [accNumber, setAccNumber] = useState(0);
+  const [userLoading, setUserLoading] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const storage = require('../async_storage');
 
-    if(value !== null){
-      setAccNumber(value)
-    }
+  const showToastMsg = (msg) => {
+    ToastAndroid.showWithGravity(
+      msg,
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
   };
-  fetchData();
-  
-}, []);
 
-useEffect(() => {
-  const fetchCustomerAndAccountData = async () => {
-    try {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const value = await storage.getItem('accountNumber');
+        if (value !== null) {
+          setAccNumber(value);
+        }
+      } catch (error) {
+        console.error('Error fetching account number:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
-      setUserLoading(true);
-      const value = await storage.getItem('CustID_Nr'); 
-      const response = await axios.get(`${BASE_URL}get_customer/${value}`);
-      const customerData = response.data;
-      
-      if(customerData){
-    
-        setCustomerName(customerData.FirstName);
+  useEffect(() => {
+    const fetchCustomerAndAccountData = async () => {
+      try {
+        setUserLoading(true);
+        const value = await storage.getItem('CustID_Nr');
+        if (value) {
+          const response = await axios.get(`${BASE_URL}get_customer/${value}`);
+          const customerData = response.data;
+          if (customerData) {
+            setCustomerName(customerData.FirstName);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching customer or account data:', error);
+      } finally {
         setUserLoading(false);
       }
-      
-    } catch (error) {
-      console.error('Error fetching customer or account data:', error);
-      setUserLoading(false);
-    }
-  };
+    };
+    fetchCustomerAndAccountData();
+  }, []);
 
-  fetchCustomerAndAccountData();
-  
-}, []);
-
-  async function  handleLogin (){
+  const handleLogin = async () => {
+    // Dismiss the keyboard when the user submits the pin
+    Keyboard.dismiss();
     setIsLoading(true);
-    console.log(inputPin);
-    //fetching user account data using account number
-    if(inputPin){
-      await axios.get(`${BASE_URL}get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
-        const userData = response.data;
-        console.log(userData);
-        //check if the user data is not null
-        if (userData) {
-          showToastMsg('Successfully logged in');
-            //inserting the accountID of the customer to be used in the home page
-           setInputPin('');
-            navigation.navigate('Home');
-          setIsLoading(false);
-          
-        } else {
-          showToastMsg('Wrong remote pin');
-          setIsLoading(false);
-         
-        }
-        }).catch((error)=>{
+    try {
+      if (!inputPin) {
+        showToastMsg('Please provide your remote Pin');
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await axios.get(`${BASE_URL}get_customer_byID/${accNumber}/${inputPin}`);
+      const userData = response.data;
+      if (userData) {
+        showToastMsg('Successfully logged in');
+        setInputPin('');
+        navigation.navigate('Home');
+      } else {
+        showToastMsg('Wrong remote pin');
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
         console.error('Error fetching data:', error.response.data);
-      });
-    }else{
-      showToastMsg('Please provide your remote Pin')
+        showToastMsg('Error: ' + (error.response.data.message || 'Failed to log in'));
+      } else {
+        console.error('Error fetching data:', error.message);
+        showToastMsg('An error occurred. Please try again.');
+      }
+    } finally {
       setIsLoading(false);
     }
-   
-   
   };
+
   const handleForgotPin = () => {
     alert('Forgot PIN clicked');
   };
 
   return (
-    <View style={styles.container}>
-   
-      <Image
-        source={require('../assets/Logo.png')}
-        style={styles.logo}
-      />
-      <View style={styles.background} />
-      <View style={styles.card}>
-      
-        <Image
-          source={require('../assets/user.png')}
-          style={styles.user}
-          resizeMode="contain"
-        />
-       {
-        userLoading ? (<ActivityIndicator size="large" color="#0000ff" /> ):
-        (<View style={styles.greetingsContainer}>
-          <Text style={styles.greeting1}>WELCOME BACK,</Text>
-          <Text style={styles.greeting2}>{customerName.toUpperCase()}</Text>
-        </View>)
-       } 
-        <Text style={styles.label}>Enter Remote Pin</Text>
-        <TextInput
-          style={styles.input}
-          value={inputPin}
-          secureTextEntry
-          keyboardType="numeric"
-          placeholder="Remote pin"
-          onChangeText={setInputPin}
-        />
-        <View style={styles.forgotPinContainer}>
-          <TouchableOpacity onPress={()=>handleForgotPin}>
-            <Text style={styles.forgotPin}>Forgot PIN</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      >
+        <Image source={require('../assets/Logo.png')} style={styles.logo} />
+        <View style={styles.background} />
+        <View style={styles.card}>
+          <Image
+            source={require('../assets/user.png')}
+            style={styles.user}
+            resizeMode="contain"
+          />
+          {userLoading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <View style={styles.greetingsContainer}>
+              <Text style={styles.greeting1}>WELCOME BACK,</Text>
+              <Text style={styles.greeting2}>{customerName.toUpperCase()}</Text>
+            </View>
+          )}
+          <Text style={styles.label}>Enter Remote Pin</Text>
+          <TextInput
+            style={styles.input}
+            value={inputPin}
+            secureTextEntry
+            keyboardType="numeric"
+            placeholder="Remote pin"
+            onChangeText={setInputPin}
+            onSubmitEditing={handleLogin} // Dismiss keyboard when user presses 'submit' on keyboard
+          />
+          <View style={styles.forgotPinContainer}>
+            <TouchableOpacity onPress={handleForgotPin}>
+              <Text style={styles.forgotPin}>Forgot PIN</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.bottomContainer}>
+            {isLoading ? (
+              <LottieView
+                style={{ width: 100, height: 100, alignItems: 'center', marginBottom: 45 }}
+                source={require('../assets/lottie_animation_icons/loading_anim_icon.json')}
+                autoPlay
+                loop
+              />
+            ) : (
+              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Login</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <TouchableOpacity style={styles.signupTxtBtn} onPress={() => navigation.navigate('Registration')}>
+            <Text>Don't have an account?</Text>
+            <Text style={styles.signupTxt}>Sign up!</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.bottomContainer}>
-          
-          {isLoading ? (
-        <LottieView style={{ width: 100, height: 100,alignItems: 'center', marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
-      ) : (
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Login</Text>
-        </TouchableOpacity>
-      )}
-        </View>
-        <TouchableOpacity style={styles.signupTxtBtn} onPress={ ()=>navigation.navigate('Registration')}>
-          <Text>Don't have an account?</Text>
-          <Text style={styles.signupTxt}>Sign up!</Text>
-        </TouchableOpacity>
-      </View>
-     
-    </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -156,11 +163,10 @@ const styles = StyleSheet.create({
   },
   signupTxtBtn: {
     flexDirection: 'row',
-    
   },
-  signupTxt:{
+  signupTxt: {
     marginLeft: 5,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   logo: {
     width: 108,
@@ -199,9 +205,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#02457A',
     zIndex: -1,
   },
-  greetingsContainer:{
+  greetingsContainer: {
     alignItems: 'center',
-    
   },
   greeting1: {
     fontSize: 14,
@@ -221,7 +226,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 1,
   },
-  
   label: {
     fontSize: 16,
     color: '#02457A',
