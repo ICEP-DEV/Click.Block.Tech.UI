@@ -10,6 +10,7 @@ import VerifyEmailScreen from './registrationScreens/VerifyEmailScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import TermsScreen from './registrationScreens/TermsScreen';
 import Login from './screens/Login';
+import SavingsAccount from './screens/savingsAccount';  
 import IdentityVerificationScreen from './screens/IdentityVerificationScreen';
 import EmailVerificationScreen from './registrationScreens/RegistrationSuccessScreen'; 
 import LandingPage from './screens/LandingPage';
@@ -40,7 +41,7 @@ export default  function App() {
       const value = await storage.getItem('accountNumber'); 
       console.log(value);
       if(value !== null){
-        setRoute('Login');
+        setRoute('Home');
         setIsLoading(false);
       }else{       
          setRoute('LandingPage');
@@ -76,6 +77,7 @@ export default  function App() {
           <Stack.Screen name="PersonalInfoScreen" component={PersonalInfoScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="ManageCard" component={ManageCard}  options={{ headerShown: false }} />
           <Stack.Screen name="ManageScreen" component={ManageScreen}  options={{ headerShown: false }} />
+          <Stack.Screen name="SavingsAccount" component={SavingsAccount} options={{ headerShown: false }} />
           <Stack.Screen
           name="CardSettings"
           component={CardSettings}

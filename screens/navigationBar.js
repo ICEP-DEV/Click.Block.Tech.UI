@@ -11,6 +11,7 @@ import NotificationsScreen from './notificationsScreen';
 import TransactScreen from './transactScreen';
 import ManageCard from './ManageCard';
 import ManageScreen from './manageScreen';
+import PersonalInfoScreen from './PersonalInfoScreen';
 
 const Tab = createBottomTabNavigator();
 

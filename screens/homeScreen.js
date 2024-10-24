@@ -1,8 +1,11 @@
+// homeScreen.js
+
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 import styles from './style';
- 
+
 import accountIcon from '../assets/Homepage/account.png';
 import coinsIcon from '../assets/Homepage/coins.png';
 import loanIcon from '../assets/Homepage/loan.png';
@@ -13,38 +16,34 @@ import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
 import { BASE_URL } from '../API/API';
 
-const HomeScreen = () => { // Previously MainScreen
+const HomeScreen = () => {
   const [firstName, setFirstName] = useState('');
   const [accountType, setAccountType] = useState('');
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [accountID, setAccountID] = useState('');
   const storage = require('../async_storage');
-  //this function get the account ID in the local storage
- 
-    useEffect(() => {
-      const fetchCustomerAndAccountData = async () => {
-        
-        try {
-          const value = await storage.getItem('CustID_Nr'); 
-          const response = await axios.get(`${BASE_URL}get_customer/${value}`);
-          const customerData = response.data;
-          setFirstName(customerData.FirstName || '');
-          const accountType = customerData.BankAccount.AccountType || 'Savings';
-          const balance = customerData.BankAccount.Balance || 0;
-  
-          setAccountType(accountType.toUpperCase());
-          setBalance(balance);
-  
-          setLoading(false);
-        } catch (error) {
-          console.error('Error fetching customer or account data:', error);
-          setLoading(false);
-        }
-      };
-  
-      fetchCustomerAndAccountData();
-    }, []);
+  const navigation = useNavigation(); // Initialize navigation
+
+  // Fetch customer and account data
+  useEffect(() => {
+    const fetchCustomerAndAccountData = async () => {
+      try {
+        const value = await storage.getItem('CustID_Nr');
+        const response = await axios.get(`${BASE_URL}get_customer/${value}`);
+        const customerData = response.data;
+        setFirstName(customerData.FirstName || '');
+        setAccountType(customerData.BankAccount.AccountType || 'Savings');
+        setBalance(customerData.BankAccount.Balance || 0);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching customer or account data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchCustomerAndAccountData();
+  }, []);
+
   if (loading) {
     return (
       <View style={styles.fullScreenContainer}>
@@ -57,17 +56,20 @@ const HomeScreen = () => { // Previously MainScreen
     <View style={styles.fullScreenContainer}>
       <View style={styles.header}>
         <Image source={accountIcon} style={styles.accountIcon} />
-        <Text style={styles.greeting}> WELCOME BACK, </Text>
-<Text style={styles.greeting}>{firstName.toUpperCase()} </Text>
-        
+        <Text style={styles.greeting}>WELCOME BACK, </Text>
+        <Text style={styles.greeting}>{firstName.toUpperCase()}</Text>
         <Text style={styles.subGreeting}>How can we help you today?</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.accountContainer}>
-          <TouchableOpacity style={styles.accountBox}>
+          {/* Navigate to SavingsAccount.js when clicked */}
+          <TouchableOpacity 
+            style={styles.accountBox} 
+            onPress={() => navigation.navigate('SavingsAccount')}
+          >
             <View style={styles.accountRow}>
-              <Text style={styles.accountText}>{accountType} ACCOUNT</Text>
+              <Text style={styles.accountText}>{accountType.toUpperCase()} ACCOUNT</Text>
               <Image source={coinsIcon} style={styles.accountImage} />
             </View>
             <Text style={styles.balanceText}>Balance: R{balance.toFixed(2)}</Text>
