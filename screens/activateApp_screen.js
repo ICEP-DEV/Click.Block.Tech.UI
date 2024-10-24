@@ -33,8 +33,9 @@ export default function ActivateApp({navigation}){
             setAccountNumber('');
             //Inserting the account number of the customer to be stored for future verification
             storage.setItem('accountNumber',accountNumber);
-            //storing the account ID of the customer to the used on the next page
+            //Storing the customer ID number
             storage.setItem('CustID_Nr',userData._CustID_Nr);
+            //storing the account ID of the customer to the used on the next page
             storage.setItem('accountID',userData._AccountID);
             navigation.navigate('Home');
           } else {
