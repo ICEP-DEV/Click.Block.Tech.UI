@@ -53,7 +53,7 @@ export default function UpdatePin() {
       </View>
 
       {/* Bottom Navigation */}
-      <BottomNavigation />
+      
     </SafeAreaView>
   );
 }

@@ -9,8 +9,6 @@ const ManageStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ManageScreen" component={ManageScreen} />
-  
-      
     </Stack.Navigator>
   );
 };
