@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react'; 
+import { View, Text, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { BASE_URL } from '../API/API'; // Make sure the base URL is correctly defined
-import storage from '../async_storage'; // Import AsyncStorage functions for retrieving custID_Nr
+import { BASE_URL } from '../API/API';
+import storage from '../async_storage';
+import Icon from 'react-native-vector-icons/Ionicons'; // Importing Ionicons for back arrow
 
-const PersonalInfoScreen = () => {
-  const [customerData, setCustomerData] = useState(null); // State to hold customer data
-  const [loading, setLoading] = useState(true); // State for loading indicator
-  const [error, setError] = useState(null); // State for error handling
+const PersonalInfoScreen = ({ navigation }) => {
+  const [customerData, setCustomerData] = useState(null); 
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);
 
-  // Fetch customer details when the component mounts
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
-        const custID_Nr = await storage.getItem('CustID_Nr'); // Retrieve customer ID from AsyncStorage
+        const custID_Nr = await storage.getItem('CustID_Nr');
         if (!custID_Nr) {
           throw new Error('Customer ID not found. Please log in again.');
         }
 
-        const response = await axios.get(`${BASE_URL}get_customer/${custID_Nr}`); // Fetch customer details from backend
-        setCustomerData(response.data); // Store fetched data in state
-        setLoading(false); // Stop loading spinner
+        const response = await axios.get(`${BASE_URL}get_customer/${custID_Nr}`);
+        setCustomerData(response.data); 
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching customer data:', error);
         setError('Failed to load customer details. Please try again.');
-        setLoading(false); // Stop loading spinner in case of error
+        setLoading(false);
       }
     };
 
@@ -49,52 +49,61 @@ const PersonalInfoScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>MY DETAILS</Text>
-      <Text style={styles.subHeader}>Contact our support centre to update the details below.</Text>
-
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Fullname:</Text>
-        <TextInput 
-          style={styles.input} 
-          value={`${customerData.FirstName} ${customerData.LastName}`} 
-          editable={false} 
-        />
+      {/* Full-height header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>MY DETAILS</Text>
       </View>
 
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Email:</Text>
-        <TextInput 
-          style={styles.input} 
-          value={customerData.Email || ''} 
-          editable={false} 
-        />
-      </View>
+      <View style={styles.contentContainer}>
+        <Text style={styles.subHeader}>Contact our support centre to update the details below.</Text>
 
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Contact Details:</Text>
-        <TextInput 
-          style={styles.input} 
-          value={customerData.PhoneNumber || ''} 
-          editable={false} 
-        />
-      </View>
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Fullname:</Text>
+          <TextInput
+            style={styles.input}
+            value={`${customerData.FirstName} ${customerData.LastName}`}
+            editable={false}
+          />
+        </View>
 
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Date of Birth:</Text>
-        <TextInput 
-          style={styles.input} 
-          value={customerData.DateOfBirth || ''} 
-          editable={false} 
-        />
-      </View>
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Email:</Text>
+          <TextInput
+            style={styles.input}
+            value={customerData.Email || ''}
+            editable={false}
+          />
+        </View>
 
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Residential Address:</Text>
-        <TextInput 
-          style={styles.input} 
-          value={customerData.Address || ''} 
-          editable={false} 
-        />
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Contact Details:</Text>
+          <TextInput
+            style={styles.input}
+            value={customerData.PhoneNumber || ''}
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Date of Birth:</Text>
+          <TextInput
+            style={styles.input}
+            value={customerData.DateOfBirth || ''}
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Residential Address:</Text>
+          <TextInput
+            style={styles.input}
+            value={customerData.Address || ''}
+            editable={false}
+          />
+        </View>
       </View>
     </View>
   );
@@ -103,18 +112,41 @@ const PersonalInfoScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F5F5',
   },
+  // Full vertical header style
   header: {
+    backgroundColor: '#002f66',
+    width: '100%', // Full width
+    height: '15%', // Adjust height as needed (30% of screen height)
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute', // Sticks the header at the top
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1, // Ensures header stays on top
+  },
+  backButton: {
+    position: 'absolute',
+    left: 20,
+    top: 40,  // Adjust top to ensure it's not too close to the top edge
+  },
+  headerText: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  contentContainer: {
+    marginTop: '40%',  // Adds space to avoid overlapping with the header
+    paddingHorizontal: 20,
   },
   subHeader: {
     fontSize: 14,
-    color: 'gray',
+    color: '#333333',
     marginBottom: 20,
+    textAlign: 'center',
   },
   fieldContainer: {
     marginBottom: 15,
@@ -122,15 +154,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#003366',
     marginBottom: 5,
   },
   input: {
     fontSize: 16,
-    padding: 10,
+    padding: 15,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     backgroundColor: '#f2f2f2',
+    color: '#333333',
   },
   loadingContainer: {
     flex: 1,
@@ -140,3 +174,9 @@ const styles = StyleSheet.create({
 });
 
 export default PersonalInfoScreen;
+
+
+
+
+
+ 
