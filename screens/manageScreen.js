@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import styles from './style';// Import navigation hook
 import { BASE_URL } from '../API/API';
+import NavigationBar from './navigationBar';
 
  // Replace with the actual CustID_Nr
 
@@ -81,6 +82,7 @@ const ManageScreen = ({navigation}) => {
           <Text style={styles.balanceText}>Access and download electronic statements</Text>
         </TouchableOpacity>
       </View>
+      
     </View>
   );
 };
