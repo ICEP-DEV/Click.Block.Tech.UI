@@ -19,7 +19,7 @@ export default function CardSettings({navigation}) {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.navigate('ManageScreen')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.headerText}>CARD SETTINGS</Text>
