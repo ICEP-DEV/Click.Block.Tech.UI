@@ -25,6 +25,7 @@ import PinEntry from './screens/pinEntry.js';
 import PersonalInfoScreen from './screens/PersonalInfoScreen.js';
 import ManageCard from './screens/ManageCard.js';
 import ManageScreen from './screens/manageScreen.js';
+import CongratulationsScreen from './screens/CongratulationsScreen.js';
 
 
 // Create a Stack Navigator
@@ -41,7 +42,7 @@ export default  function App() {
       const value = await storage.getItem('accountNumber'); 
       console.log(value);
       if(value !== null){
-        setRoute('Home');
+        setRoute('Login');
         setIsLoading(false);
       }else{       
          setRoute('LandingPage');
@@ -78,6 +79,7 @@ export default  function App() {
           <Stack.Screen name="ManageCard" component={ManageCard}  options={{ headerShown: false }} />
           <Stack.Screen name="ManageScreen" component={ManageScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="SavingsAccount" component={SavingsAccount} options={{ headerShown: false }} />
+          <Stack.Screen name="Congratulations" component={CongratulationsScreen} options={{ headerShown: false }} />
           <Stack.Screen
           name="CardSettings"
           component={CardSettings}
