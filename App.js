@@ -10,6 +10,7 @@ import VerifyEmailScreen from './registrationScreens/VerifyEmailScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import TermsScreen from './registrationScreens/TermsScreen';
 import Login from './screens/Login';
+import SavingsAccount from './screens/savingsAccount';  
 import IdentityVerificationScreen from './screens/IdentityVerificationScreen';
 import EmailVerificationScreen from './registrationScreens/RegistrationSuccessScreen'; 
 import LandingPage from './screens/LandingPage';
@@ -24,6 +25,7 @@ import PinEntry from './screens/pinEntry.js';
 import PersonalInfoScreen from './screens/PersonalInfoScreen.js';
 import ManageCard from './screens/ManageCard.js';
 import ManageScreen from './screens/manageScreen.js';
+import CongratulationsScreen from './screens/CongratulationsScreen.js';
 
 
 // Create a Stack Navigator
@@ -76,6 +78,8 @@ export default  function App() {
           <Stack.Screen name="PersonalInfoScreen" component={PersonalInfoScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="ManageCard" component={ManageCard}  options={{ headerShown: false }} />
           <Stack.Screen name="ManageScreen" component={ManageScreen}  options={{ headerShown: false }} />
+          <Stack.Screen name="SavingsAccount" component={SavingsAccount} options={{ headerShown: false }} />
+          <Stack.Screen name="Congratulations" component={CongratulationsScreen} options={{ headerShown: false }} />
           <Stack.Screen
           name="CardSettings"
           component={CardSettings}
