@@ -48,8 +48,8 @@ export default function CardSettings({navigation}) {
             />
           </View>
 
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PinEntry', { pinType: 'panic' })}>
-          <Text style={styles.optionText}>Create Panic PIN</Text>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('CratePanicPin')}>
+          <Text style={styles.optionText}>Create Alert PIN</Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('UpdatePin')}>
