@@ -38,16 +38,12 @@ export default function UpdatePin() {
           <Text style={styles.cardType}>Debit Card</Text>
 
           {/* Buttons for Remote, Alert, and Panic PIN */}
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PinEntry', { pinType: 'Remote' })}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('UpdateRemotePin')}>
             <Text style={styles.optionText}>Remote PIN</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PinEntry', { pinType: 'Alert' })}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('UpdateAlertPin')}>
             <Text style={styles.optionText}>Alert PIN</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PinEntry', { pinType: 'Panic' })}>
-            <Text style={styles.optionText}>Create Panic PIN</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
