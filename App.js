@@ -26,6 +26,9 @@ import PersonalInfoScreen from './screens/PersonalInfoScreen.js';
 import ManageCard from './screens/ManageCard.js';
 import ManageScreen from './screens/manageScreen.js';
 import CongratulationsScreen from './screens/CongratulationsScreen.js';
+import CreatePanicPin from './screens/createPanicpin_screen.js';
+import UpdateRemotePin from './screens/update_remotePin_screen.js';
+import UpdateAlertPin from './screens/update_panicPin_screen.js';
 
 
 // Create a Stack Navigator
@@ -92,7 +95,22 @@ export default  function App() {
         />
         <Stack.Screen
           name="PinEntry"
-          component={PinEntry} // Add the PinEntry screen here
+          component={PinEntry} 
+          options={{ headerShown: false }} 
+        />
+         <Stack.Screen
+          name="CratePanicPin"
+          component={CreatePanicPin} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name="UpdateRemotePin"
+          component={UpdateRemotePin} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name="UpdateAlertPin"
+          component={UpdateAlertPin} 
           options={{ headerShown: false }} 
         />
           </Stack.Navigator>
