@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Linking, Alert, Image, ScrollView, Modal } from 'react-native';
 
@@ -62,17 +63,20 @@ const ContactUs = () => {
   };
 
   const getAIResponse = (message) => {
-    // Simple AI response logic (expand as needed)
     const responses = {
-      "hello": "Hi there! How can I help you today?",
-      "how can i contact support?": "You can contact support via phone or email.",
-      "what are your hours?": "We are available 9 AM to 5 PM, Monday to Friday.",
-      "help": null, // Null indicates escalation needed
+      "hello": "Hi there! How can I assist you with your banking needs today?",
+      "how can i contact support?": "You can contact our support team via phone or email.",
+      "what are your hours?": "Our banking hours are 9 AM to 5 PM, Monday to Friday.",
+      "i forgot my password": "Please use the 'Forgot Password' option on the login page to reset your password.",
+      "how can i check my account balance?": "You can check your account balance via our mobile app or online banking.",
+      "what should i do if my card is lost?": "Please call our support line immediately to report your lost card.",
+      "my card is blocked": "If your card is blocked, please contact our support team to resolve the issue and regain access.",
+      "how to apply for a loan?": "You can apply for a loan through our website or visit any of our branches.",
+      "help": null,
     };
 
-    // Convert message to lowercase for matching
     const lowerCaseMessage = message.toLowerCase();
-    return responses[lowerCaseMessage] || "I'm not sure how to help with that.";
+    return responses[lowerCaseMessage] || "I'm not sure how to help with that. A human agent will assist you shortly.";
   };
 
   const toggleChatbox = () => {
@@ -83,7 +87,10 @@ const ContactUs = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#0F0C29', '#16335D', '#1E5E98']}
+      style={styles.container}
+    >
       <Image source={require('../assets/Logo.png')} style={styles.logo} />
 
       <View style={styles.formContainer}>
@@ -125,10 +132,6 @@ const ContactUs = () => {
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.chatIcon} onPress={toggleChatbox}>
-          <Image source={require('../assets/chat.png')} style={styles.icon} />
-        </TouchableOpacity>
-
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={handlePhonePress}>
             <Image source={require('../assets/phone.png')} style={styles.icon} />
@@ -141,6 +144,10 @@ const ContactUs = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <TouchableOpacity style={styles.chatIcon} onPress={toggleChatbox}>
+        <Image source={require('../assets/chat.png')} style={styles.icon} />
+      </TouchableOpacity>
 
       <Modal
         animationType="slide"
@@ -176,7 +183,7 @@ const ContactUs = () => {
           </View>
         </View>
       </Modal>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -184,7 +191,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#02457a',
   },
   logo: {
     width: 100,
@@ -201,6 +207,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
+    marginBottom: 20, // Added margin for better spacing
   },
   header: {
     fontSize: 24,
@@ -256,12 +263,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   icon: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
   },
   chatIcon: {
-    alignSelf: 'flex-end',
-    marginVertical: 10,
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
   },
   modalContainer: {
     flex: 1,
