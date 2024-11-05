@@ -1,7 +1,7 @@
 // homeScreen.js
 
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text,Alert, View, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native'; // Import navigation hook
 import styles from './style';
@@ -15,6 +15,7 @@ import transferIcon from '../assets/Homepage/transfer.png';
 import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
 import { BASE_URL } from '../API/API';
+import useAlertStoreStore from '../stores/panicAlert_store';
 
 const HomeScreen = () => {
   const [firstName, setFirstName] = useState('');
@@ -23,22 +24,62 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const storage = require('../async_storage');
   const navigation = useNavigation(); // Initialize navigation
+  const panicAlert = useAlertStoreStore((state)=>state.isAlertTriggered);
 
+ 
   // Fetch customer and account data
   useEffect(() => {
     const fetchCustomerAndAccountData = async () => {
-      try {
-        const value = await storage.getItem('CustID_Nr');
-        const response = await axios.get(`${BASE_URL}get_customer/${value}`);
-        const customerData = response.data;
-        setFirstName(customerData.FirstName || '');
-        setAccountType(customerData.BankAccount.AccountType || 'Savings');
-        setBalance(customerData.BankAccount.Balance || 0);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching customer or account data:', error);
-        setLoading(false);
+      if(panicAlert){
+        Alert.alert(
+          'Network Error',
+          'Please try logging out and try again.',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                
+                navigation.navigate('Login')
+
+              } ,
+              style: 'cancel',
+            },
+          ],
+          {
+            cancelable: false,
+            onDismiss: () =>
+              Alert.alert(
+                'This alert was dismissed by tapping outside of the alert dialog.',
+              ),
+          },
+        );
+        try {
+          const value = await storage.getItem('CustID_Nr');
+          const response = await axios.get(`${BASE_URL}get_customer/${value}`);
+          const customerData = response.data;
+          setFirstName(customerData.FirstName || '');
+          setAccountType(customerData.BankAccount.AccountType || 'Savings');
+          setBalance(customerData.BankAccount.Balance || 0);
+          setLoading(false);
+        } catch (error) {
+          console.error('Error fetching customer or account data:', error);
+          setLoading(false);
+        }
+      }else{
+        try {
+          const value = await storage.getItem('CustID_Nr');
+          const response = await axios.get(`${BASE_URL}get_customer/${value}`);
+          const customerData = response.data;
+          setFirstName(customerData.FirstName || '');
+          setAccountType(customerData.BankAccount.AccountType || 'Savings');
+          setBalance(customerData.BankAccount.Balance || 0);
+          setLoading(false);
+        } catch (error) {
+          console.error('Error fetching customer or account data:', error);
+          setLoading(false);
+        }
       }
+      
     };
 
     fetchCustomerAndAccountData();
@@ -72,7 +113,10 @@ const HomeScreen = () => {
               <Text style={styles.accountText}>{accountType.toUpperCase()} ACCOUNT</Text>
               <Image source={coinsIcon} style={styles.accountImage} />
             </View>
-            <Text style={styles.balanceText}>Balance: R{balance.toFixed(2)}</Text>
+            {
+              panicAlert ? (<Text style={styles.balanceText}>Balance: R25.50</Text>) : <Text style={styles.balanceText}>Balance: R{balance.toFixed(2)}</Text>
+            }
+            
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.accountBox}>

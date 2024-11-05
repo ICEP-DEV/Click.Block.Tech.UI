@@ -16,6 +16,13 @@ storageFunc = {
     } catch (error) {
       console.error('Error setting item:', error);
     }
+  },
+  removeItem: async (key) => {
+    try {
+      await AsyncStorage.removeItem(key);
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
   }
 }
  

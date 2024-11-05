@@ -3,6 +3,9 @@ import axios from "axios";
 import LottieView from 'lottie-react-native';
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { BASE_URL } from '../API/API';
+import * as Location from 'expo-location';
+import useLocationStore from '../stores/location_store';
+import useAlertStoreStore from '../stores/panicAlert_store';
 // `navigation` is passed as a prop when using React Navigation
 
 export default function Login ({ navigation }){
@@ -11,6 +14,26 @@ const [isLoading, setIsLoading] = useState(false);
 const [accNumber, setAccNumber] = useState(0);
 const [userLoading, setUserLoading] = useState(false);
 const [customerName, setCustomerName] = useState('');
+const [isPanicTriggered, setIsPanicTriggered] = useState(false);
+const [customerAccID, setCustomerAccID] =useState('');
+const [customerIDNr,setCustomerIDNr] = useState('');
+//Location
+const [errMsg, setErrMsg] = useState('');
+const permissionNotGranted = useLocationStore((state) => state.notGrantPermission);
+const permissionGranted = useLocationStore((state) => state.grantPermission);
+const alertTriggered = useAlertStoreStore((state)=> state.triggerAlert);
+const reset = useAlertStoreStore((state)=> state.reset);
+
+const [streetAddress, setStreetAddress] = useState('');
+const [suburb,setSuburb] = useState('');
+const [city, setCity] = useState('');
+const [province,setProvince] = useState('');
+const [postalCode, setPostalCode] = useState('');
+const [country, setCountry] = useState('');
+const [latitude, setLatitude] = useState('');
+const [longitude, setLongitude] = useState('');
+const [locationID, setLocationID] = useState('');
+
 const storage = require('../async_storage');
 const showToastMsg= (msg) => {
   ToastAndroid.showWithGravity(
@@ -19,9 +42,57 @@ const showToastMsg= (msg) => {
     ToastAndroid.CENTER,
   );
 };
+
+//Get location
+const getUserLocation = async () =>{
+  //If user does not grant permission
+  try{
+      let {status} = await Location.requestForegroundPermissionsAsync();
+      if(status !== 'granted'){
+          setErrMsg('not granted!');
+          //set is permission granted to false
+          permissionNotGranted();
+          console.log('Permission is not granted from the hook');
+      }else if (status === 'granted'){
+          setErrMsg('granted');
+          //set is permission granted to true
+          permissionGranted();
+          console.log('Permission is granted from the hook');
+      }
+      //If user grands us permission
+      let {coords} = await Location.getCurrentPositionAsync();
+      if ({coords}){
+          const {latitude, longitude} = coords;
+          console.log("lat and long is: ", latitude, longitude);
+          setLatitude(latitude);
+          setLongitude(longitude);
+          let response = await Location.reverseGeocodeAsync({
+              latitude,
+              longitude
+          });
+          console.log("User Location: ",response);
+          //setting location information
+          setStreetAddress(response[0].formattedAddress);
+          setSuburb(response[0].subregion);
+          setCountry(response[0].country);
+          setProvince(response[0].region);
+          setCity(response[0].city);
+          setPostalCode(response[0].postalCode);
+
+
+      } 
+  }catch(err){
+      console.log('inside err')
+      console.log(err);
+      setErrMsg('not granted');
+  }
+  
+}
+
+//Fetching customer account number to be used when logging in
 useEffect(() => {
   const fetchData = async () => {
-    const value = await storage.getItem('accountNumber'); 
+    const value = await storage.getItem('accountNumber');
 
     if(value !== null){
       setAccNumber(value)
@@ -31,21 +102,22 @@ useEffect(() => {
   
 }, []);
 
+//Fetching customer information to be displayed on the login screen
 useEffect(() => {
   const fetchCustomerAndAccountData = async () => {
     try {
-
       setUserLoading(true);
       const value = await storage.getItem('CustID_Nr'); 
       const response = await axios.get(`${BASE_URL}get_customer/${value}`);
       const customerData = response.data;
+      setCustomerIDNr(value);
       
       if(customerData){
-    
         setCustomerName(customerData.FirstName);
+        //set customer Account ID to be used to disable account of the customer where the Alert PIN is triggered
+        setCustomerAccID(customerData.AccountID);
         setUserLoading(false);
       }
-      
     } catch (error) {
       console.error('Error fetching customer or account data:', error);
       setUserLoading(false);
@@ -58,32 +130,130 @@ useEffect(() => {
 
   async function  handleLogin (){
     setIsLoading(true);
-    console.log(inputPin);
-    //fetching user account data using account number
-    if(inputPin){
-      await axios.get(`${BASE_URL}get_customer_byID/${accNumber}/${inputPin}`,).then((response)=>{
-        const userData = response.data;
-        console.log(userData);
-        //check if the user data is not null
-        if (userData) {
-          showToastMsg('Successfully logged in');
-            //inserting the accountID of the customer to be used in the home page
-           setInputPin('');
-            navigation.navigate('Home');
-          setIsLoading(false);
-          
-        } else {
-          showToastMsg('Wrong remote pin');
-          setIsLoading(false);
-         
+    try{
+      const response = await axios.get(`${BASE_URL}compare_alertPIN/${accNumber}/${inputPin}`,);
+      console.log('next');
+      //If the entered PIN matched the alert PIN it returns true
+      const userData = response.data;
+      if (userData) {
+        //get location
+        getUserLocation();
+        //set the IsPanicTriggered to true
+      
+     
+        //Enabling the Panic Button Status
+        const updateData = {
+          "PanicButtonStatus": `1`
         }
-        }).catch((error)=>{
-        console.error('Error fetching data:', error.response.data);
-      });
-    }else{
-      showToastMsg('Please provide your remote Pin')
-      setIsLoading(false);
+        try{
+          //updating the panic button status
+          const response = await axios.put(`${BASE_URL}update_PanicStatus/${customerIDNr}`,updateData);
+          const res = response.data;
+          if(res){
+            console.log(res);
+          }
+        }catch(err){
+          console.log('error updating Panic Button Status');
+        }
+         //Disabling the customer Account status
+         const updateAccountData = {
+          "isActive": `0`
+        }
+         try{
+          //updating the account status
+          const response = await axios.put(`${BASE_URL}update_accountStatus/${customerAccID}`,updateAccountData);
+          const res = response.data;
+          if(res){
+            console.log(res);
+          }
+        }catch(err){
+          console.log('error updating account status');
+        }
+        //Setting location Data
+        const locationData = {
+          "StreetAddress": `${streetAddress}`,
+          "Suburb": `${suburb}`,
+          "City": `${city}`,
+          "Province": `${province}`,
+          "PostalCode": `${postalCode}`,
+          "Country": `${country}`,
+          "latitude": `${latitude}`,
+          "longitude": `${longitude}`
+        }
+        //creating location
+        try{
+          const response = await axios.post(`${BASE_URL}createLocation`,locationData);
+          const result = response.data;
+          if(result){
+            setLocationID(result.id);
+          console.log(`location infromation: ${result.id}`);
+          }
+    
+         
+        }catch(err){
+          console.log('error creating Location');
+        }
+        //setting Alert Data
+        const sentDate = Date.now();
+        const alertData = {
+          "CustID_Nr": `${customerIDNr}`,
+          "AlertType": `PanicAlert`,
+          "SentDate": `${sentDate}`,
+          "LocationID": `${locationID}`,
+          "Receiver": `Admin`,
+          "Message": `Alert button is triggered`,
+        }
+
+        //creating Alert
+        try{
+          const response = await axios.post(`${BASE_URL}createAlert`,alertData);
+          const result = response.data;
+    
+         
+        }catch(err){
+          console.log('error creating Alert');
+        }
+        
+        console.log('The alert PIN is triggered');
+        alertTriggered();
+        navigation.navigate('Home');
+        setIsLoading(false);
+      }else{
+        //if the entered PIN does not match with the Alert PIN check for the remote PIN
+        if(inputPin){
+          reset();
+         try{
+          const response =  await axios.get(`${BASE_URL}get_customer_byID/${accNumber}/${inputPin}`,);
+            const userData = response.data;
+            console.log(userData);
+            //check if the user data is not null
+            if (userData) {
+              showToastMsg('Successfully logged in');
+                //inserting the accountID of the customer to be used in the home page
+               setInputPin('');
+                navigation.navigate('Home');
+              setIsLoading(false);
+              
+            } else {
+              showToastMsg('Wrong remote pin');
+              setIsLoading(false);
+             
+            }
+         }catch(err){
+          Alert.alert('Error', 'An error occurred. Please try again.');
+         }
+          
+        }else{
+          showToastMsg('Please provide your remote Pin')
+          setIsLoading(false);
+        }
+      }
+    }catch(err){
+      
+      Alert.alert('Error', 'An error occurred while comparing PINs. Please try again.');
     }
+    //fetching user account data using account number
+    
    
    
   };
