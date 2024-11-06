@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // For gradient background
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-export default function PanicButton({ navigation }) { // Add navigation as a prop
+export default function PanicButton({ navigation }) {
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
 
   const handleSubmit = () => {
     if (pin === confirmPin && pin.length === 5) {
-      alert('Panic PIN set successfully');
+      Alert.alert(
+        "Success",
+        "Panic PIN set successfully",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("SecurityFeatures"),
+          }
+        ]
+      );
     } else {
-      alert('PINs do not match or are not 5 digits');
+      Alert.alert("Error", "PINs do not match or are not 5 digits");
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Gradient Header */}
-      <LinearGradient
-        colors={['#002F66', '#02457A']}
-        style={styles.headerContainer}
-      >
+      <LinearGradient colors={['#002F66', '#02457A']} style={styles.headerContainer}>
         <Text style={styles.header}>SECURITY FEATURE</Text>
       </LinearGradient>
 
-      {/* Main Form */}
       <View style={styles.card}>
         <Text style={styles.subHeader}>PANIC BUTTON FEATURE</Text>
         <Image source={require('../assets/card.png')} style={styles.image} />
@@ -49,7 +53,6 @@ export default function PanicButton({ navigation }) { // Add navigation as a pro
           onChangeText={setConfirmPin}
         />
 
-        {/* Make the link text clickable */}
         <TouchableOpacity onPress={() => navigation.navigate('HowItWorks')}>
           <Text style={styles.linkText}>How does it work?</Text>
         </TouchableOpacity>
@@ -59,12 +62,11 @@ export default function PanicButton({ navigation }) { // Add navigation as a pro
         </TouchableOpacity>
       </View>
 
-      {/* Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerIcon}><Text>Home</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.footerIcon}><Text>Manage</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.footerIcon}><Text>Notifications</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.footerIcon}><Text>Transact</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.footerIcon}><Text style={styles.footerText}>Home</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.footerIcon}><Text style={styles.footerText}>Manage</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.footerIcon}><Text style={styles.footerText}>Notifications</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.footerIcon}><Text style={styles.footerText}>Transact</Text></TouchableOpacity>
       </View>
     </View>
   );
@@ -94,8 +96,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
-    elevation: 5, // For shadow in Android
-    shadowColor: '#000', // For shadow in iOS
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -157,6 +159,9 @@ const styles = StyleSheet.create({
   },
   footerIcon: {
     alignItems: 'center',
+  },
+  footerText: {
     color: '#fff',
+    fontSize: 16,
   },
 });
