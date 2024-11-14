@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Alert,ToastAndroid } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -14,6 +14,13 @@ const VerifyEmailScreen = () => {
   const route = useRoute();
   const { Email } = route.params; // Assuming email is passed from the previous page
   const {CustID_Nr} = route.params;
+  const showToastMsg= (msg) => {
+    ToastAndroid.showWithGravity(
+      msg,
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
+  };
 
   // Handle verification code change
   const handleCodeChange = (text) => {
@@ -41,7 +48,7 @@ const VerifyEmailScreen = () => {
 
     } catch (error) {
       console.error('Error verifying OTP:', error.response.data);
-      Alert.alert('Error', 'Failed to verify email: ' + error.message); // Show error alert
+      showToastMsg('Failed to verify email: '); // Show error toast
     }
   };
 
