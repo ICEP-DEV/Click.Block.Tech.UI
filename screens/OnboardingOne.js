@@ -11,7 +11,7 @@ const loadFonts = async () => {
         'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
     });
 };
-
+//OPM - Onboarding One
 const OnboardingOne = () => {
     
     //OPM - Declare here
