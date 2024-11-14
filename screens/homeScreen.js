@@ -31,35 +31,14 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchCustomerAndAccountData = async () => {
       if(panicAlert){
-        Alert.alert(
-          'Network Error',
-          'Please try logging out and try again.',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => {
-                
-                navigation.navigate('Login')
-
-              } ,
-              style: 'cancel',
-            },
-          ],
-          {
-            cancelable: false,
-            onDismiss: () =>
-              Alert.alert(
-                'This alert was dismissed by tapping outside of the alert dialog.',
-              ),
-          },
-        );
         try {
           const value = await storage.getItem('CustID_Nr');
           const response = await axios.get(`${BASE_URL}get_customer/${value}`);
           const customerData = response.data;
           setFirstName(customerData.FirstName || '');
           setAccountType(customerData.BankAccount.AccountType || 'Savings');
-          setBalance(customerData.BankAccount.Balance || 0);
+          const randomBalance = Math.floor(Math.random() * (50 - 10) ) + 10;
+          setBalance(randomBalance);
           setLoading(false);
         } catch (error) {
           console.error('Error fetching customer or account data:', error);
@@ -113,10 +92,7 @@ const HomeScreen = () => {
               <Text style={styles.accountText}>{accountType.toUpperCase()} ACCOUNT</Text>
               <Image source={coinsIcon} style={styles.accountImage} />
             </View>
-            {
-              panicAlert ? (<Text style={styles.balanceText}>Balance: R25.50</Text>) : <Text style={styles.balanceText}>Balance: R{balance.toFixed(2)}</Text>
-            }
-            
+              <Text style={styles.balanceText}>Balance: R{balance.toFixed(2)}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.accountBox}>
