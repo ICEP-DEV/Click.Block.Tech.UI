@@ -48,7 +48,7 @@ export default function CreatePanicPin({navigation}) {
           };
       
           fetchCustID();
-        }, []);
+        }, [isPermissionGranted]);
       
         // Handle create Alert pin
         const handleSubmit = async () => {
