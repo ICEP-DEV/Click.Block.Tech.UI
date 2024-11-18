@@ -31,51 +31,51 @@ const PinEntry = () => {
 
   return (
     <View style={styles.container}>
-      {!approved ? (
-        <View style={styles.pinBox}>
-          {!loading ? (
-            <>
-              <Text style={styles.notificationText}>
-                A withdrawal of R500 at Soshanguve Crossing is awaiting your approval.
-              </Text>
-              <Text style={styles.pinTitle}>Enter PIN</Text>
-              <TextInput
-                style={styles.pinInput}
-                secureTextEntry
-                keyboardType="numeric"
-                value={pin}
-                onChangeText={setPin}
-                placeholder="Enter 5-digit PIN"
-                maxLength={5} // Set the PIN input to allow 5 digits
-              />
-              <TouchableOpacity onPress={handlePinSubmit} style={styles.submitButton}>
-                <Text style={styles.buttonText}>Submit</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            // Show loading indicator while waiting
-            <ActivityIndicator size="large" color="#007aff" />
-          )}
-        </View>
-      ) : (
-        // This is where the success message appears after correct PIN is entered
-        <View style={styles.approvedBox}>
-          <Text style={styles.approvedTitle}>TRANSACTION APPROVED</Text>
-          <Text style={styles.approvedText}>
-            Your transaction of R500 has been approved {currentDateTime}. Take your money out at an ATM and start spending.
-          </Text>
-          <TouchableOpacity
-            onPress={() => navigation.reset({
-              index: 0, // Start at the first screen of the stack
-              routes: [{ name: 'Home' }] // Reset the stack to only have the 'Home' screen
-            })}
-            style={styles.doneButton}
-          >
-            <Text style={styles.buttonText}>Done</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+    {!approved ? (
+      <View style={styles.pinBox}>
+        {!loading ? (
+          <>
+            <Text style={styles.notificationText}>
+              A withdrawal of R500 at Soshanguve Crossing is awaiting your approval.
+            </Text>
+            <Text style={styles.pinTitle}>Enter PIN</Text>
+            <TextInput
+              style={styles.pinInput}
+              secureTextEntry
+              keyboardType="numeric"
+              value={pin}
+              onChangeText={setPin}
+              placeholder="Enter 5-digit PIN"
+              maxLength={5} // Set the PIN input to allow 5 digits
+            />
+            <TouchableOpacity onPress={handlePinSubmit} style={styles.submitButton}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          // Show loading indicator while waiting
+          <ActivityIndicator size="large" color="#007aff" />
+        )}
+      </View>
+    ) : (
+      // This is where the success message appears after correct PIN is entered
+      <View style={styles.approvedBox}>
+        <Text style={styles.approvedTitle}>TRANSACTION APPROVED</Text>
+        <Text style={styles.approvedText}>
+          Your transaction of R500 has been approved {currentDateTime}. Take your money out at an ATM and start spending.
+        </Text>
+        <TouchableOpacity
+          onPress={() => navigation.reset({
+            index: 0, // Start at the first screen of the stack
+            routes: [{ name: 'Home' }] // Reset the stack to only have the 'Home' screen
+          })}
+          style={styles.doneButton}
+        >
+          <Text style={styles.buttonText}>Done</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+  </View>
   );
 };
 
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#02457a',
+    //backgroundColor: '#02457a',
   },
   pinBox: {
     width: '80%',
