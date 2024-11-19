@@ -42,6 +42,7 @@ export default  function App() {
   useEffect(() => {
     setIsLoading(true);
     const fetchData = async () => {
+     
       const value = await storage.getItem('accountNumber'); 
       console.log(value);
       if(value !== null){

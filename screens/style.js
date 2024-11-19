@@ -1,6 +1,22 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+
+  camera: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  faces: {
+    backgroundColor: '#ffffff',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 16
+  },
+  faceDesc: {
+    fontSize: 20
+  },
   // Existing styles for MainScreen and others
   fullScreenContainer: {
     flex: 1,
