@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+const storage = require('../async_storage');
 
 const TransactionNotification = () => {
   const [declined, setDeclined] = useState(false); // State to handle declined transaction
   const navigation = useNavigation();
 
   const handleApprove = () => {
-    // Navigate to the PIN Entry Screen
-    navigation.navigate('PinEntry');
+ 
+    storage.setItem('accountNumber', '1727684539');
+    storage.setItem('accountID', '3');
+    storage.setItem('custIdNr', '9805015476481');
+
+    storage.setItem('action', 'approve');
+    
+    navigation.navigate('Login');
   };
 
   const handleDecline = () => {
