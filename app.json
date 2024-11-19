@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "Click_Block_Tech_UI",
     "slug": "Click_Block_Tech_UI",
     "version": "1.0.0",
@@ -38,6 +39,9 @@
           }
         ]
       ]
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

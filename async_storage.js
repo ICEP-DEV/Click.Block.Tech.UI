@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-storageFunc = {
+const storageFunc = {
   getItem:  async (key) => {
     try {
       const value = await AsyncStorage.getItem(key);
@@ -25,6 +25,4 @@ storageFunc = {
     }
   }
 }
- 
-  
-  module.exports = storageFunc;
+module.exports = storageFunc;
