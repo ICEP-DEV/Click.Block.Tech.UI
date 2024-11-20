@@ -124,9 +124,16 @@ export default function ManageCard() {
           <TouchableOpacity style={styles.option} onPress={()=>navigation.navigate('CardSettings')}> 
             <Text style={styles.optionText}>Card Settings</Text>
           </TouchableOpacity>
+
+          {/* OPM - Logout Button */}
+
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.optionText}>Logout</Text>
+          </TouchableOpacity>
+
         </ScrollView>
       </View>
-
+      
       {/* Card Details Modal */}
       <Modal
         animationType="slide"
