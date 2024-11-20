@@ -61,7 +61,7 @@ const HomeScreen = () => { // Previously MainScreen
     <View style={styles.fullScreenContainer}>
       <View style={styles.header}>
         <Image source={accountIcon} style={styles.accountIcon} />
-        <Text style={styles.greeting}> WELCOME BACK, </Text>
+        <Text style={styles.greeting}> WELCOME BACK, BJ</Text>
 <Text style={styles.greeting}>{firstName.toUpperCase()} </Text>
         
         <Text style={styles.subGreeting}>How can we help you today?</Text>

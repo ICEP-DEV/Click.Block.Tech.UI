@@ -9,11 +9,9 @@ const TransactionNotification = () => {
 
   const handleApprove = () => {
  
-    storage.setItem('accountNumber', '1727684539');
     storage.setItem('accountID', '3');
-    storage.setItem('custIdNr', '9805015476481');
+    storage.setItem('custIdNr', '9908126401086');
 
-    storage.setItem('action', 'approve');
     
     navigation.navigate('Login');
   };

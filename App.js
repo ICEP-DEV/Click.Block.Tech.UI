@@ -7,6 +7,9 @@ import NavigationBar from './screens/navigationBar';
 import TransactionNotification from './screens/TransactionNotification';
 import Login from './screens/Login';
 import LoginOrSignup from './screens/LoginOrSignup';
+import SuccessPage from './screens/successPage'; 
+import Insufficient from './screens/InsufficientFundsPage'; 
+import HomeScreen from './screens/homeScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +20,8 @@ export default function App() {
   useEffect(() => {
     const fetchInitialRoute = async () => {
       try {
+        
+        storage.setItem('accountNumber', '1727684539');
         const value = await storage.getItem('accountNumber');
         if (value) {
           setInitialRoute('TransactionNotification');
@@ -40,6 +45,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="Insufficient" component={Insufficient} />
+        <Stack.Screen name="Success" component={SuccessPage} />
         <Stack.Screen name="TransactionNotification" component={TransactionNotification} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="LoginOrSignup" component={LoginOrSignup} options={{ headerShown: false }} />
