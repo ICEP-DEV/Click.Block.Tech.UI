@@ -48,10 +48,8 @@ const ContactUs = () => {
   const sendChatMessage = () => {
     if (!chatMessage) return;
 
-    // Add user's message to chat history
     setChatHistory([...chatHistory, { text: chatMessage, sender: 'User' }]);
 
-    // Get AI response
     const aiResponse = getAIResponse(chatMessage);
     if (aiResponse) {
       setChatHistory(prev => [...prev, { text: aiResponse, sender: 'AI' }]);
@@ -87,46 +85,19 @@ const ContactUs = () => {
   };
 
   return (
-    <LinearGradient
-      colors={['#0F0C29', '#16335D', '#1E5E98']}
-      style={styles.container}
-    >
+    <LinearGradient colors={['#0F0C29', '#16335D', '#1E5E98']} style={styles.container}>
       <Image source={require('../assets/Logo.png')} style={styles.logo} />
 
       <View style={styles.formContainer}>
         <Text style={styles.header}>CONTACT US</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Full Names"
-          value={fullName}
-          onChangeText={setFullName}
-        />
+        <TextInput style={styles.input} placeholder="Full Names" value={fullName} onChangeText={setFullName} />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Phone number"
-          keyboardType="phone-pad"
-          maxLength={10}
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-        />
+        <TextInput style={styles.input} placeholder="Phone number" keyboardType="phone-pad" maxLength={10} value={phoneNumber} onChangeText={setPhoneNumber} />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email Address"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
+        <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" value={email} onChangeText={setEmail} />
 
-        <TextInput
-          style={[styles.input, styles.messageBox]}
-          placeholder="Write your message here"
-          multiline
-          value={message}
-          onChangeText={setMessage}
-        />
+        <TextInput style={[styles.input, styles.messageBox]} placeholder="Write your message here" multiline value={message} onChangeText={setMessage} />
 
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
@@ -143,20 +114,13 @@ const ContactUs = () => {
             <Image source={require('../assets/communication.png')} style={styles.icon} />
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.chatIcon} onPress={toggleChatbox}>
+          <Image source={require('../assets/chat.png')} style={styles.icon} />
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.chatIcon} onPress={toggleChatbox}>
-        <Image source={require('../assets/chat.png')} style={styles.icon} />
-      </TouchableOpacity>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={() => {
-          setIsModalVisible(false);
-        }}
-      >
+      <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={() => setIsModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalHeader}>Chat Messages</Text>
@@ -167,17 +131,8 @@ const ContactUs = () => {
                 </Text>
               ))}
             </ScrollView>
-            <TextInput
-              style={styles.chatInput}
-              placeholder="Type a message..."
-              value={chatMessage}
-              onChangeText={setChatMessage}
-              onSubmitEditing={sendChatMessage}
-            />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setIsModalVisible(false)}
-            >
+            <TextInput style={styles.chatInput} placeholder="Type a message..." value={chatMessage} onChangeText={setChatMessage} onSubmitEditing={sendChatMessage} />
+            <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -207,7 +162,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    marginBottom: 20, // Added margin for better spacing
+    marginBottom: 20,
   },
   header: {
     fontSize: 24,
@@ -268,8 +223,8 @@ const styles = StyleSheet.create({
   },
   chatIcon: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: -20, // Adjust positioning to place it in the bottom right corner of the form container
+    right: -20,
   },
   modalContainer: {
     flex: 1,
