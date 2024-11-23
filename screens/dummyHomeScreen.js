@@ -37,11 +37,6 @@ const HomeScreen = () => { // Previously MainScreen
           const accountType = customerData.BankAccount.AccountType || 'Savings';
           const balance = 0;
   
-          
-          if(!customerData.PanicButtonStatus){
-            balance = customerData.BankAccount.Balance || 0;
-          }
-
           setAccountType(accountType.toUpperCase());
           setBalance(balance);
   
@@ -66,7 +61,7 @@ const HomeScreen = () => { // Previously MainScreen
     <View style={styles.fullScreenContainer}>
       <View style={styles.header}>
         <Image source={accountIcon} style={styles.accountIcon} />
-        <Text style={styles.greeting}> WELCOME BACK</Text>
+        <Text style={styles.greeting}> WELCOME BACK...this is a fake account</Text>
 <Text style={styles.greeting}>{firstName.toUpperCase()} </Text>
         
         <Text style={styles.subGreeting}>How can we help you today?</Text>

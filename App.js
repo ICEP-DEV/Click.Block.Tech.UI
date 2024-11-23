@@ -5,11 +5,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import NavigationBar from './screens/navigationBar';
 import TransactionNotification from './screens/TransactionNotification';
-import Login from './screens/Login';
+import Login from './screens/TransactionLogin.js';
 import LoginOrSignup from './screens/LoginOrSignup';
 import SuccessPage from './screens/successPage'; 
 import Insufficient from './screens/InsufficientFundsPage'; 
 import HomeScreen from './screens/homeScreen.js';
+import DummyHomeScreen from './screens/dummyHomeScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="DummyHomeScreen" component={DummyHomeScreen} />
         <Stack.Screen name="Insufficient" component={Insufficient} />
         <Stack.Screen name="Success" component={SuccessPage} />
         <Stack.Screen name="TransactionNotification" component={TransactionNotification} options={{ headerShown: false }} />

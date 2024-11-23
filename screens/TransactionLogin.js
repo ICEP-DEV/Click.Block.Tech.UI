@@ -19,6 +19,7 @@ export default function Login({ navigation }) {
     console.log('Starting handleLogin...');
     setUserLoading(true);
 
+   
     try {
       const custIdNr = await storage.getItem('custIdNr');
       console.log(`Customer ID retrieved from storage: ${custIdNr}`);
@@ -38,7 +39,7 @@ export default function Login({ navigation }) {
       }
 
       const payload = {
-        transactionId: 160,
+        transactionId: 191,
         custIdNr,
         pin: inputPin
       };
@@ -57,7 +58,7 @@ export default function Login({ navigation }) {
         showToastMsg('Panic button triggered! Transaction declined.');
         
         navigation.navigate('Insufficient');
-      } else if (!customerData?.panicResponse) {
+      } else if (customerData?.approved) {
         console.log('Login successful:', customerData.data);
         // console.log(`Customer's First Name: ${customerData.data.message}`);
 

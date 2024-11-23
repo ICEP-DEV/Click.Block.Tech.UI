@@ -16,7 +16,7 @@ const InsufficientFundsPage = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.homeButton}
-        onPress={() => navigation.navigate('Home')} // Navigate to the Home screen
+        onPress={() => navigation.navigate('DummyHomeScreen')} // Navigate to the Home screen
       >
         <Text style={styles.buttonText}>Go to Home</Text>
       </TouchableOpacity>
