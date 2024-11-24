@@ -5,7 +5,6 @@ import axios from "axios";
 import { BASE_URL } from '../API/API';
 
 const storage = require("../async_storage");
-const API = require("../API/API");
 
 const TransactionNotification = () => {
   const [declined, setDeclined] = useState(false); 
@@ -75,7 +74,7 @@ const TransactionNotification = () => {
                 <>
                   <Text style={styles.notificationTitle}>Transaction Notification</Text>
                   <Text style={styles.notificationText}>
-                    A withdrawal of 500 at Soshanguve Crossing is awaiting your approval.
+                   A withdrawal of 500 at Soshanguve Crossing is awaiting your approval.
                   </Text>
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity onPress={handleApprove} style={styles.approveButton}>
@@ -96,7 +95,7 @@ const TransactionNotification = () => {
                     <TouchableOpacity onPress={() => setDeclined(false)} style={styles.closeButton}>
                       <Text style={styles.buttonText}>Close</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Balance")} style={styles.balanceButton}>
+                    <TouchableOpacity onPress={() => navigation.navigate("HomePage")} style={styles.balanceButton}>
                       <Text style={styles.buttonText}>Balance</Text>
                     </TouchableOpacity>
                   </View>

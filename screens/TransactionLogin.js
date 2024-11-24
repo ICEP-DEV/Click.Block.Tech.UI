@@ -1,83 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import LottieView from 'lottie-react-native';
 import { View, Text, TextInput, TouchableOpacity, ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { BASE_URL } from '../API/API';
+import storage from '../async_storage'; // Assuming you have the async_storage utility.
 
 export default function Login({ navigation }) {
   const [inputPin, setInputPin] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [customerData, setCustomerData] = useState(null);
-  const [userLoading, setUserLoading] = useState(false);
-  const storage = require('../async_storage');
+  const [isLoading, setIsLoading] = useState(false); // For login process
+  const [customerData, setCustomerData] = useState(null); // Stores customer details
+  const [userLoading, setUserLoading] = useState(false); // For fetching customer data
 
   const showToastMsg = (msg) => {
     ToastAndroid.showWithGravity(msg, ToastAndroid.SHORT, ToastAndroid.CENTER);
   };
 
+  useEffect(() => {
+    const fetchCustomerAndAccountData = async () => {
+      setUserLoading(true);
+      try {
+        const custIdNr = await storage.getItem('custIdNr');
+        if (!custIdNr) {
+          showToastMsg('Customer ID number is missing. Please log in again.');
+          return;
+        }
+  
+        const response = await axios.get(`${BASE_URL}get_customer/${custIdNr}`);
+        const customer = response.data;
+  
+        if (customer) {
+          console.log('Customer Data:', customer.FirstName);
+          setCustomerData(customer);
+        }
+      } catch (error) {
+        if (error.response) {
+          console.error('Server responded with:', error.response.data);
+          showToastMsg(error.response.data.message || 'Failed to load user data.');
+        } else if (error.request) {
+          console.error('No response received:', error.request);
+          showToastMsg('No response from server. Please try again later.');
+        } else {
+          console.error('Error setting up request:', error.message);
+          showToastMsg('An unexpected error occurred.');
+        }
+      } finally {
+        setUserLoading(false);
+      }
+    };
+  
+    fetchCustomerAndAccountData();
+  }, []);
+  
+
   const handleLogin = async () => {
-    console.log('Starting handleLogin...');
-    setUserLoading(true);
+    setIsLoading(true);
 
     try {
       const custIdNr = await storage.getItem('custIdNr');
       const transactionID = await storage.getItem('transactionID');
-      console.log(`Customer ID retrieved from storage: ${custIdNr}`);
-   
 
       if (!inputPin) {
-        console.log('Remote PIN is missing');
         showToastMsg('Please provide your remote PIN');
-        setUserLoading(false);
+        return;
+      }
+
+      if (inputPin.length < 4) {
+        showToastMsg('PIN must be at least 4 digits');
         return;
       }
 
       if (!custIdNr) {
-        console.warn('Customer ID is missing');
-        setUserLoading(false);
+        showToastMsg('Customer ID missing. Please log in again.');
         return;
       }
 
       const payload = {
         transactionId: transactionID,
         custIdNr,
-        pin: inputPin
+        pin: inputPin,
       };
 
-      console.log('Sending payload to server:', payload);
+      console.log('Sending payload:', payload);
 
-      // Send POST request
       const response = await axios.post(`${BASE_URL}notifications/process-transaction`, payload);
-      console.log('Server response received:', response.data);
+      const responseData = response.data;
 
-      const customerData = response.data;
-
-      if (customerData?.panicResponse) {
+      if (responseData?.panicResponse) {
         console.warn('Panic button triggered!');
-        console.log('Panic Response Details:', customerData.panicResponse);
         showToastMsg('Panic button triggered! Transaction declined.');
-        
         navigation.navigate('Insufficient');
-      } else if (customerData?.approved) {
-        console.log('Login successful:', customerData.data);
-        // console.log(`Customer's First Name: ${customerData.data.message}`);
-
-        setCustomerData(customerData.data);
-        
+      } else if (responseData?.approved) {
         showToastMsg('Login successful');
-
-       
         navigation.navigate('Success');
       } else {
-        console.warn('Login failed:', customerData?.wrongPin || 'Wrong remote PIN');
-        showToastMsg(customerData?.incorrectPin || 'Wrong remote PIN');
+        showToastMsg(responseData?.incorrectPin || 'Wrong remote PIN');
       }
     } catch (error) {
-      console.error('Error during login:', error.response?.data || error.message);
+      console.error('Error during login:', error.message);
       showToastMsg('Login failed. Please try again.');
     } finally {
-      console.log('handleLogin process completed.');
-      setUserLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -105,11 +127,7 @@ export default function Login({ navigation }) {
           secureTextEntry
           keyboardType="numeric"
           placeholder="Remote pin"
-          onChangeText={(text) => {
-            console.log('Remote PIN entered:', text);
-            setInputPin(text);
-
-          }}
+          onChangeText={setInputPin}
         />
         <View style={styles.forgotPinContainer}>
           <TouchableOpacity onPress={handleForgotPin}>
@@ -207,8 +225,9 @@ const styles = StyleSheet.create({
     borderColor: '#02457A',
     borderWidth: 1.5,
     borderRadius: 5,
-    padding: 10,
-    fontSize: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
   },
