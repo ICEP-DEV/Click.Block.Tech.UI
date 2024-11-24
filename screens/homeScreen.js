@@ -22,38 +22,39 @@ const HomeScreen = () => { // Previously MainScreen
   const storage = require('../async_storage');
   //this function get the account ID in the local storage
  
-    useEffect(() => {
-      const fetchCustomerAndAccountData = async () => {
+  useEffect(() => {
+    const fetchCustomerAndAccountData = async () => {
+      try {
+        const value = await storage.getItem('custIdNr'); 
+        console.log(value);
+        const response = await axios.get(`${BASE_URL}get_customer/${value}`);
+        const customerData = response.data;
+        console.log(customerData.FirstName);
+       
+        setFirstName(customerData.FirstName || '');
+        console.log(firstName);
+        const accountType = customerData.BankAccount.AccountType || 'Savings';
         
-        try {
-          const value = await storage.getItem('accountID'); 
-          console.log(value);
-          const response = await axios.get(`${BASE_URL}get_customer/${value}`);
-          const customerData = response.data;
-          console.log(customerData.FirstName);
-         
-          setFirstName(customerData.FirstName || '');
-          console.log(firstName);
-          const accountType = customerData.BankAccount.AccountType || 'Savings';
-          const balance = 0;
-  
-          
-          if(!customerData.PanicButtonStatus){
-            balance = customerData.BankAccount.Balance || 0;
-          }
-
-          setAccountType(accountType.toUpperCase());
-          setBalance(balance);
-  
-          setLoading(false);
-        } catch (error) {
-          console.error('Error fetching customer or account data:', error);
-          setLoading(false);
+        // Fix balance assignment by using setBalance
+        let balance = 0;  // Initialize balance
+        if(!customerData.PanicButtonStatus){
+          balance = customerData.BankAccount.Balance || 0;
+          console.log("this is the balance in the bank: ", balance);
         }
-      };
+        
+        // Use setBalance to update the state
+        setAccountType(accountType.toUpperCase());
+        setBalance(balance); // This should be done with the setter
   
-      fetchCustomerAndAccountData();
-    }, []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching customer or account data:', error);
+        setLoading(false);
+      }
+    };
+  
+    fetchCustomerAndAccountData();
+  }, []); 
   if (loading) {
     return (
       <View style={styles.fullScreenContainer}>

@@ -26,7 +26,7 @@ const HomeScreen = () => { // Previously MainScreen
       const fetchCustomerAndAccountData = async () => {
         
         try {
-          const value = await storage.getItem('accountID'); 
+          const value = await storage.getItem('custIdNr'); 
           console.log(value);
           const response = await axios.get(`${BASE_URL}get_customer/${value}`);
           const customerData = response.data;
@@ -61,7 +61,7 @@ const HomeScreen = () => { // Previously MainScreen
     <View style={styles.fullScreenContainer}>
       <View style={styles.header}>
         <Image source={accountIcon} style={styles.accountIcon} />
-        <Text style={styles.greeting}> WELCOME BACK...this is a fake account</Text>
+        <Text style={styles.greeting}> WELCOME BACK...</Text>
 <Text style={styles.greeting}>{firstName.toUpperCase()} </Text>
         
         <Text style={styles.subGreeting}>How can we help you today?</Text>

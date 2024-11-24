@@ -19,9 +19,9 @@ export default function Login({ navigation }) {
     console.log('Starting handleLogin...');
     setUserLoading(true);
 
-   
     try {
       const custIdNr = await storage.getItem('custIdNr');
+      const transactionID = await storage.getItem('transactionID');
       console.log(`Customer ID retrieved from storage: ${custIdNr}`);
    
 
@@ -39,7 +39,7 @@ export default function Login({ navigation }) {
       }
 
       const payload = {
-        transactionId: 191,
+        transactionId: transactionID,
         custIdNr,
         pin: inputPin
       };
@@ -63,13 +63,14 @@ export default function Login({ navigation }) {
         // console.log(`Customer's First Name: ${customerData.data.message}`);
 
         setCustomerData(customerData.data);
+        
         showToastMsg('Login successful');
 
        
         navigation.navigate('Success');
       } else {
-        console.warn('Login failed:', customerData?.message || 'Wrong remote PIN');
-        showToastMsg(customerData?.message || 'Wrong remote PIN');
+        console.warn('Login failed:', customerData?.wrongPin || 'Wrong remote PIN');
+        showToastMsg(customerData?.incorrectPin || 'Wrong remote PIN');
       }
     } catch (error) {
       console.error('Error during login:', error.response?.data || error.message);

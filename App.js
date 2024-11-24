@@ -47,7 +47,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="DummyHomeScreen" component={DummyHomeScreen} />
+        <Stack.Screen name="HomeScreen101" component={DummyHomeScreen} />
         <Stack.Screen name="Insufficient" component={Insufficient} />
         <Stack.Screen name="Success" component={SuccessPage} />
         <Stack.Screen name="TransactionNotification" component={TransactionNotification} options={{ headerShown: false }} />
