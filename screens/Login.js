@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import axios from "axios";
 import LottieView from 'lottie-react-native';
 import { View, Text, TextInput, TouchableOpacity,ToastAndroid, StyleSheet, Image, ActivityIndicator } from 'react-native';
@@ -6,6 +6,7 @@ import { BASE_URL } from '../API/API';
 import * as Location from 'expo-location';
 import useLocationStore from '../stores/location_store';
 import useAlertStoreStore from '../stores/panicAlert_store';
+import AcceptDeclineModal from '../hooks/acceptDecline_hook';
 
 export default function Login ({ navigation }){
 const [inputPin, setInputPin] = useState('');
@@ -21,7 +22,13 @@ const permissionGranted = useLocationStore((state) => state.grantPermission);
 const alertTriggered = useAlertStoreStore((state)=> state.triggerAlert);
 const reset = useAlertStoreStore((state)=> state.reset);
 const isPanicAlertTriggered = useAlertStoreStore((state)=>state.isAlertTriggered);
+const [isModalVisible,setIsModalVisible] = useState(false);
 const storage = require('../async_storage');
+const [transaction, setTransactions] = useState();
+
+
+//Expo sensors
+
 //ToastMessage
 const showToastMsg= (msg) => {
   ToastAndroid.showWithGravity(
@@ -30,6 +37,10 @@ const showToastMsg= (msg) => {
     ToastAndroid.CENTER,
   );
 };
+
+
+
+//end of expo sensors
 
 //Get location
 const getUserLocation = async () =>{
@@ -58,7 +69,11 @@ const getUserLocation = async () =>{
           });
           console.log("User Location: ",response);
           //saving customer location
-          saveLocation(response[0].formattedAddress,response[0].subregion,response[0].city,response[0].region,response[0].postalCode,response[0].country,latitude,longitude)
+          //checking if the panic alert is triggered to avoid calling creating location when reusing the method
+          if(isPanicAlertTriggered === false){
+            saveLocation(response[0].formattedAddress,response[0].subregion,response[0].city,response[0].region,response[0].postalCode,response[0].country,latitude,longitude)
+          }
+          
 
       } 
   }catch(err){
@@ -82,22 +97,24 @@ useEffect(() => {
   
 }, [accNumber]);
 
+
 //Fetching customer information to be displayed on the login screen
 useEffect(() => {
   const fetchCustomerAndAccountData = async () => {
     try {
       setUserLoading(true);
-      const value = await storage.getItem('CustID_Nr'); 
+      const value = await storage.getItem('CustID_Nr');
+      console.log(`Id${customerAccID}`) 
       const response = await axios.get(`${BASE_URL}get_customer/${value}`);
       const customerData = response.data;
       console.log(value);
       setCustomerIDNr(value);
-      
       if(customerData){
         setCustomerName(customerData.FirstName);
         //set customer Account ID to be used to disable account of the customer where the Alert PIN is triggered
         setCustomerAccID(customerData.AccountID);
         setUserLoading(false);
+
       }
     } catch (error) {
       console.error('Error fetching customer or account data:', error);
@@ -108,12 +125,38 @@ useEffect(() => {
   fetchCustomerAndAccountData();
   
 }, []);
+//fetching Transactions
+useEffect(() => {
+  const fetchTransacNotification = async () => {
+    console.log(isModalVisible)
+ 
+    try{
+      console.log(`Acc:${customerAccID}`)
+      const status = `pending`;
+      if(customerAccID){
+        const response = await axios.get(`${BASE_URL}getTransaction_byAccID/${customerAccID}/${status}`);
+      const transactions = response.data;
+      if(transactions.length > 0){
+        setIsModalVisible(true);
+        setTransactions(transactions);
+       
+      }else{
+        setIsModalVisible(false);
+      }
+
+      }
+      
+    }catch(err){
+      console.log(err);
+    }
+  };
+  fetchTransacNotification();
+  
+}, [customerAccID,isModalVisible]);
 
 const creatAlert = async(locationID) =>{
   console.log('creating alert');
   const date = new Date();
-
-  console.log(date.toISOString());
   const alertData = {
    "CustID_Nr": `${customerIDNr}`,
    "AlertType": `PanicAlert`,
@@ -219,6 +262,7 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
         console.log('The alert PIN is triggered');
         setInputPin('');
         alertTriggered();
+
         navigation.navigate('Home');
         setIsLoading(false);
 
@@ -271,7 +315,7 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
 
   return (
     <View style={styles.container}>
-   
+      <AcceptDeclineModal isModalVisible={isModalVisible} transaction={transaction} customerIDNr={customerIDNr} customerAccID={customerAccID} navigation={navigation}/>
       <Image
         source={require('../assets/Logo.png')}
         style={styles.logo}
@@ -438,9 +482,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
   },
+  
   loginButtonText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
+
 });
