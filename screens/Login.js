@@ -265,9 +265,11 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
    
     
   };
-  const handleForgotPin = () => {
-    alert('Forgot PIN clicked');
-  };
+
+  // const handleForgotPin = () => {
+  //   // alert('Forgot PIN clicked');
+  //   navigation.navigate('PasswordAuthentication');
+  // };
 
   return (
     <View style={styles.container}>
@@ -301,7 +303,7 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
           onChangeText={setInputPin}
         />
         <View style={styles.forgotPinContainer}>
-          <TouchableOpacity onPress={()=>handleForgotPin}>
+          <TouchableOpacity onPress={()=>navigation.navigate('PasswordAuthentication')}>
             <Text style={styles.forgotPin}>Forgot PIN</Text>
           </TouchableOpacity>
         </View>
