@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: '#02457A',
     textShadowColor: '#888',
-    textShadowOffset: { width: 2, height: 2 },
+    textShadowOffset: { width: 1, height: 1 }, //Oamogetswe - Changed the shadow of the name
     textShadowRadius: 1,
   },
   
