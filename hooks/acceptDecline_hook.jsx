@@ -230,8 +230,6 @@ useEffect(() => {
       axios.put(`${BASE_URL}updateTransacPanicStatus/`,panicData).then(response=>{
         
       });
-
-
         navigation.navigate('Home');
         setIsLoading(false);
      }else{
