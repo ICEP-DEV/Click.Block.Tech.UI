@@ -16,19 +16,19 @@ export default function PasswordAuthentication() {
 
   const validateInput = (value) => {
     if (/^\d+$/.test(value) && value.length > 10) {
-      return; // Stop input if it's a phone number exceeding 10 digits
+      return; //OPM - Stop input if it's a phone number exceeding 10 digits
     }
   
     setInputValue(value);
   
-    // Basic email or phone number regex for validation
+    // OPM - Basic email or phone number regex for validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\d{10}$/;
+    //const phoneRegex = /^\d{10}$/;
 
     if (!value) {
       setError('Field cannot be empty');
-    } else if (!emailRegex.test(value) && !phoneRegex.test(value)) {
-      setError('Enter a valid email or 10-digit phone number');
+    } else if (!emailRegex.test(value)) {
+      setError('Enter a valid email');
     } else {
       setError('');
     }
@@ -38,8 +38,8 @@ export default function PasswordAuthentication() {
     if (!inputValue || error) {
       Alert.alert('Error', 'Please correct the errors before proceeding.');
     } else {
-      Alert.alert('Success', 'Verification link/code sent to your email/phone.');
-      navigation.navigate('NextScreen'); // Replace with the desired screen
+      Alert.alert('Success', 'Verification code sent to your email, Please check your phone.');
+      //navigation.navigate('NextScreen'); // OPM - Replace with the desired screen
     }
   };
 
@@ -60,13 +60,13 @@ export default function PasswordAuthentication() {
         {/* Main Content */}
         <View style={styles.mainContent}>
           <Text style={styles.instructions}>
-            Enter the email or phone number associated with your account.
+            Enter the email associated with your account.
           </Text>
 
           {/* Input Field */}
           <TextInput
             style={[styles.input, error ? styles.inputError : null]}
-            placeholder="Email or Phone Number"
+            placeholder="Email Address"
             placeholderTextColor="#888"
             value={inputValue}
             onChangeText={validateInput}

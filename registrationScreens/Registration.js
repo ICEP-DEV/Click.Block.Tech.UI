@@ -297,7 +297,7 @@ const Registration = ({ navigation }) => {
         {/* Login Link */}
         <View style={styles.loginContainer}>
           <Text style={styles.loginText}>Already have an account?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('VerifyApp')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.linkText}>Login</Text>
           </TouchableOpacity>
         </View>
