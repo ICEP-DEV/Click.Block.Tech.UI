@@ -16,6 +16,8 @@ import payRecipientIcon from '../assets/Homepage/payRecipient.png';
 import approveTransactionIcon from '../assets/Homepage/approveTransaction.png';
 import { BASE_URL } from '../API/API';
 import useAlertStoreStore from '../stores/panicAlert_store';
+import { DeviceMotion } from 'expo-sensors';
+import * as Location from 'expo-location';
 
 const HomeScreen = () => {
   const [firstName, setFirstName] = useState('');
@@ -25,8 +27,48 @@ const HomeScreen = () => {
   const storage = require('../async_storage');
   const navigation = useNavigation(); // Initialize navigation
   const panicAlert = useAlertStoreStore((state)=>state.isAlertTriggered);
-
+  const [ data, setData] = useState();
+  const [panicStatus, setPanicStatus] = useState();
+  const [isMovement, setIsMovement] = useState(false);
+  const [locationID, setLocationID] = useState(0);
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [errMsg, setErrMsg] = useState('');
+  //Device motion threshold for the magnitude 
+  const threshold = 1;  
  
+  //This method gets the current user location
+  const getUserLocation = async () =>{
+    //If user does not grant permission
+    try{
+        let {status} = await Location.requestForegroundPermissionsAsync();
+        if(status !== 'granted'){
+            setErrMsg('not granted!');
+            //set is permission granted to false
+      
+            console.log('Permission is not granted from the hook');
+        }else if (status === 'granted'){
+            setErrMsg('granted');
+            //set is permission granted to true
+          
+            console.log('Permission is granted from the hook');
+        }
+        //If user grands us permission
+        let {coords} = await Location.getCurrentPositionAsync();
+        if ({coords}){
+            const {latitude, longitude} = coords;
+            
+           setLatitude(latitude);
+           setLongitude(longitude);
+          coords = {};
+        } 
+    }catch(err){
+        console.log('inside err')
+        console.log(err);
+        setErrMsg('not granted');
+    }
+    
+  }
   // Fetch customer and account data
   useEffect(() => {
     const fetchCustomerAndAccountData = async () => {
@@ -37,9 +79,9 @@ const HomeScreen = () => {
           const customerData = response.data;
           setFirstName(customerData.FirstName || '');
           setAccountType(customerData.BankAccount.AccountType || 'Savings');
-          const randomBalance = Math.floor(Math.random() * (50 - 10) ) + 10;
-          setBalance(randomBalance);
           setLoading(false);
+          console.log(customerData.PanicButtonStatus);
+          setPanicStatus(customerData.PanicButtonStatus);
         } catch (error) {
           console.error('Error fetching customer or account data:', error);
           setLoading(false);
@@ -62,8 +104,65 @@ const HomeScreen = () => {
     };
 
     fetchCustomerAndAccountData();
-  }, []);
+  }, [panicStatus]);
 
+  //This function updated the latitude and longitude
+  const updatingLatLong = async() =>{
+    getUserLocation();
+    if(locationID){
+      console.log(`${longitude}`)
+      
+        const updateData = {
+          "latitude": `${latitude}`,
+          "longitude": `${longitude}`
+        }
+      const response = await axios.put(`${BASE_URL}updateLatLong/${locationID}`,updateData);
+      const customerData = response.data;
+      if(customerData){
+        console.log('Location updated');
+      }else{
+        console.log('not');
+      }
+      
+    }
+  }
+    //Tracking Live customerLive When the alert is triggered
+useEffect(() => {
+  if(panicStatus === 1){
+    const subscription = DeviceMotion.addListener(setData);
+  if (data && data.acceleration) {
+    const { x, y, z } = data.acceleration;
+    const magnitude = Math.sqrt(x * x + y * y + z * z);
+
+    if (magnitude > threshold) {
+      console.log('Movement detected!');
+      setIsMovement(true);
+      updatingLatLong()
+    }
+    return () => subscription.remove();
+  }
+  }{
+    //do nothing
+  }
+  
+}, [data, panicStatus,latitude,longitude]);
+
+//This useEffect get the user alert information when movement is detected
+useEffect(()=>{
+  const gettingAlert = async() =>{
+    try{
+      if(isMovement){
+        const value = await storage.getItem('CustID_Nr');
+        const response = await axios.get(`${BASE_URL}getAlertLocationID/${value}`);
+        const locationData = response.data;
+        setLocationID(locationData._LocationID);
+      }
+    }catch(err){
+      console.log(err);
+    }
+  };
+  gettingAlert()
+},[isMovement])
   if (loading) {
     return (
       <View style={styles.fullScreenContainer}>
@@ -92,7 +191,7 @@ const HomeScreen = () => {
               <Text style={styles.accountText}>{accountType.toUpperCase()} ACCOUNT</Text>
               <Image source={coinsIcon} style={styles.accountImage} />
             </View>
-              <Text style={styles.balanceText}>Balance: R{balance.toFixed(2)}</Text>
+              {(panicAlert ? <Text style={styles.balanceText}>Balance: R{'0.00'}</Text>: <Text style={styles.balanceText}>Balance: R{balance.toFixed(2)}</Text>) }
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.accountBox}>
