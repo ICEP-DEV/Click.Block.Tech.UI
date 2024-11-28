@@ -13,6 +13,8 @@ export default function AcceptDeclineModalHook({isModalVisible,transaction, cust
  const [transactions, setTransactions] = useState(transaction);
  const [transactionType, setTransactionType] = useState('');
  const [transactionAmnt, setTransactionAmnt] = useState('');
+ const [transactionID, setTransactionID] = useState('');
+ const [accountID, setAccountID] = useState('');
  const [isLoading, setIsLoading] = useState(false);
  const [accNumber,setAccNumber] = useState('');
  const permissionNotGranted = useLocationStore((state) => state.notGrantPermission);
@@ -37,7 +39,7 @@ export default function AcceptDeclineModalHook({isModalVisible,transaction, cust
             permissionNotGranted();
             console.log('Permission is not granted from the hook');
         }else if (status === 'granted'){
-            setErrMsg('granted');
+           
             //set is permission granted to true
             permissionGranted();
             console.log('Permission is granted from the hook');
@@ -68,7 +70,7 @@ export default function AcceptDeclineModalHook({isModalVisible,transaction, cust
     
   }
   const creatAlert = async(locationID) =>{
-    console.log('creating alert');
+   
     const date = new Date();
     const alertData = {
      "CustID_Nr": `${customerIDNr}`,
@@ -136,10 +138,13 @@ export default function AcceptDeclineModalHook({isModalVisible,transaction, cust
     console.log(transaction)
     setTransactionAmnt(transaction[0].transactionAmount);
     setTransactionType(transaction[0].transactionType);
+    setTransactionID(transaction[0].transactionID);
+    setAccountID(transaction[0].accountID);
+
     
     }
     
- },[isModalVisible, transaction]);
+ },[isModalVisible, transaction,transactionAmnt]);
 
  const closeModal = () =>{
     setIsVisble(false);
@@ -173,11 +178,11 @@ useEffect(() => {
     }
   }
 
- const handleTransactionApproval = () =>{
+  const handleDeclining = ()=>{
     setIsLoading(true);
     try{
       //this API call compare the entered PIN with the alert PIN
-      console.log(approvalPIN);
+      
      
       console.log('inside');
           axios.get(`${BASE_URL}compare_alertPIN/${accNumber}/${approvalPIN}`,).then(response => {
@@ -197,6 +202,35 @@ useEffect(() => {
         console.log('The alert PIN is triggered');
         setApprovalPIN('');
         alertTriggered();
+        
+        //update transaction and notification status to declined
+        const updateData = {
+          "status": `declined`,
+          "transactionID": `${transactionID}`
+        }
+        const notifyData = {
+          "status": `declined`,
+          "transactionID": `${transactionID}`
+        }
+
+        const panicData = {
+          "transactionId": `${transactionID}`,
+          "status": `${1}`
+        }
+        
+        
+      //update transaction and notification status to Declined
+      axios.put(`${BASE_URL}updateTransaction/`,updateData).then(response=>{
+            
+      });
+      axios.put(`${BASE_URL}updateNotificationStatus/`,notifyData).then(response=>{
+        
+      });
+      //updating panic status on the transaction
+      axios.put(`${BASE_URL}updateTransacPanicStatus/`,panicData).then(response=>{
+        
+      });
+
 
         navigation.navigate('Home');
         setIsLoading(false);
@@ -213,9 +247,142 @@ useEffect(() => {
              setApprovalPIN('');
              setIsLoading(false);
              reset();
-             //check if the panic button status is triggered
-             //If the panic button status is triggered, ??deny access??
+             const updateData = {
+                "status": `declined`,
+                "transactionID": `${transactionID}`
+              }
+              const notifyData = {
+                "status": `declined`,
+                "transactionID": `${transactionID}`
+              }
+              
+            //update transaction and notification status to Declined
+            axios.put(`${BASE_URL}updateTransaction/`,updateData).then(response=>{
+                  
+            });
+            axios.put(`${BASE_URL}updateNotificationStatus/`,notifyData).then(response=>{
+              
+            });
+            //update the account balance
+              navigation.navigate('Home');
+            } else {
+            showToastMsg('Wrong remote pin');
+            setIsLoading(false);
+           
+             }
 
+          });
+           
+         }catch(err){
+          showToastMsg('Error l');
+         }
+      }
+        
+      });
+      
+    }catch(err){
+      
+      showToastMsg('Error comparing Pins');
+    }
+   
+  }
+
+ const handleTransactionApproval = () =>{
+    setIsLoading(true);
+    try{
+      //this API call compare the entered PIN with the alert PIN
+      
+     
+      console.log('inside');
+          axios.get(`${BASE_URL}compare_alertPIN/${accNumber}/${approvalPIN}`,).then(response => {
+        //If the entered PIN matched the alert PIN it returns true
+        const data = response.data;
+    
+        if (data) {
+        
+        //get location
+        getUserLocation();
+
+        //Enabling the Panic Button Status
+        updatePaniAlertStatus (); 
+         //Disabling the customer Account status
+        disableAccount();
+        
+        console.log('The alert PIN is triggered');
+        setApprovalPIN('');
+        alertTriggered();
+        
+        //update transaction and notification status to declined
+        const updateData = {
+          "status": `declined`,
+          "transactionID": `${transactionID}`
+        }
+        const notifyData = {
+          "status": `declined`,
+          "transactionID": `${transactionID}`
+        }
+
+        const panicData = {
+          "transactionId": `${transactionID}`,
+          "status": `${1}`
+        }
+        
+        
+      //update transaction and notification status to Declined
+      axios.put(`${BASE_URL}updateTransaction/`,updateData).then(response=>{
+            
+      });
+      axios.put(`${BASE_URL}updateNotificationStatus/`,notifyData).then(response=>{
+        
+      });
+      //updating panic status on the transaction
+      axios.put(`${BASE_URL}updateTransacPanicStatus/`,panicData).then(response=>{
+        
+      });
+        navigation.navigate('Home');
+        setIsLoading(false);
+     }else{
+        //if the entered PIN does not match with the Alert PIN check for the remote PIN
+         try{
+            axios.get(`${BASE_URL}compare_PIN/${accNumber}/${approvalPIN}`,).then(response => {
+            //If the entered PIN matched the alert PIN it returns true
+          const data = response.data;
+           //check if the user data is not null
+           if (data) {
+            showToastMsg('Successfully logged in');
+              //inserting the accountID of the customer to be used in the home page
+             setApprovalPIN('');
+             setIsLoading(false);
+             reset();
+             const updateData = {
+                "status": `approved`,
+                "transactionID": `${transactionID}`
+              }
+              const notifyData = {
+                "status": `approved`,
+                "transactionID": `${transactionID}`
+              }
+              const balanceData = {
+                "accountID": `${accountID}`,
+                "requestedAmount": `${transactionAmnt}`
+              }
+            //update transaction and notification status to approved
+            axios.put(`${BASE_URL}subtract_AccBalance/`,balanceData).then(response=>{
+                const res = response.data;
+                console.log(res.message);
+            
+                axios.put(`${BASE_URL}updateTransaction/`,updateData).then(response=>{
+                  
+                 });
+
+                 axios.put(`${BASE_URL}updateNotificationStatus/`,notifyData).then(response=>{
+              
+               });
+             });
+          
+             
+          
+            //update the account balance
               navigation.navigate('Home');
             
             
@@ -255,7 +422,7 @@ return(
           onChangeText={setApprovalPIN}
         />
         <TouchableOpacity style={styles.acceptButton} onPress={handleTransactionApproval}><Text style={styles.modalButtonText}>Accept</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.declineButton} onPress={closeModal}><Text style={styles.modalButtonText}>Decline</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.declineButton} onPress={handleDeclining}><Text style={styles.modalButtonText}>Decline</Text></TouchableOpacity>
         </View>
       </Modal>
 );

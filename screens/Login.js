@@ -126,33 +126,34 @@ useEffect(() => {
   
 }, []);
 //fetching Transactions
-useEffect(() => {
-  const fetchTransacNotification = async () => {
-    console.log(isModalVisible)
- 
-    try{
-      console.log(`Acc:${customerAccID}`)
-      const status = `pending`;
-      if(customerAccID){
-        const response = await axios.get(`${BASE_URL}getTransaction_byAccID/${customerAccID}/${status}`);
-      const transactions = response.data;
-      if(transactions.length > 0){
-        setIsModalVisible(true);
-        setTransactions(transactions);
-       
-      }else{
-        setIsModalVisible(false);
-      }
+const fetchTransacNotification = async () => {
+  console.log(isModalVisible)
 
-      }
-      
-    }catch(err){
-      console.log(err);
+  try{
+    console.log(`Acc:${customerAccID}`)
+    const status = `pending`;
+    if(customerAccID){
+      const response = await axios.get(`${BASE_URL}getTransaction_byAccID/${customerAccID}/${status}`);
+    const transactions = response.data;
+    if(transactions.length > 0){
+      setIsModalVisible(true);
+      setTransactions(transactions);
+     
+    }else{
+      setIsModalVisible(false);
     }
-  };
+
+    }
+    
+  }catch(err){
+    console.log(err);
+  }
+};
+useEffect(() => {
+  
   fetchTransacNotification();
   
-}, [customerAccID,isModalVisible]);
+}, [customerAccID,isModalVisible,transaction]);
 
 const creatAlert = async(locationID) =>{
   console.log('creating alert');
@@ -315,11 +316,15 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
 
   return (
     <View style={styles.container}>
+
       <AcceptDeclineModal isModalVisible={isModalVisible} transaction={transaction} customerIDNr={customerIDNr} customerAccID={customerAccID} navigation={navigation}/>
-      <Image
-        source={require('../assets/Logo.png')}
-        style={styles.logo}
-      />
+     
+      <TouchableOpacity onPress={()=>{fetchTransacNotification()}}>
+        <Image
+          source={require('../assets/Logo.png')}
+          style={styles.logo }
+        />
+    </TouchableOpacity>
       <View style={styles.background} />
       <View style={styles.card}>
       
@@ -389,6 +394,7 @@ const styles = StyleSheet.create({
     height: 63,
     marginBottom: 40,
   },
+ 
   user: {
     width: 50,
     height: 50,
