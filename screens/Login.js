@@ -310,9 +310,11 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
    
     
   };
-  const handleForgotPin = () => {
-    alert('Forgot PIN clicked');
-  };
+
+  // const handleForgotPin = () => {
+  //   // alert('Forgot PIN clicked');
+  //   navigation.navigate('PasswordAuthentication');
+  // };
 
   return (
     <View style={styles.container}>
@@ -350,7 +352,7 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
           onChangeText={setInputPin}
         />
         <View style={styles.forgotPinContainer}>
-          <TouchableOpacity onPress={()=>handleForgotPin}>
+          <TouchableOpacity onPress={()=>navigation.navigate('PasswordAuthentication')}>
             <Text style={styles.forgotPin}>Forgot PIN</Text>
           </TouchableOpacity>
         </View>
@@ -446,7 +448,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: '#02457A',
     textShadowColor: '#888',
-    textShadowOffset: { width: 2, height: 2 },
+    textShadowOffset: { width: 1, height: 1 }, //Oamogetswe - Changed the shadow of the name
     textShadowRadius: 1,
   },
   
