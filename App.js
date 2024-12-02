@@ -29,7 +29,7 @@ import CongratulationsScreen from './screens/CongratulationsScreen.js';
 import CreatePanicPin from './screens/createPanicpin_screen.js';
 import UpdateRemotePin from './screens/update_remotePin_screen.js';
 import UpdateAlertPin from './screens/update_panicPin_screen.js';
-
+import contactUs from './screens/contactUs.js';
 
 // Create a Stack Navigator
 const Stack = createStackNavigator();
@@ -84,6 +84,7 @@ export default  function App() {
           <Stack.Screen name="ManageScreen" component={ManageScreen}  options={{ headerShown: false }} />
           <Stack.Screen name="SavingsAccount" component={SavingsAccount} options={{ headerShown: false }} />
           <Stack.Screen name="Congratulations" component={CongratulationsScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="contactUs" component={contactUs} options={{ headerShown: false }} />
           <Stack.Screen
           name="CardSettings"
           component={CardSettings}

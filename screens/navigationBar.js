@@ -12,6 +12,7 @@ import TransactScreen from './transactScreen';
 import ManageCard from './ManageCard';
 import ManageScreen from './manageScreen';
 import PersonalInfoScreen from './PersonalInfoScreen';
+import ContactUs from './contactUs';
 
 const Tab = createBottomTabNavigator();
 

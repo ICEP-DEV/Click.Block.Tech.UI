@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, Image, Switch, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, ScrollView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-
 const { width } = Dimensions.get('window');
 
-export default function CardSettings({navigation}) {
+export default function CardSettings({ navigation }) {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
-
 
   const toggleBalanceVisibility = () => {
     setIsBalanceVisible(prev => !prev);
@@ -35,8 +33,6 @@ export default function CardSettings({navigation}) {
           <Text style={styles.cardType}>Debit Card</Text>
 
           {/* Card Options */}
-
-         
           <View style={styles.option}>
             <Text style={styles.optionText}>View Balance</Text>
             <Switch
@@ -49,14 +45,15 @@ export default function CardSettings({navigation}) {
           </View>
 
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('CratePanicPin')}>
-          <Text style={styles.optionText}>Create Alert PIN</Text>
+            <Text style={styles.optionText}>Create Alert PIN</Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('UpdatePin')}>
             <Text style={styles.optionText}>Update PIN</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option}>
+          {/* Updated Message Settings Button */}
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('contactUs')}>
             <Text style={styles.optionText}>Message Settings</Text>
           </TouchableOpacity>
 
@@ -65,9 +62,6 @@ export default function CardSettings({navigation}) {
           </TouchableOpacity>
         </ScrollView>
       </View>
-
-      {/* Bottom Navigation */}
-      
     </SafeAreaView>
   );
 }
@@ -137,3 +131,4 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.8 }],
   },
 });
+
