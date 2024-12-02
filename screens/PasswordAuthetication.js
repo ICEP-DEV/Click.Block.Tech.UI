@@ -1,164 +1,159 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, StyleSheet, StatusBar, Dimensions, Alert} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native'; // Uncommented for navigation use
+// import LottieView from 'lottie-react-native'; // Commented out LottieView since it's only used for backend processing
+// import axios from 'axios'; // Commented out axios import as it's no longer needed
+// import { BASE_URL } from '../API/API'; // Commented out backend URL
 
-const { width } = Dimensions.get('window');
+// const API_URL = ${BASE_URL}/customers; // Commented out API_URL
 
-export default function PasswordAuthentication() {
-  const navigation = useNavigation();
-  const [inputValue, setInputValue] = useState('');
-  const [error, setError] = useState('');
+const PasswordAuthetication = () => {
+  const [email, setEmail] = useState('');
+  const navigation = useNavigation(); // Initialize navigation
 
-  const handleBackPress = () => {
-    navigation.goBack();
-  };
+  // Commented out the backend API call
+  // const updateCustomerStep = async (customerData) => {
+  //   try {
+  //     const response = await axios.patch(${API_URL}/${customerData.CustID_Nr}, customerData);
+  //     console.log('Update successful:', response.data);
+  //     return response;
+  //   } catch (error) {
+  //     console.error('Error updating customer:', error.response.data);
+  //     throw error.response.data;
+  //   }
+  // };
 
-  const validateInput = (value) => {
-    if (/^\d+$/.test(value) && value.length > 10) {
-      return; //OPM - Stop input if it's a phone number exceeding 10 digits
+  // Commented out the handleNext function for backend interaction
+  // const handleNext = async () => {
+  //   setIsSendingOtp(true);
+  //   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  //   if (!emailPattern.test(email)) {
+  //     Alert.alert('Invalid Email', 'Please enter a valid email address.');
+  //     setIsSendingOtp(false);
+  //     return;
+  //   }
+
+  //   const customerData = {
+  //     CustID_Nr: CustID,
+  //     Email: email,
+  //   };
+
+  //   console.log('Customer data being submitted:', customerData);
+
+  //   try {
+  //     const response = await updateCustomerStep(customerData);
+  //     console.log('API response:', response.stepText);
+
+  //     if (response.status === 200) {
+  //       setIsSendingOtp(false);
+  //       Alert.alert('Success', 'Email sent. Check your inbox for OTP.', [
+  //         { text: 'OK', onPress: () => navigation.navigate('VerifyEmail', { Email: email, CustID_Nr: CustID }) }
+  //       ]);
+  //     }
+
+  //   } catch (error) {
+  //     alert('Failed to update customer: ' + error.message);
+  //     setIsSendingOtp(false);  // Stop the loading animation in case of error
+  //   }
+  // };
+
+  const handleNext = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Email validation
+    if (!emailPattern.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
     }
-  
-    setInputValue(value);
-  
-    // OPM - Basic email or phone number regex for validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //const phoneRegex = /^\d{10}$/;
 
-    if (!value) {
-      setError('Field cannot be empty');
-    } else if (!emailRegex.test(value)) {
-      setError('Enter a valid email');
+    // Only call navigation if it is available (when uncommented)
+    if (navigation) {
+      // Navigate to the "VerifyEmail" screen and pass the email
+      navigation.navigate('PasswordVerificationCode', { email });
     } else {
-      setError('');
-    }
-  };
-
-  const handleSubmit = () => {
-    if (!inputValue || error) {
-      Alert.alert('Error', 'Please correct the errors before proceeding.');
-    } else {
-      Alert.alert('Success', 'Verification code sent to your email, Please check your phone.');
-      //navigation.navigate('NextScreen'); // OPM - Replace with the desired screen
+      console.log('Valid email, but navigation is not enabled');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#02457A" barStyle="light-content" />
+    <SafeAreaView style={styles.safeContainer}>
+      <LinearGradient colors={['#0F0C29', '#16335D', '#1E5E98']} style={styles.gradient}>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Forgot Remote Pin</Text>
+          <Text style={styles.subtitle}>Enter your email to receive a verification code to proceed.</Text>
 
-      <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={handleBackPress}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>Forgot Password</Text>
-          <View style={styles.placeholder} />
-        </View>
-
-        {/* Main Content */}
-        <View style={styles.mainContent}>
-          <Text style={styles.instructions}>
-            Enter the email associated with your account.
-          </Text>
-
-          {/* Input Field */}
           <TextInput
-            style={[styles.input, error ? styles.inputError : null]}
-            placeholder="Email Address"
-            placeholderTextColor="#888"
-            value={inputValue}
-            onChangeText={validateInput}
+            label="Enter your email address"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+            mode="outlined"
             keyboardType="email-address"
+            autoCapitalize="none" // To prevent auto-capitalizing the first letter of email
           />
 
-          {/* Error Message */}
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {/* Mocking loading state, you can remove the Lottie view */}
+          {/* 
+          {
+            isSendingOtp ? (
+              <LottieView style={{ width: 100, height: 100, marginLeft: 115, marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
+            ) : (
+              <Button mode="contained" onPress={handleNext} style={styles.button}>
+                Next
+              </Button>
+            )
+          }
+          */}
+          <Button mode="contained" onPress={handleNext} style={styles.button}>
+            Next
+          </Button>
 
-          {/* Submit Button */}
-          <TouchableOpacity 
-            style={styles.submitButton} 
-            onPress={handleSubmit}
-          >
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
         </View>
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  safeContainer: {
     flex: 1,
-    backgroundColor: '#02457A',
   },
-  content: {
+  gradient: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  header: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: '#02457A',
-    height: 60,
+    justifyContent: 'center',
   },
-  headerText: {
-    color: 'white',
-    fontSize: 20,
+  formContainer: {
+    width: '90%',
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 3,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
-    flex: 1,
+    color: '#003366',
+    marginBottom: 10,
   },
-  placeholder: {
-    width: 24,
-  },
-  mainContent: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  instructions: {
+  subtitle: {
     fontSize: 16,
-    color: '#02457A',
-    textAlign: 'center',
+    color: '#666',
     marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  inputError: {
-    borderColor: 'red',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  submitButton: {
-    backgroundColor: '#02457A',
-    padding: 16,
-    borderRadius: 8,
-    width: '100%',
-    alignItems: 'center',
+  button: {
+    backgroundColor: '#003366',
     marginTop: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  submitButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
+
+export default PasswordAuthetication;

@@ -30,6 +30,8 @@ import CreatePanicPin from './screens/createPanicpin_screen.js';
 import UpdateRemotePin from './screens/update_remotePin_screen.js';
 import UpdateAlertPin from './screens/update_panicPin_screen.js';
 import PasswordAuthentication from './screens/PasswordAuthetication.js';
+import PasswordVerificationCode from './screens/PasswordVerificationCode.js';
+import NewPassword from './screens/NewPassword.js';
 import { SessionProvider } from './screens/SessionProvider.js';  // Import the SessionProvider
 
 const Stack = createStackNavigator();
@@ -102,6 +104,8 @@ export default function App() {
               <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen} options={{ headerShown: false }} />
               <Stack.Screen name="VerifyApp" component={ActivateApp} options={{ headerShown: false }} />
               <Stack.Screen name="PasswordAuthentication" component={PasswordAuthentication} options={{ headerShown: false }} />
+              <Stack.Screen name="PasswordVerificationCode" component={PasswordVerificationCode} options={{ headerShown: false }} />
+              <Stack.Screen name="NewPassword" component={NewPassword} options={{ headerShown: false }} />
               {/* Only wrap the 'Home' and later screens with SessionProvider */}
               <Stack.Screen name="Home">
                 {() => (
