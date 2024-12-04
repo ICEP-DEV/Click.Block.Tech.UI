@@ -1,4 +1,4 @@
-import { ActivityIndicator, TouchableWithoutFeedback, View } from 'react-native';
+/*import { ActivityIndicator, TouchableWithoutFeedback, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -85,8 +85,8 @@ export default function App() {
             <ActivityIndicator size="large" color="#0000ff" /> // Display a loading indicator while data is being fetched
           ) : (
             <Stack.Navigator initialRouteName={route}>
-              {/* Initial Flow: Login, Registration, and Onboarding Screens */}
-              <Stack.Screen name="LoginOrSignup" component={LoginOrSignup} options={{ headerShown: false }} />
+              {/* Initial Flow: Login, Registration, and Onboarding Screens }*/
+              /*<Stack.Screen name="LoginOrSignup" component={LoginOrSignup} options={{ headerShown: false }} />
               <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
               <Stack.Screen name="LandingPage" component={LandingPage} options={{ headerShown: false }} />
               <Stack.Screen name="Registration" component={Registration} options={{ headerShown: false }} />
@@ -102,7 +102,7 @@ export default function App() {
               <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen} options={{ headerShown: false }} />
               <Stack.Screen name="VerifyApp" component={ActivateApp} options={{ headerShown: false }} />
               <Stack.Screen name="PasswordAuthentication" component={PasswordAuthentication} options={{ headerShown: false }} />
-              {/* Only wrap the 'Home' and later screens with SessionProvider */}
+              {/* Only wrap the 'Home' and later screens with SessionProvider *}
               <Stack.Screen name="Home">
                 {() => (
                   <SessionProvider>
@@ -129,3 +129,38 @@ export default function App() {
     </NavigationContainer>
   );
 }
+*/
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import MainScreen from './screens/MainScreen';
+import StatementScreen from './screens/StatementScreen';
+import DownloadStatement from './screens/DownloadStatement';  // Updated import
+
+const Stack = createStackNavigator();
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Main">
+        <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          options={{ title: 'Main Menu' }}
+        />
+        <Stack.Screen
+          name="Statements"
+          component={StatementScreen}
+          options={{ title: 'Statements' }}
+        />
+        <Stack.Screen
+          name="DownloadStatement"
+          component={DownloadStatement}  // Updated reference
+          options={{ title: 'Download Statement' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default App;
