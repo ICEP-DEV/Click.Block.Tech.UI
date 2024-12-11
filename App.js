@@ -126,6 +126,7 @@ export default function App() {
               <Stack.Screen name="CratePanicPin" component={CreatePanicPin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateRemotePin" component={UpdateRemotePin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateAlertPin" component={UpdateAlertPin} options={{ headerShown: false }} />
+              
             </Stack.Navigator>
           )}
         </View>
