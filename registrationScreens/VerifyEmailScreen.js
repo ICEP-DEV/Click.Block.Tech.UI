@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, Alert,ToastAndroid } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Alert, ToastAndroid } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { BASE_URL } from '../API/API';
 
-const API_URL = `${BASE_URL}/customers`;
-
 const VerifyEmailScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { Email } = route.params; // Assuming email is passed from the previous page
-  const {CustID_Nr} = route.params;
-  const showToastMsg= (msg) => {
+  const { Email, CustID_Nr } = route.params;
+
+  const showToastMsg = (msg) => {
     ToastAndroid.showWithGravity(
       msg,
       ToastAndroid.SHORT,
@@ -22,44 +21,44 @@ const VerifyEmailScreen = () => {
     );
   };
 
-  // Handle verification code change
   const handleCodeChange = (text) => {
-    // Limit the input to 6 digits
     setVerificationCode(text.slice(0, 6));
-    
   };
 
-  // API call to verify the OTP
   const verifyOtp = async () => {
+    if (isLoading) return; // Prevent multiple submissions
+
+    setIsLoading(true);
     try {
       const otpData = {
-        Email, 
-        otp: verificationCode
+        Email,
+        otp: verificationCode,
       };
 
-      console.log(otpData);
+      const response = await axios.post(`${BASE_URL}/forgotPin/verify-otp`, otpData);
 
-      const response = await axios.post(`${API_URL}/verify-otp`, otpData);
-
-      console.log(otpData);
-      console.log('Verification successful:', response.data);
-      Alert.alert('Success', 'Email verified successfully!'); // Show success alert
-      navigation.navigate('emailSuccess',{CustID:CustID_Nr}); // Navigate to the next screen
-
+      if (response.status === 200 && response.data?.message) {
+        Alert.alert('Success', 'OTP verified successfully!');
+        navigation.navigate('NewPassword', { CustID: CustID_Nr });
+      } else {
+        const errorMsg = response.data?.error || 'Unexpected response from the server.';
+        Alert.alert('Error', errorMsg);
+      }
     } catch (error) {
-      console.error('Error verifying OTP:', error.response.data);
-      showToastMsg('Failed to verify email: '); // Show error toast
+      const errorMsg = error.response?.data?.error || 'Failed to verify OTP. Please try again.';
+      Alert.alert('Error', errorMsg);
+      showToastMsg(errorMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Handle the "Next" button press
   const handleNext = () => {
     if (verificationCode.length !== 6) {
       Alert.alert('Invalid Code', 'Please enter a valid 6-digit code.');
-    } else {
-      console.log('Code is valid:', verificationCode);
-      verifyOtp(); // Call the API to verify OTP
+      return;
     }
+    verifyOtp();
   };
 
   return (
@@ -67,7 +66,6 @@ const VerifyEmailScreen = () => {
       <LinearGradient colors={['#003366', '#003366', '#ffffff']} style={styles.gradient}>
         <View style={styles.formContainer}>
 
-          {/* Progress Bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>1</Text></View>
             <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>2</Text></View>
@@ -75,26 +73,29 @@ const VerifyEmailScreen = () => {
             <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>4</Text></View>
           </View>
 
-          {/* Title and instructions */}
           <Text style={styles.title}>VERIFY EMAIL ACCOUNT</Text>
           <Text style={styles.subtitle}>
             We've sent an email to your provided email address with a verification code. Please enter it in the field below to verify your email account.
           </Text>
 
-          {/* Single Verification Code Input */}
           <TextInput
             label="Verification Code"
             value={verificationCode}
             onChangeText={handleCodeChange}
             style={styles.input}
-            keyboardType=""
+            keyboardType="numeric"
             maxLength={6}
             mode="outlined"
           />
 
-          {/* Next Button */}
-          <Button mode="contained" onPress={handleNext} style={styles.button}>
-            Next
+          <Button
+            mode="contained"
+            onPress={handleNext}
+            style={styles.button}
+            loading={isLoading}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Verifying...' : 'Next'}
           </Button>
         </View>
       </LinearGradient>
@@ -137,11 +138,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#02457A',
   },
   activeProgressText: {
-    color: '#fff', // White text for active square
+    color: '#fff',
     fontWeight: 'bold',
   },
   inactiveProgressText: {
-    color: '#02457A', // Dark blue text for inactive square
+    color: '#02457A',
     fontWeight: 'bold',
   },
   title: {
