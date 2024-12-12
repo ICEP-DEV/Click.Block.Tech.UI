@@ -33,8 +33,12 @@ const HomeScreen = () => {
       if(panicAlert){
         try {
           const value = await storage.getItem('CustID_Nr');
+
+         
           const response = await axios.get(`${BASE_URL}get_customer/${value}`);
+          
           const customerData = response.data;
+          
           setFirstName(customerData.FirstName || '');
           setAccountType(customerData.BankAccount.AccountType || 'Savings');
           const randomBalance = Math.floor(Math.random() * (50 - 10) ) + 10;

@@ -44,7 +44,8 @@ export default  function App() {
     setIsLoading(true);
     const fetchData = async () => {
      
-      const value = await storage.getItem('accountNumber'); 
+      // = await storage.getItem('accountNumber');
+      const value = 0;
       console.log(value);
       if(value !== null){
         setRoute('Login');

@@ -19,22 +19,26 @@ export default function CongratulationsScreen() {
     
     const fetchCardAndCustomerData = async () => {
       const accountID = await storage.getItem('accountID');
-    
+
       try {
        
         const response = await axios.get(`${BASE_URL}/bankcards/${accountID}/customer`);
         const data = response.data;
-
+        console.log('data after endpoint', data);
         setCustomerDetails({
           firstName: data.FirstName,
           lastName: data.LastName,
         });
 
+        
         setCardDetails({
           cardNumber: data.CardNumber,
           cvv: data.CVV,
           expirationDate: data.ExpirationDate,
         });
+
+        
+   
 
         setLoading(false);
       } catch (error) {

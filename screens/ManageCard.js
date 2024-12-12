@@ -28,18 +28,54 @@ export default function ManageCard() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation();
 
+ 
+
+  // Toggle dropdown modal
+  const toggleDropdownModal = () => {
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
   const [loading, setLoading] = useState(true);
   const [customerDetails, setCustomerDetails] = useState(null);
   const [cardDetails, setCardDetails] = useState(null);
   const toggleModal = () => setIsModalVisible(!isModalVisible);
   const storage = require('../async_storage');
-  const toggleCardDeactivation = () => {
-    setIsCardDeactivated((prev) => !prev);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  const dropdownOptions = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+  const toggleCardDeactivation = async () => {
+    try {
+      // Get account ID from storage
+      const accountID = await storage.getItem('accountID');
+      
+      // Fetch customer details to get CustID_Nr
+      const getCustIDResponse = await axios.get(`${BASE_URL}/bankcards/${accountID}/customer`);
+      const custID_Nr = getCustIDResponse.data.CustID_Nr;
+  
+      // Conditional API call based on the current state
+      if (isCardDeactivated) {
+        // Reactivate the card
+        
+        const reactivateResponse = await axios.put(`${BASE_URL}/customers/${custID_Nr}/reactivateCards`);
+        console.log('Card reactivated:', reactivateResponse.data);
+      } else {
+        // Deactivate the card
+        const deactivateResponse = await axios.put(`${BASE_URL}/customers/${custID_Nr}/deactivateCards`);
+        console.log('Card deactivated:', deactivateResponse.data);
+      }
+  
+      // Toggle the state
+      setIsCardDeactivated((prev) => !prev);
+  
+    } catch (error) {
+      console.error('Error toggling card state:', error);
+    }
   };
+  
 
 // Get By Card Number
   
-
   useEffect(() => {
     
     const fetchCardAndCustomerData = async () => {
@@ -133,6 +169,37 @@ export default function ManageCard() {
 
         </ScrollView>
       </View>
+
+            <Modal
+        visible={isDropdownVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsDropdownVisible(false)}
+      >
+
+        <View style={styles.modalContainer}>
+          <View style={styles.dropdownContent}>
+            <Text style={styles.modalTitle}>Choose an Option</Text>
+            {dropdownOptions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.dropdownOption}
+                onPress={() => handleOptionSelect(option)}
+              >
+                <Text style={styles.dropdownOptionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+
+            <TouchableOpacity
+              style={styles.updatedBackButton}
+              onPress={() => setIsDropdownVisible(false)}
+            >
+		
+              <Text style={styles.updatedBackButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       
       {/* Card Details Modal */}
       <Modal
