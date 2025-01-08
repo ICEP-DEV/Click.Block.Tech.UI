@@ -32,6 +32,7 @@ import UpdateAlertPin from './screens/update_panicPin_screen.js';
 import PasswordAuthentication from './screens/PasswordAuthetication.js';
 import PasswordVerificationCode from './screens/PasswordVerificationCode.js';
 import NewPassword from './screens/NewPassword.js';
+import StatementMenu from './screens/StatementMenu.js';
 import { SessionProvider } from './screens/SessionProvider.js';  // Import the SessionProvider
 
 const Stack = createStackNavigator();
@@ -119,6 +120,7 @@ export default function App() {
               <Stack.Screen name="ManageCard" component={ManageCard} options={{ headerShown: false }} />
               <Stack.Screen name="ManageScreen" component={ManageScreen} options={{ headerShown: false }} />
               <Stack.Screen name="SavingsAccount" component={SavingsAccount} options={{ headerShown: false }} />
+              <Stack.Screen name="StatementMenu" component={StatementMenu} options={{ headerShown: false }} />
               <Stack.Screen name="Congratulations" component={CongratulationsScreen} options={{ headerShown: false }} />
               <Stack.Screen name="CardSettings" component={CardSettings} options={{ headerShown: false }} />
               <Stack.Screen name="UpdatePin" component={UpdatePin} options={{ headerShown: false }} />
