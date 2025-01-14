@@ -1,3 +1,4 @@
+// ManageCard.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -18,10 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { BASE_URL } from '../API/API';
 
-
 const { width } = Dimensions.get('window');
-
-
 
 export default function ManageCard() {
   const [isCardDeactivated, setIsCardDeactivated] = useState(false);
@@ -31,22 +29,18 @@ export default function ManageCard() {
   const [loading, setLoading] = useState(true);
   const [customerDetails, setCustomerDetails] = useState(null);
   const [cardDetails, setCardDetails] = useState(null);
+
   const toggleModal = () => setIsModalVisible(!isModalVisible);
   const storage = require('../async_storage');
   const toggleCardDeactivation = () => {
     setIsCardDeactivated((prev) => !prev);
   };
 
-// Get By Card Number
-  
-
   useEffect(() => {
-    
     const fetchCardAndCustomerData = async () => {
       const accountID = await storage.getItem('accountID');
-    
+
       try {
-       
         const response = await axios.get(`${BASE_URL}/bankcards/${accountID}/customer`);
         const data = response.data;
 
@@ -71,12 +65,11 @@ export default function ManageCard() {
     fetchCardAndCustomerData();
   }, []);
 
-  // Format the expiration date
   const formatExpirationDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-    const year = String(date.getFullYear()).slice(-2); // Get last two digits of the year
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
     return `${month}/${year}`;
   };
 
@@ -88,7 +81,6 @@ export default function ManageCard() {
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#02457A" barStyle="light-content" />
       <View style={styles.content}>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Ionicons name="arrow-back" size={24} color="white" />
@@ -97,7 +89,6 @@ export default function ManageCard() {
           <View style={styles.placeholder} />
         </View>
 
-        {/* Scrollable Content */}
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Image
             source={require('../assets/ManageCard/card_p.png')}
@@ -105,7 +96,6 @@ export default function ManageCard() {
           />
           <Text style={styles.cardType}>Debit Card</Text>
 
-          {/* Card Options */}
           <TouchableOpacity style={styles.option} onPress={toggleModal}>
             <Text style={styles.optionText}>View card details</Text>
           </TouchableOpacity>
@@ -121,88 +111,31 @@ export default function ManageCard() {
             />
           </View>
 
-          <TouchableOpacity style={styles.option} onPress={()=>navigation.navigate('CardSettings')}> 
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('CardSettings')}>
             <Text style={styles.optionText}>Card Settings</Text>
           </TouchableOpacity>
 
-          {/* OPM - Logout Button */}
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate('UpdateDailyLimit')}
+          >
+            <Text style={styles.optionText}>Update Daily Limit</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.optionText}>Logout</Text>
           </TouchableOpacity>
 
+          {/* New Update Daily Limit Button */}
+     
         </ScrollView>
       </View>
-      
-      {/* Card Details Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={toggleModal}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.updatedModalContent}>
-            <Text style={styles.modalTitle}>CARD DETAILS</Text>
-            <Image
-              source={require('../assets/ManageCard/card_p.png')}
-              style={styles.updatedModalCardImage}
-            />
-            <Text style={styles.modalCardType}>Debit Card</Text>
-
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Account Holder</Text>
-              <View style={styles.updatedDetailValueContainer}>
-                <Text style={styles.updatedDetailValue}>
-                  {customerDetails
-                    ? `${customerDetails.firstName} ${customerDetails.lastName}`
-                    : 'Loading...'}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Card Number</Text>
-              <View style={styles.updatedDetailValueContainer}>
-                <Text style={styles.updatedDetailValue}>
-                  {cardDetails ? cardDetails.cardNumber : 'Loading...'}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.detailRowHalf}>
-              <View style={styles.halfWidth}>
-                <Text style={styles.detailLabel}>CVV</Text>
-                <View style={styles.updatedDetailValueContainer}>
-                  <Text style={styles.updatedDetailValue}>
-                    {cardDetails ? cardDetails.cvv : 'Loading...'}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.halfWidth}>
-                <Text style={styles.detailLabel}>Expiry Date</Text>
-                <View style={styles.updatedDetailValueContainer}>
-                  <Text style={styles.updatedDetailValue}>
-                    {cardDetails
-                      ? formatExpirationDate(cardDetails.expirationDate)
-                      : 'Loading...'}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={styles.updatedBackButton}
-              onPress={toggleModal}
-            >
-              <Text style={styles.updatedBackButtonText}>Back</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }
+
+// Add your styles here
+
 
 const styles = StyleSheet.create({
   container: {
