@@ -5,7 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { BASE_URL } from '../API/API';
-
+const storage = require('../async_storage');
+  
 const PasswordAuthetication = () => {
   const [Email, setEmail] = useState('');
   const [isSendingOtp, setIsSendingOtp] = useState(false);
@@ -23,23 +24,41 @@ const PasswordAuthetication = () => {
     setIsSendingOtp(true);
 
     try {
-      const response = await axios.post(`${BASE_URL}/generate-otp`, { Email });
-      console.log('API Response:', response.data);
+      // Retrieve CustID from AsyncStorage
+      const CustID = await storage.getItem('CustID_Nr');
+      if (!CustID) {
+        Alert.alert('Error', 'Unable to retrieve customer ID. Please try again.');
+        return;
+      }
 
-      if (response.status === 200) {
+      // Fetch customer details
+      const customerResponse = await axios.get(`${BASE_URL}/get_customer/${CustID}`);
+      const customerData = customerResponse.data;
+
+      // Check if email matches
+      if (customerData.Email !== Email) {
+        Alert.alert('Email Mismatch', 'The entered email does not match our records.');
+        return;
+      }
+
+      // Generate OTP if email matches
+      const otpResponse = await axios.post(`${BASE_URL}/generate-otp`, { Email });
+      console.log('API Response:', otpResponse.data);
+
+      if (otpResponse.status === 200) {
         Alert.alert('Success', 'Verification code sent. Check your inbox.', [
           {
             text: 'OK',
             onPress: () =>
-              navigation.navigate('VerifyEmail', { Email }),
+              navigation.navigate('PasswordVerificationCode', { Email }),
           },
         ]);
       } else {
         Alert.alert('Error', 'Failed to send verification code. Please try again.');
       }
     } catch (error) {
-      console.error('Error generating OTP:', error);
-      Alert.alert('Error', 'An error occurred while sending the OTP. Please try again.');
+      console.error('Error processing request:', error);
+      Alert.alert('Error', 'An error occurred while processing your request. Please try again.');
     } finally {
       setIsSendingOtp(false);
     }

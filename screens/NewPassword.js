@@ -11,8 +11,10 @@ const NewPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
   const route = useRoute();
+  const storage = require('../async_storage');
   
-  const { CustID } = route.params; // Assuming CustID is passed from the previous screen
+  
+
   const showToastMsg = (msg) => {
     ToastAndroid.showWithGravity(
       msg,
@@ -38,13 +40,14 @@ const NewPassword = () => {
       return;
     }
 
+    const CustID = await storage.getItem('CustID_Nr');
     try {
       const passwordData = {
         custID_Nr: CustID ,
         newPin: newPassword
       };
 
-      console.log(passwordData);
+      console.log('Password Data', passwordData);
 
       const response = await axios.patch(`${BASE_URL}/update-pin`, passwordData);
 
