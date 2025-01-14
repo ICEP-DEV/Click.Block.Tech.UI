@@ -2,79 +2,65 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native'; // Uncommented for navigation use
-// import LottieView from 'lottie-react-native'; // Commented out LottieView since it's only used for backend processing
-// import axios from 'axios'; // Commented out axios import as it's no longer needed
-// import { BASE_URL } from '../API/API'; // Commented out backend URL
-
-// const API_URL = ${BASE_URL}/customers; // Commented out API_URL
-
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { BASE_URL } from '../API/API';
+const storage = require('../async_storage');
+  
 const PasswordAuthetication = () => {
-  const [email, setEmail] = useState('');
-  const navigation = useNavigation(); // Initialize navigation
+  const [Email, setEmail] = useState('');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const navigation = useNavigation();
 
-  // Commented out the backend API call
-  // const updateCustomerStep = async (customerData) => {
-  //   try {
-  //     const response = await axios.patch(${API_URL}/${customerData.CustID_Nr}, customerData);
-  //     console.log('Update successful:', response.data);
-  //     return response;
-  //   } catch (error) {
-  //     console.error('Error updating customer:', error.response.data);
-  //     throw error.response.data;
-  //   }
-  // };
-
-  // Commented out the handleNext function for backend interaction
-  // const handleNext = async () => {
-  //   setIsSendingOtp(true);
-  //   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  //   if (!emailPattern.test(email)) {
-  //     Alert.alert('Invalid Email', 'Please enter a valid email address.');
-  //     setIsSendingOtp(false);
-  //     return;
-  //   }
-
-  //   const customerData = {
-  //     CustID_Nr: CustID,
-  //     Email: email,
-  //   };
-
-  //   console.log('Customer data being submitted:', customerData);
-
-  //   try {
-  //     const response = await updateCustomerStep(customerData);
-  //     console.log('API response:', response.stepText);
-
-  //     if (response.status === 200) {
-  //       setIsSendingOtp(false);
-  //       Alert.alert('Success', 'Email sent. Check your inbox for OTP.', [
-  //         { text: 'OK', onPress: () => navigation.navigate('VerifyEmail', { Email: email, CustID_Nr: CustID }) }
-  //       ]);
-  //     }
-
-  //   } catch (error) {
-  //     alert('Failed to update customer: ' + error.message);
-  //     setIsSendingOtp(false);  // Stop the loading animation in case of error
-  //   }
-  // };
-
-  const handleNext = () => {
+  const handleNext = async () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Email validation
-    if (!emailPattern.test(email)) {
+    if (!emailPattern.test(Email)) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
 
-    // Only call navigation if it is available (when uncommented)
-    if (navigation) {
-      // Navigate to the "VerifyEmail" screen and pass the email
-      navigation.navigate('PasswordVerificationCode', { email });
-    } else {
-      console.log('Valid email, but navigation is not enabled');
+    setIsSendingOtp(true);
+
+    try {
+      // Retrieve CustID from AsyncStorage
+      const CustID = await storage.getItem('CustID_Nr');
+      if (!CustID) {
+        Alert.alert('Error', 'Unable to retrieve customer ID. Please try again.');
+        return;
+      }
+
+      // Fetch customer details
+      const customerResponse = await axios.get(`${BASE_URL}/get_customer/${CustID}`);
+      const customerData = customerResponse.data;
+
+      // Check if email matches
+      if (customerData.Email !== Email) {
+        Alert.alert('Email Mismatch', 'The entered email does not match our records.');
+        return;
+      }
+
+      // Generate OTP if email matches
+      const otpResponse = await axios.post(`${BASE_URL}/generate-otp`, { Email });
+      console.log('API Response:', otpResponse.data);
+
+      if (otpResponse.status === 200) {
+        Alert.alert('Success', 'Verification code sent. Check your inbox.', [
+          {
+            text: 'OK',
+            onPress: () =>
+              navigation.navigate('PasswordVerificationCode', { Email }),
+          },
+        ]);
+      } else {
+        Alert.alert('Error', 'Failed to send verification code. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error processing request:', error);
+      Alert.alert('Error', 'An error occurred while processing your request. Please try again.');
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
@@ -87,30 +73,23 @@ const PasswordAuthetication = () => {
 
           <TextInput
             label="Enter your email address"
-            value={email}
+            value={Email}
             onChangeText={setEmail}
             style={styles.input}
             mode="outlined"
             keyboardType="email-address"
-            autoCapitalize="none" // To prevent auto-capitalizing the first letter of email
+            autoCapitalize="none"
           />
 
-          {/* Mocking loading state, you can remove the Lottie view */}
-          {/* 
-          {
-            isSendingOtp ? (
-              <LottieView style={{ width: 100, height: 100, marginLeft: 115, marginBottom: 45 }} source={require('../assets/lottie_animation_icons/loading_anim_icon.json')} autoPlay loop />
-            ) : (
-              <Button mode="contained" onPress={handleNext} style={styles.button}>
-                Next
-              </Button>
-            )
-          }
-          */}
-          <Button mode="contained" onPress={handleNext} style={styles.button}>
-            Next
+          <Button
+            mode="contained"
+            onPress={handleNext}
+            style={styles.button}
+            loading={isSendingOtp}
+            disabled={isSendingOtp}
+          >
+            {isSendingOtp ? 'Sending...' : 'Next'}
           </Button>
-
         </View>
       </LinearGradient>
     </SafeAreaView>

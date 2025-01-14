@@ -88,9 +88,9 @@ export default function ActivateApp({navigation}){
               onChangeText={setInputPin}
             />
             <View style={styles.forgotPinContainer}>
-              <TouchableOpacity >
-                <Text style={styles.forgotPin}>Forgot PIN</Text>
-              </TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.navigate('PasswordAuthentication')}>
+            <Text style={styles.forgotPin}>Forgot PIN</Text>
+          </TouchableOpacity>
             </View>
             <View style={styles.bottomContainer}>
               

@@ -6,14 +6,15 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { BASE_URL } from '../API/API';
 
-const API_URL = `${BASE_URL}/customers`;
-
 const NewPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
   const route = useRoute();
-  const { CustID } = route.params; // Assuming CustID is passed from the previous screen
+  const storage = require('../async_storage');
+  
+  
+
   const showToastMsg = (msg) => {
     ToastAndroid.showWithGravity(
       msg,
@@ -39,15 +40,16 @@ const NewPassword = () => {
       return;
     }
 
+    const CustID = await storage.getItem('CustID_Nr');
     try {
       const passwordData = {
-        CustID,
-        newPassword
+        custID_Nr: CustID ,
+        newPin: newPassword
       };
 
-      console.log(passwordData);
+      console.log('Password Data', passwordData);
 
-      const response = await axios.post(`${API_URL}/reset-password`, passwordData);
+      const response = await axios.patch(`${BASE_URL}/update-pin`, passwordData);
 
       console.log('PIN reset successful:', response.data);
       Alert.alert('Success', 'Your Remote pin has been updated!'); // Show success alert
