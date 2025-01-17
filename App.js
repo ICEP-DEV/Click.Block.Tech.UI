@@ -32,6 +32,7 @@ import UpdateAlertPin from './screens/update_panicPin_screen.js';
 import PasswordAuthentication from './screens/PasswordAuthetication.js';
 import PasswordVerificationCode from './screens/PasswordVerificationCode.js';
 import NewPassword from './screens/NewPassword.js';
+import StatementMenu from './screens/StatementMenu.js';
 import { SessionProvider } from './screens/SessionProvider.js';  // Import the SessionProvider
 
 const Stack = createStackNavigator();
@@ -125,6 +126,7 @@ export default function App() {
               <Stack.Screen name="PinEntry" component={PinEntry} options={{ headerShown: false }} />
               <Stack.Screen name="CratePanicPin" component={CreatePanicPin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateRemotePin" component={UpdateRemotePin} options={{ headerShown: false }} />
+              <Stack.Screen name="StatementMenu" component={StatementMenu} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateAlertPin" component={UpdateAlertPin} options={{ headerShown: false }} />
               
             </Stack.Navigator>

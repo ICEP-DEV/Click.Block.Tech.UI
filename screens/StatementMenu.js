@@ -1,124 +1,139 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TextInput, Alert, TouchableOpacity, RadioButton } from 'react-native';
+import { View, Text, Alert, TextInput, StyleSheet } from 'react-native';
+import { RadioButton, Button } from 'react-native-paper'; 
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
-const StatementMenu = ({ route }) => {
-  const { accountType } = route.params;
-  const [selectedDateRange, setSelectedDateRange] = useState('1 Month'); // Default selected range
+const StatementMenu = () => {
+  const [selectedDateRange, setSelectedDateRange] = useState('1 Month');
   const [email, setEmail] = useState('');
   const [isEmailSelected, setIsEmailSelected] = useState(false);
-  const [viewStatement, setViewStatement] = useState(false);
   const navigation = useNavigation();
 
-  // Function to validate email
-  const validateEmail = (email) => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
-  };
+  const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
-  // Function to handle sending the email
   const handleSendEmail = () => {
     if (!validateEmail(email)) {
-      Alert.alert('Invalid email address');
+      Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
-    // Logic for sending the email with the statement
-    Alert.alert('Statement sent to email');
+    Alert.alert('Success', `Statement sent to ${email}`);
   };
 
-  // Function to handle viewing the statement
   const handleViewStatement = () => {
-    Alert.alert(`Viewing statement for ${accountType} account, Date range: ${selectedDateRange}`);
-    // Logic for viewing the statement
+    Alert.alert('View Statement', `Viewing statement for ${selectedDateRange}`);
   };
 
-  // Function to handle PDF statement download
   const handleGetPDFStatement = () => {
-    Alert.alert(`Downloading PDF statement for ${accountType} account, Date range: ${selectedDateRange}`);
-    // Logic for downloading PDF
+    Alert.alert('Download PDF', `Downloading PDF statement for ${selectedDateRange}`);
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 20, marginBottom: 10 }}>Statement for {accountType} Account</Text>
+    <LinearGradient
+      colors={['#0F0C29', '#16335D', '#1E5E98']}
+      style={styles.gradientBackground}
+    >
+      <View style={styles.container}>
+        <Text style={styles.heading}>Statement for Savings Account</Text>
 
-      {/* Date Range Selection */}
-      <Text style={{ marginBottom: 10 }}>Select Date Range:</Text>
-      <RadioButton.Group
-        onValueChange={value => setSelectedDateRange(value)}
-        value={selectedDateRange}
-      >
-        <View style={{ flexDirection: 'row' }}>
-          <RadioButton value="1 Month" />
-          <Text>Last 1 Month</Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <RadioButton value="3 Months" />
-          <Text>Last 3 Months</Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <RadioButton value="6 Months" />
-          <Text>Last 6 Months</Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <RadioButton value="12 Months" />
-          <Text>Last 12 Months</Text>
-        </View>
-      </RadioButton.Group>
-
-      {/* Options to choose between View Statement or Send via Email */}
-      <View style={{ marginTop: 20 }}>
-        <Text style={{ fontSize: 18 }}>Options:</Text>
-        
-        {/* View Statement Button */}
-        <TouchableOpacity
-          onPress={() => {
-            setViewStatement(true);
-            setIsEmailSelected(false); // Disable email option when viewing statement
-            handleViewStatement();
-          }}
+        {/* Date Range Selection */}
+        <Text style={styles.subheading}>Select Date Range:</Text>
+        <RadioButton.Group
+          onValueChange={(value) => setSelectedDateRange(value)}
+          value={selectedDateRange}
         >
-          <Button title="View Statement" />
-        </TouchableOpacity>
+          {['1 Month', '3 Months', '6 Months', '12 Months'].map((range) => (
+            <View key={range} style={styles.radioButtonContainer}>
+              <RadioButton value={range} />
+              <Text>{`Last ${range}`}</Text>
+            </View>
+          ))}
+        </RadioButton.Group>
 
-        {/* Get PDF Statement Button */}
-        <TouchableOpacity
-          onPress={() => {
-            setViewStatement(true);
-            setIsEmailSelected(false); // Disable email option when downloading PDF
-            handleGetPDFStatement();
-          }}
-        >
-          <Button title="Get PDF Statement" />
-        </TouchableOpacity>
+        {/* Options */}
+        <View style={styles.options}>
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={handleViewStatement}
+          >
+            View Statement
+          </Button>
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={handleGetPDFStatement}
+          >
+            Get PDF Statement
+          </Button>
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={() => setIsEmailSelected(true)}
+          >
+            Send via Email
+          </Button>
+        </View>
 
-        {/* Send via Email Button */}
-        <TouchableOpacity
-          onPress={() => {
-            setIsEmailSelected(true); // Enable email input
-            setViewStatement(false); // Disable statement viewing when sending via email
-          }}
-          style={{ marginTop: 10 }}
-        >
-          <Button title="Send via Email" />
-        </TouchableOpacity>
+        {/* Email Input */}
+        {isEmailSelected && (
+          <View style={styles.emailContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter email address"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <Button mode="contained" style={styles.button} onPress={handleSendEmail}>
+              Send Statement
+            </Button>
+          </View>
+        )}
       </View>
-
-      {/* If Send via Email is selected, show email input field */}
-      {isEmailSelected && (
-        <View style={{ marginTop: 20 }}>
-          <TextInput
-            style={{ borderBottomWidth: 1, marginBottom: 20 }}
-            placeholder="Enter email address"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <Button title="Send Statement" onPress={handleSendEmail} />
-        </View>
-      )}
-    </View>
+    </LinearGradient>
   );
 };
+
+const styles = StyleSheet.create({
+  gradientBackground: {
+    flex: 1,
+  },
+  container: {
+    padding: 20,
+    flex: 1,
+  },
+  heading: {
+    fontSize: 20,
+    marginBottom: 10,
+    color: '#fff',
+  },
+  subheading: {
+    marginBottom: 10,
+    color: '#fff',
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  options: {
+    marginTop: 20,
+  },
+  button: {
+    marginBottom: 10,
+  },
+  emailContainer: {
+    marginTop: 20,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 10,
+    padding: 5,
+    backgroundColor: '#fff',
+    borderRadius: 4,
+  },
+});
 
 export default StatementMenu;
