@@ -25,10 +25,21 @@ const PasswordAuthetication = () => {
 
     try {
       // Retrieve CustID from AsyncStorage
-      const CustID = await storage.getItem('CustID_Nr');
+      let CustID = await storage.getItem('CustID_Nr');
+      
       if (!CustID) {
-        Alert.alert('Error', 'Unable to retrieve customer ID. Please try again.');
-        return;
+        
+        const emailResponse = await axios.get(`${BASE_URL}get_customer_byEmail/${Email}`);
+        
+       
+        if (emailResponse.data && emailResponse.data.CustID_Nr) {
+          CustID = emailResponse.data.CustID_Nr;
+          await storage.setItem('CustID_Nr', CustID );
+          
+        } else {
+          Alert.alert('Error', 'No customer found with the provided email.');
+          return;
+        }
       }
 
       // Fetch customer details
@@ -57,8 +68,8 @@ const PasswordAuthetication = () => {
         Alert.alert('Error', 'Failed to send verification code. Please try again.');
       }
     } catch (error) {
-      console.error('Error processing request:', error);
-      Alert.alert('Error', 'An error occurred while processing your request. Please try again.');
+      
+      Alert.alert('Error', 'No customer found with the provided email.');
     } finally {
       setIsSendingOtp(false);
     }

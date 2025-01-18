@@ -128,17 +128,6 @@ const SavingsAccount = () => {
             <Text style={styles.transactionDate}>Sat 7, 18:53 pm</Text>
           </View>
 
-          <View style={styles.transactionItem}>
-            <Text style={styles.transactionText}>RTC 1223356778 PAYMENT</Text>
-            <Text style={styles.transactionAmountPositive}>+R630.50</Text>
-            <Text style={styles.transactionDate}>Mon 8, 10:53 pm</Text>
-          </View>
-
-          <View style={styles.transactionItem}>
-            <Text style={styles.transactionText}>VODACOM AIRTIME</Text>
-            <Text style={styles.transactionAmountNegative}>-R350</Text>
-            <Text style={styles.transactionDate}>Mon 8, 14:53 pm</Text>
-          </View>
         </View>
       </ScrollView>
     </View>
