@@ -25,6 +25,7 @@ export default function ActivateApp({navigation}){
         await axios.get(`${BASE_URL}get_customer_byID/${accountNumber}/${inputPin}`,).then((response)=>{
           
           const userData = response.data;
+          console.log(userData);
           //check if the user data is not null
           if (userData) {
             showToastMsg('Successfully logged in');

@@ -16,12 +16,13 @@ import { BASE_URL } from '../API/API';
 const SavingsAccount = () => {
   const [firstName, setFirstName] = useState('');
   const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState([]); // State for transactions
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false); // State for the popup menu
   const storage = require('../async_storage');
   const navigation = useNavigation();
 
-  // Fetch customer data from the database
+  // Fetch customer and transactions data from the database
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
@@ -31,9 +32,15 @@ const SavingsAccount = () => {
 
         setFirstName(customerData.FirstName || '');
         setBalance(customerData.BankAccount.Balance || 0);
+
+        // Fetch transactions based on the Bank Account ID (assuming it's part of the response)
+        const accID = await storage.getItem('accountID');
+        const transactionsResponse = await axios.get(`${BASE_URL}getAllTransactionByAccID/${accID}`);
+        setTransactions(transactionsResponse.data);
+
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching customer data:', error);
+        console.error('Error fetching customer data or transactions:', error);
         setLoading(false);
       }
     };
@@ -48,6 +55,27 @@ const SavingsAccount = () => {
       </View>
     );
   }
+
+  // Function to extract the year and month from a transaction's date
+  const getTransactionYearMonth = (transactionDate) => {
+    const date = new Date(transactionDate);
+    const year = date.getFullYear();
+    const month = date.toLocaleString('default', { month: 'long' });
+    return { year, month };
+  };
+
+  // Categorize transactions by year and month
+  const categorizedTransactions = transactions.reduce((acc, transaction) => {
+    const { year, month } = getTransactionYearMonth(transaction.transactionDate);
+    if (!acc[year]) {
+      acc[year] = {};
+    }
+    if (!acc[year][month]) {
+      acc[year][month] = [];
+    }
+    acc[year][month].push(transaction);
+    return acc;
+  }, {});
 
   return (
     <View style={styles.fullScreenContainer}>
@@ -104,30 +132,62 @@ const SavingsAccount = () => {
               <Text style={styles.modalOptionText}>Proof of Account</Text>
             </TouchableOpacity>
             <TouchableOpacity
-  style={styles.modalOption}
-  onPress={() => {
-    setModalVisible(false); 
-    console.log('Account Statement selected');
-    navigation.navigate('StatementMenu'); // This will navigate to the StatementMenu screen
-  }}
->
+              style={styles.modalOption}
+              onPress={() => {
+                setModalVisible(false); 
+                console.log('Account Statement selected');
+                navigation.navigate('StatementMenu'); // This will navigate to the StatementMenu screen
+              }}
+            >
               <Text style={styles.modalOptionText}>Account Statement</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      {/* Recent Transactions Section */}
+      {/* Categorized Transactions Section */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.transactionSection}>
-          <Text style={styles.transactionHeader}>Recent transactions</Text>
-          {/* Hardcoded Transactions */}
-          <View style={styles.transactionItem}>
-            <Text style={styles.transactionText}>PAYROLL REF 12443554535</Text>
-            <Text style={styles.transactionAmountPositive}>+R2000</Text>
-            <Text style={styles.transactionDate}>Sat 7, 18:53 pm</Text>
-          </View>
+          {Object.keys(categorizedTransactions).map((year) => (
+            <View key={year} style={styles.transactionYearSection}>
+              <Text style={styles.transactionYear}>{year}</Text>
+              {Object.keys(categorizedTransactions[year]).map((month) => (
+                <View key={month} style={styles.transactionMonthSection}>
+                  <Text style={styles.transactionHeader}>
+                    {month}
+                  </Text>
+                  {categorizedTransactions[year][month].map((transaction) => (
+                    <View key={transaction.id} style={styles.transactionItem}>
+                      <Text style={styles.transactionText}>
+                        {transaction.transactionType || 'Transaction'}
+                      </Text>
+                      <Text
+                        style={
+                          transaction.transactionAmount > 0
+                            ? styles.transactionAmountPositive
+                            : styles.transactionAmountNegative
+                        }
+                      >
+                        {transaction.transactionAmount > 0
+                          ? `+R${transaction.transactionAmount}`
+                          : `-R${Math.abs(transaction.transactionAmount)}`}
+                      </Text>
+                      <Text style={styles.transactionDate}>
+  {new Date(transaction.transactionDate).toLocaleDateString()}{" "}
+  <Text style={styles.transactionTime}>
+    {new Date(transaction.transactionDate).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })}
+  </Text>
+</Text>
 
+                    </View>
+                  ))}
+                </View>
+              ))}
+            </View>
+          ))}
         </View>
       </ScrollView>
     </View>
@@ -139,6 +199,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  transactionTime: {
+    fontSize: 12,
+    color: '#666',
+    marginRight: 30,
+  },
+  
   header: {
     backgroundColor: '#002f66',
     paddingVertical: 40,
@@ -175,6 +241,18 @@ const styles = StyleSheet.create({
   transactionSection: {
     marginTop: 20,
     paddingHorizontal: 20,
+  },
+  transactionYearSection: {
+    marginBottom: 30,
+  },
+  transactionYear: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  transactionMonthSection: {
+    marginBottom: 20,
   },
   transactionHeader: {
     fontSize: 18,
@@ -234,8 +312,8 @@ const styles = StyleSheet.create({
   },
   modalOption: {
     paddingVertical: 10,
-    borderBottomColor: '#ddd',
     borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   modalOptionText: {
     fontSize: 16,

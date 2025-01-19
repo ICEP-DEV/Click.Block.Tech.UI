@@ -34,7 +34,7 @@ const PasswordAuthetication = () => {
        
         if (emailResponse.data && emailResponse.data.CustID_Nr) {
           CustID = emailResponse.data.CustID_Nr;
-          await storage.setItem('CustID_Nr', CustID );
+          // await storage.setItem('CustID_Nr', CustID );
           
         } else {
           Alert.alert('Error', 'No customer found with the provided email.');
