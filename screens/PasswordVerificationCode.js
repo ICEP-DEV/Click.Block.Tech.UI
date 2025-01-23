@@ -1,19 +1,18 @@
-import React, { useState } from 'react';  
+import React, { useState } from 'react';
 import { View, StyleSheet, Text, SafeAreaView, Alert, ToastAndroid } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
-// import axios from 'axios'; // Commented out axios import
-// import { BASE_URL } from '../API/API'; // Commented out the BASE_URL import
-
-// const API_URL = `${BASE_URL}/customers`; // Commented out the API_URL definition
+import axios from 'axios';
+import { BASE_URL } from '../API/API';
 
 const PasswordVerificationCode = () => {
   const [verificationCode, setVerificationCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { Email } = route.params; // Assuming email is passed from the previous page
-  const { CustID_Nr } = route.params;
+  const { Email, CustID_Nr } = route.params;
+
   const showToastMsg = (msg) => {
     ToastAndroid.showWithGravity(
       msg,
@@ -22,45 +21,45 @@ const PasswordVerificationCode = () => {
     );
   };
 
-  // Handle verification code change
   const handleCodeChange = (text) => {
-    // Limit the input to 6 digits
-    setVerificationCode(text.slice(0, 6));
+    setVerificationCode(text.slice(0, 6)); // Limit to 6 characters
   };
 
-  // Commented out the API call to verify the OTP
-  // const verifyOtp = async () => {
-  //   try {
-  //     const otpData = {
-  //       Email, 
-  //       otp: verificationCode
-  //     };
-  
-  //     console.log(otpData);
-  
-  //     const response = await axios.post(`${API_URL}/verify-otp`, otpData);
-  
-  //     console.log(otpData);
-  //     console.log('Verification successful:', response.data);
-  //     Alert.alert('Success', 'Email verified successfully!'); // Show success alert
-  //     navigation.navigate('emailSuccess', { CustID: CustID_Nr }); // Navigate to the next screen
-  
-  //   } catch (error) {
-  //     console.error('Error verifying OTP:', error.response.data);
-  //     showToastMsg('Failed to verify email: '); // Show error toast
-  //   }
-  // };
+  const verifyOtp = async () => {
+    if (isLoading) return; // Prevent multiple submissions
 
-  // Handle the "Next" button press (now only navigates to the next screen)
+    setIsLoading(true);
+    try {
+      const otpData = {
+        Email,
+        otp: verificationCode,
+      };
+
+      const response = await axios.post(`${BASE_URL}/forgotPin/verify-otp`, otpData);
+
+      if (response.status === 200 && response.data?.message) {
+        Alert.alert('Success', 'OTP verified successfully!');
+        
+        navigation.navigate('NewPassword', { CustID: CustID_Nr }); // Navigate to NewPassword screen
+      } else {
+        const errorMsg = response.data?.error || 'Unexpected response from the server.';
+        Alert.alert('Error', errorMsg);
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || 'Failed to verify OTP. Please try again.';
+      Alert.alert('Error', errorMsg);
+      showToastMsg(errorMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleNext = () => {
     if (verificationCode.length !== 6) {
       Alert.alert('Invalid Code', 'Please enter a valid 6-digit code.');
-    } else {
-      console.log('Code is valid:', verificationCode);
-      // Commented out the backend call, now we just navigate
-      // verifyOtp(); // Call the API to verify OTP
-      navigation.navigate('NewPassword', { CustID: CustID_Nr }); // Navigate to NewPassword screen
+      return;
     }
+    verifyOtp(); // Trigger OTP verification
   };
 
   return (
@@ -74,7 +73,7 @@ const PasswordVerificationCode = () => {
             We've sent an email to your provided email address with a verification code. Please enter it in the field below to verify your email account.
           </Text>
 
-          {/* Single Verification Code Input */}
+          {/* Verification Code Input */}
           <TextInput
             label="Verification Code"
             value={verificationCode}
@@ -86,8 +85,8 @@ const PasswordVerificationCode = () => {
           />
 
           {/* Next Button */}
-          <Button mode="contained" onPress={handleNext} style={styles.button}>
-            Next
+          <Button mode="contained" onPress={handleNext} style={styles.button} loading={isLoading} disabled={isLoading}>
+            {isLoading ? 'Verifying...' : 'Next'}
           </Button>
         </View>
       </LinearGradient>
