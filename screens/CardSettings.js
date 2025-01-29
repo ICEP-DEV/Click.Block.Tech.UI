@@ -52,13 +52,13 @@ export default function CardSettings({ navigation }) {
             <Text style={styles.optionText}>Update PIN</Text>
           </TouchableOpacity>
 
-          {/* Updated Message Settings Button */}
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('contactUs')}>
-            <Text style={styles.optionText}>Message Settings</Text>
-          </TouchableOpacity>
-
+       
           <TouchableOpacity style={styles.option}>
             <Text style={styles.optionText}>Privacy Settings</Text>
+          </TouchableOpacity>
+             {/* Updated Message Settings Button */}
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('chatbot')}>
+            <Text style={styles.optionText}>Help</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

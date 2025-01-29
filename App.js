@@ -31,7 +31,8 @@ import UpdateRemotePin from './screens/update_remotePin_screen.js';
 import UpdateAlertPin from './screens/update_panicPin_screen.js';
 import PasswordAuthentication from './screens/PasswordAuthetication.js';
 import { SessionProvider } from './screens/SessionProvider.js';  // Import the SessionProviderimport contactUs from './screens/contactUs.js';
-
+import ContactUs from './screens/contactUs.js';
+import ChatbotPage from './screens/chatbot_page.js';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -79,65 +80,6 @@ export default function App() {
 
   return (
     <NavigationContainer>
-     
-     {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" /> // Display a loading indicator while data is being fetched
-      ) : (
-        <Stack.Navigator initialRouteName={route}>
-          <Stack.Screen name="LoginOrSignup"  component={LoginOrSignup} options={{headerShown: false}}/>
-          <Stack.Screen name="Login"  component={Login} options={{headerShown: false}}/>
-          <Stack.Screen name="LandingPage"  component={LandingPage} options={{headerShown: false}}/>
-          <Stack.Screen name="Registration" component={Registration}  options={{ headerShown: false }}  />
-          <Stack.Screen name="PersonalInfo" component={PersonalInfoForm}  options={{ headerShown: false }} />
-          <Stack.Screen name="ContactDetails" component={ContactDetailsScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="emailSuccess" component={EmailVerificationScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="Success" component={SuccessScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="Terms" component={TermsScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="OnboardingOne" component={OnboardingOne} options={{ headerShown: false }} />
-          <Stack.Screen name="OnboardingTwo" component={OnboardingTwo} options={{ headerShown: false }} />
-          <Stack.Screen name="OnboardingThree" component={OnboardingThree} options={{ headerShown: false }} />
-          <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="VerifyApp" component={ActivateApp}  options={{ headerShown: false }} />
-          <Stack.Screen name="Home" component={NavigationBar}  options={{ headerShown: false }} />
-          <Stack.Screen name="PersonalInfoScreen" component={PersonalInfoScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="ManageCard" component={ManageCard}  options={{ headerShown: false }} />
-          <Stack.Screen name="ManageScreen" component={ManageScreen}  options={{ headerShown: false }} />
-          <Stack.Screen name="SavingsAccount" component={SavingsAccount} options={{ headerShown: false }} />
-          <Stack.Screen name="Congratulations" component={CongratulationsScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="contactUs" component={contactUs} options={{ headerShown: false }} />
-          <Stack.Screen
-          name="CardSettings"
-          component={CardSettings}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="UpdatePin"
-          component={UpdatePin}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PinEntry"
-          component={PinEntry} 
-          options={{ headerShown: false }} 
-        />
-         <Stack.Screen
-          name="CratePanicPin"
-          component={CreatePanicPin} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen
-          name="UpdateRemotePin"
-          component={UpdateRemotePin} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen
-          name="UpdateAlertPin"
-          component={UpdateAlertPin} 
-          options={{ headerShown: false }} 
-        />
-          </Stack.Navigator>
-      )}
       <TouchableWithoutFeedback onPress={resetTimer} onTouchStart={resetTimer}>
         <View style={{ flex: 1 }}>
           {isLoading ? (
@@ -161,6 +103,7 @@ export default function App() {
               <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen} options={{ headerShown: false }} />
               <Stack.Screen name="VerifyApp" component={ActivateApp} options={{ headerShown: false }} />
               <Stack.Screen name="PasswordAuthentication" component={PasswordAuthentication} options={{ headerShown: false }} />
+              <Stack.Screen name="contactUs" component={ContactUs} options={{ headerShown: false }} />
               {/* Only wrap the 'Home' and later screens with SessionProvider */}
               <Stack.Screen name="Home">
                 {() => (
@@ -181,6 +124,7 @@ export default function App() {
               <Stack.Screen name="CratePanicPin" component={CreatePanicPin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateRemotePin" component={UpdateRemotePin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateAlertPin" component={UpdateAlertPin} options={{ headerShown: false }} />
+              <Stack.Screen name="chatbot" component={ChatbotPage} options={{ headerShown: false }} />
             </Stack.Navigator>
           )}
         </View>
