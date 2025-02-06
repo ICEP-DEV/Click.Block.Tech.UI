@@ -5,19 +5,22 @@ import {
 } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import axios from 'axios';
-import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
+import { Modal } from 'react-native';
 
-const storage = require('../async_storage');
 import { BASE_URL } from '../API/API';
+const storage = require('../async_storage');
 
 const StatementMenu = () => {
+  const [modalVisible, setModalVisible] = useState(false);  // Move this inside the component
   const [selectedDateRange, setSelectedDateRange] = useState('1 Month');
   const [email, setEmail] = useState('');
   const [isEmailSelected, setIsEmailSelected] = useState(false);
   const [viewStatement, setViewStatement] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [accountName, setAccountName] = useState('');
+  const [accountID, setAccountID] = useState('');
 
   const validateEmail = (email) => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -38,15 +41,27 @@ const StatementMenu = () => {
   const fetchTransactions = async (range) => {
     try {
       const accID = await storage.getItem('accountID');
-      const accName = await storage.getItem('accountName'); 
-      setAccountName(accName || 'N/A');
+      const firstName = await storage.getItem('userName');
+      const lastName =  await storage.getItem('userSurname');
+      const accName = firstName + ' ' + lastName;
 
+      setAccountID(accID || 'N/A');
+      setAccountName(accName || 'N/A');
+  
       const startDate = calculateStartDate(range).toISOString().split('T')[0];
       const endDate = new Date().toISOString().split('T')[0];
       const response = await axios.get(`${BASE_URL}/generate-statement?accountId=${accID}&startDate=${startDate}&endDate=${endDate}`);
       
-      setTransactions(response.data);
-      console.log('Fetched transactions:', response.data);
+      // Ensure correct field mapping
+      const formattedTransactions = response.data.map(txn => ({
+        date: txn.TransactionDate,
+        type: txn.TransactionType,
+        amount: txn.TransactionAmount,
+        status: txn.Status,
+      }));
+  
+      setTransactions(formattedTransactions);
+      console.log('Fetched transactions:', formattedTransactions);
     } catch (error) {
       console.error('Error fetching transactions:', error);
       Alert.alert('Error', 'Failed to fetch transactions.');
@@ -76,104 +91,96 @@ const StatementMenu = () => {
   };
 
   const generatePDF = async () => {
-    if (!(await requestStoragePermission())) {
-      Alert.alert('Permission Denied', 'Storage permission is required to download the PDF.');
-      return;
-    }
-
     const htmlContent = `
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h1 { text-align: center; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid black; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-          </style>
-        </head>
-        <body>
-          <h1>Bank Statement</h1>
-          <p><strong>Account Name:</strong> ${accountName}</p>
-          <p><strong>Date Range:</strong> Last ${selectedDateRange}</p>
-          <table>
+    <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { text-align: center; }
+          table {width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 0px solid black; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+        </style>
+      </head>
+      <body>
+        <h1>Bank Statement</h1>
+        <p><strong>Account Holder:</strong> ${accountName}</p>
+        <p><strong>Account Number:</strong> ${accountID}</p>
+        <p><strong>Date Range:</strong> Last ${selectedDateRange}</p>
+        <table>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+          ${transactions.map(txn => `
             <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Amount</th>
+              <td>${txn.date || 'N/A'}</td>
+              <td>${txn.type || 'N/A'}</td>
+              <td>${txn.amount || 'N/A'}</td>
+              <td>${txn.status || 'N/A'}</td>
             </tr>
-            ${transactions.map(txn => `
-              <tr>
-                <td>${txn.date || 'N/A'}</td>
-                <td>${txn.details || 'No details'}</td>
-                <td>${txn.amount || 'N/A'}</td>
-              </tr>
-            `).join('')}
-          </table>
-        </body>
-      </html>
+          `).join('')}
+        </table>
+      </body>
+    </html>
     `;
 
     try {
-      const options = {
+      const { uri } = await Print.printToFileAsync({
         html: htmlContent,
-        fileName: `Statement_${selectedDateRange.replace(" ", "_")}`,
-        directory: 'Download',
-      };
+        base64: false,
+      });
 
-      const file = await RNHTMLtoPDF.convert(options);
-      Alert.alert('Download Complete', `PDF saved to ${file.filePath}`);
+      Alert.alert('PDF Generated', `PDF saved to ${uri}`);
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      }
     } catch (error) {
       console.error('Error generating PDF:', error);
       Alert.alert('Error', 'Failed to generate PDF.');
     }
   };
 
-  const downloadAndOpenPDF = async () => {
-    try {
-      const fileUri = FileSystem.documentDirectory + "statement.pdf";
-
-      // Generate PDF content
-      const htmlContent = `
-        Account Name: ${accountName}\n
-        Date Range: Last ${selectedDateRange}\n
-        Transactions:\n
-        ${transactions.map(txn => `${txn.date || 'N/A'} - ${txn.details || 'No details'} - ${txn.amount || 'N/A'}`).join('\n')}
-      `;
-
-      await FileSystem.writeAsStringAsync(fileUri, htmlContent, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
-
-      console.log("File saved to:", fileUri);
-
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(fileUri);
-      } else {
-        Alert.alert("Sharing not available", "PDF saved at: " + fileUri);
-      }
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-    }
-  };
-
   const renderStatement = () => (
-    <ScrollView style={{ marginTop: 20 }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Account Name: {accountName}</Text>
-      <Text style={{ fontSize: 16, marginVertical: 10 }}>Date Range: Last {selectedDateRange}</Text>
-      <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Transactions:</Text>
-      {transactions.length > 0 ? (
-        transactions.map((txn, index) => (
-          <View key={index} style={{ marginVertical: 10 }}>
-            <Text>Date: {txn.date || 'N/A'}</Text>
-            <Text>Description: {txn.details || 'No details'}</Text>
-            <Text>Amount: {txn.amount || 'N/A'}</Text>
-          </View>
-        ))
-      ) : (
-        <Text>No transactions available for this period.</Text>
-      )}
-    </ScrollView>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <View style={{
+        flex: 1, justifyContent: 'center', alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      }}>
+        <View style={{
+          width: '90%', backgroundColor: 'white', padding: 20,
+          borderRadius: 10, elevation: 5
+        }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Account Holder: {accountName}</Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Account Number: {accountID}</Text>
+          <Text style={{ fontSize: 16, marginVertical: 10 }}>Date Range: Last {selectedDateRange}</Text>
+          <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Transactions:</Text>
+
+          <ScrollView style={{ maxHeight: 300 }}>
+            {transactions.length > 0 ? transactions.map((txn, index) => (
+              <View key={index} style={{ marginVertical: 10 }}>
+                <Text>Date: {txn.date || 'N/A'}</Text>
+                <Text>Type: {txn.type || 'N/A'}</Text>
+                <Text>Amount: {txn.amount || 'N/A'}</Text>
+                <Text>Status: {txn.status || 'N/A'}</Text>
+              </View>
+            )) : (
+              <Text>No transactions available for this period.</Text>
+            )}
+          </ScrollView>
+
+          <Button title="Close" onPress={() => setModalVisible(false)} />
+        </View>
+      </View>
+    </Modal>
   );
 
   return (
@@ -196,13 +203,10 @@ const StatementMenu = () => {
         ))}
       </RadioButton.Group>
 
-      <TouchableOpacity onPress={generatePDF}>
-        <Button title="Generate PDF" />
-      </TouchableOpacity>
+      <Button title="Download PDF" onPress={generatePDF} />
+      <Button title="View Statement" onPress={() => setModalVisible(true)} />
 
-      <TouchableOpacity onPress={downloadAndOpenPDF} style={{ marginTop: 10 }}>
-        <Button title="Download & Open PDF" />
-      </TouchableOpacity>
+      {renderStatement()}
 
       <TouchableOpacity onPress={() => { setIsEmailSelected(true); setViewStatement(false); }} style={{ marginTop: 10 }}>
         <Button title="Send via Email" />
@@ -220,12 +224,6 @@ const StatementMenu = () => {
           <Button title="Send Statement" onPress={() => Alert.alert('Feature not implemented yet')} />
         </View>
       )}
-
-      <TouchableOpacity onPress={() => setViewStatement(true)} style={{ marginTop: 20 }}>
-        <Button title="View Statement" />
-      </TouchableOpacity>
-
-      {viewStatement && renderStatement()}
     </View>
   );
 };

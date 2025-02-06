@@ -33,6 +33,10 @@ const SavingsAccount = () => {
         setFirstName(customerData.FirstName || '');
         setBalance(customerData.BankAccount.Balance || 0);
 
+        await storage.setItem('userName', customerData.FirstName); //SEND NAME FOR THE STATEMENT for statementMenu page
+        await storage.setItem('userSurname', customerData.LastName);
+
+
         // Fetch transactions based on the Bank Account ID (assuming it's part of the response)
         const accID = await storage.getItem('accountID');
         const transactionsResponse = await axios.get(`${BASE_URL}getAllTransactionByAccID/${accID}`);
