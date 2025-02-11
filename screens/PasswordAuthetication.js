@@ -1,208 +1,168 @@
 import React, { useState } from 'react';
-import { 
-  View, Text, Button, TextInput, Alert, TouchableOpacity, 
-  PermissionsAndroid, Platform 
-} from 'react-native';
-import { RadioButton } from 'react-native-paper';
+import { View, StyleSheet, Text, SafeAreaView, Alert , TouchableOpacity} from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import { BASE_URL } from '../API/API';
+import { Ionicons } from '@expo/vector-icons';
 
 const storage = require('../async_storage');
-import { BASE_URL } from '../API/API';
+ 
+const PasswordAuthetication = () => {
+  const [Email, setEmail] = useState('');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const navigation = useNavigation();
 
-const StatementMenu = () => {
-  const [selectedDateRange, setSelectedDateRange] = useState('1 Month');
-  const [email, setEmail] = useState('');
-  const [isEmailSelected, setIsEmailSelected] = useState(false);
-  const [viewStatement, setViewStatement] = useState(false);
-  const [transactions, setTransactions] = useState([]);
-  const [accountName, setAccountName] = useState('');
-
-  const validateEmail = (email) => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
+  //OPM - Navigate to the previous screen
+  const handleBackPress = () => {
+    navigation.goBack(); 
   };
 
-  const calculateStartDate = (range) => {
-    const today = new Date();
-    switch (range) {
-      case '1 Month': return new Date(today.setMonth(today.getMonth() - 1));
-      case '3 Months': return new Date(today.setMonth(today.getMonth() - 3));
-      case '6 Months': return new Date(today.setMonth(today.getMonth() - 6));
-      case '12 Months': return new Date(today.setMonth(today.getMonth() - 12));
-      default: return today;
-    }
-  };
+  const handleNext = async () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const fetchTransactions = async (range) => {
-    try {
-      const accID = await storage.getItem('accountID');
-      const accName = await storage.getItem('accountName'); 
-      setAccountName(accName || 'N/A');
-
-      const startDate = calculateStartDate(range).toISOString().split('T')[0];
-      const endDate = new Date().toISOString().split('T')[0];
-      const response = await axios.get(`${BASE_URL}/generate-statement?accountId=${accID}&startDate=${startDate}&endDate=${endDate}`);
-      
-      setTransactions(response.data);
-      console.log('Fetched transactions:', response.data);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-      Alert.alert('Error', 'Failed to fetch transactions.');
-    }
-  };
-
-  const requestStoragePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission',
-            message: 'App needs access to your storage to download PDF',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
-    }
-    return true;
-  };
-
-  const generatePDF = async () => {
-    if (!(await requestStoragePermission())) {
-      Alert.alert('Permission Denied', 'Storage permission is required to download the PDF.');
+    //OPM - Email validation
+    if (!emailPattern.test(Email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
 
-    const htmlContent = `
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h1 { text-align: center; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid black; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-          </style>
-        </head>
-        <body>
-          <h1>Bank Statement</h1>
-          <p><strong>Account Name:</strong> ${accountName}</p>
-          <p><strong>Date Range:</strong> Last ${selectedDateRange}</p>
-          <table>
-            <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Amount</th>
-            </tr>
-            ${transactions.map(txn => `
-              <tr>
-                <td>${txn.date || 'N/A'}</td>
-                <td>${txn.details || 'No details'}</td>
-                <td>${txn.amount || 'N/A'}</td>
-              </tr>
-            `).join('')}
-          </table>
-        </body>
-      </html>
-    `;
+    setIsSendingOtp(true);
 
     try {
-      const options = {
-        html: htmlContent,
-        fileName: `Statement_${selectedDateRange.replace(" ", "_")}`,
-        directory: 'Download',
-      };
+      // Retrieve CustID from AsyncStorage
+      let CustID = await storage.getItem('CustID_Nr');
+      
+      if (!CustID) {
+        
+        const emailResponse = await axios.get(`${BASE_URL}get_customer_byEmail/${Email}`);
+        
+        if (emailResponse.data && emailResponse.data.CustID_Nr) {
+          CustID = emailResponse.data.CustID_Nr;
+          await storage.setItem('CustID_Nr', CustID );
+          
+        } else {
+          Alert.alert('Error', 'No customer found with the provided email.');
+          return;
+        }
+      }
 
-      const file = await RNHTMLtoPDF.convert(options);
-      Alert.alert('Download Complete', `PDF saved to ${file.filePath}`);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      Alert.alert('Error', 'Failed to generate PDF.');
-    }
-  };
+      // Fetch customer details
+      const customerResponse = await axios.get(`${BASE_URL}/get_customer/${CustID}`);
+      const customerData = customerResponse.data;
 
-  const downloadAndOpenPDF = async () => {
-    try {
-      const fileUri = FileSystem.documentDirectory + "statement.pdf";
+      // Check if email matches
+      if (customerData.Email !== Email) {
+        Alert.alert('Email Mismatch', 'The entered email does not match our records.');
+        return;
+      }
 
-      // Generate PDF content
-      const htmlContent = `
-        Account Name: ${accountName}\n
-        Date Range: Last ${selectedDateRange}\n
-        Transactions:\n
-        ${transactions.map(txn => `${txn.date || 'N/A'} - ${txn.details || 'No details'} - ${txn.amount || 'N/A'}`).join('\n')}
-      `;
+      // Generate OTP if email matches
+      const otpResponse = await axios.post(`${BASE_URL}/generate-otp`, { Email });
+      console.log('API Response:', otpResponse.data);
 
-      await FileSystem.writeAsStringAsync(fileUri, htmlContent, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
-
-      console.log("File saved to:", fileUri);
-
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(fileUri);
+      if (otpResponse.status === 200) {
+        Alert.alert('Success', 'Verification code sent. Check your inbox.', [
+          {
+            text: 'OK',
+            onPress: () =>
+              navigation.navigate('PasswordVerificationCode', { Email }),
+          },
+        ]);
       } else {
-        Alert.alert("Sharing not available", "PDF saved at: " + fileUri);
+        Alert.alert('Error', 'Failed to send verification code. Please try again.');
       }
     } catch (error) {
-      console.error("Error downloading PDF:", error);
+      
+      Alert.alert('Error', 'No customer found with the provided email.');
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 20, marginBottom: 10 }}>Statement for Savings Account</Text>
+    <SafeAreaView style={styles.safeContainer}>
+      <LinearGradient colors={['#0F0C29', '#16335D', '#1E5E98']} style={styles.gradient}>
+        
+        {/* OPM - Adding a back button */}
+        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+            <Ionicons name="arrow-back" size={35} color="white" />
+        </TouchableOpacity>
 
-      <Text style={{ marginBottom: 10 }}>Select Date Range:</Text>
-      <RadioButton.Group 
-        onValueChange={(value) => {
-          setSelectedDateRange(value);
-          fetchTransactions(value);
-        }} 
-        value={selectedDateRange}
-      >
-        {['1 Month', '3 Months', '6 Months', '12 Months'].map((range) => (
-          <View key={range} style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <RadioButton value={range} />
-            <Text>{`Last ${range}`}</Text>
-          </View>
-        ))}
-      </RadioButton.Group>
+        {/* OPM - Design layout of the page */}
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Forgot Remote Pin</Text>
+          <Text style={styles.subtitle}>Enter your email to receive a verification code to proceed.</Text>
 
-      <TouchableOpacity onPress={generatePDF}>
-        <Button title="Generate PDF" />
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={downloadAndOpenPDF} style={{ marginTop: 10 }}>
-        <Button title="Download & Open PDF" />
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => { setIsEmailSelected(true); setViewStatement(false); }} style={{ marginTop: 10 }}>
-        <Button title="Send via Email" />
-      </TouchableOpacity>
-
-      {isEmailSelected && (
-        <View style={{ marginTop: 20 }}>
           <TextInput
-            style={{ borderBottomWidth: 1, marginBottom: 20 }}
-            placeholder="Enter email address"
-            keyboardType="email-address"
-            value={email}
+            label="Enter your email address"
+            value={Email}
             onChangeText={setEmail}
+            style={styles.input}
+            mode="outlined"
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
-          <Button title="Send Statement" onPress={() => Alert.alert('Feature not implemented yet')} />
+
+          <Button
+            mode="contained"
+            onPress={handleNext}
+            style={styles.button}
+            loading={isSendingOtp}
+            disabled={isSendingOtp}
+          >
+            {isSendingOtp ? 'Sending...' : 'Next'}
+          </Button>
         </View>
-      )}
-    </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
-export default StatementMenu;
+const styles = StyleSheet.create({
+  safeContainer: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    zIndex: 10,
+  },
+  formContainer: {
+    width: '90%',
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 3,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#003366',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  input: {
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#003366',
+    marginTop: 10,
+  },
+});
+
+export default PasswordAuthetication;

@@ -311,10 +311,10 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
     
   };
 
-  // const handleForgotPin = () => {
-  //   // alert('Forgot PIN clicked');
-  //   navigation.navigate('PasswordAuthentication');
-  // };
+  const handleForgotPin = () => {
+    // alert('Forgot PIN clicked');
+    navigation.navigate('PasswordAuthentication');
+  };
 
   return (
     <View style={styles.container}>
