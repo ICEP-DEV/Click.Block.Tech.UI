@@ -71,6 +71,7 @@ const PersonalInfoScreen = ({ navigation }) => {
 
       <View style={styles.contentContainer}>
         <Text style={styles.subHeader}>Contact our support centre to update the details below.</Text>
+
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Fullname:</Text>
           <TextInput
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute', // Sticks the header at the top
-    top: 0,
+    top: 25,
     left: 0,
     right: 0,
     zIndex: 1, // Ensures header stays on top
@@ -150,12 +151,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    marginTop: '20%',  // Adds space to avoid overlapping with the header
+    marginTop: '25%',  // Adds space to avoid overlapping with the header
     paddingHorizontal: 20,
   },
   subHeader: {
     fontSize: 14, 
-    color: '#02457A', //OPM - Changed the text color to match the one on the prototype
+    color: '#02457A', //OPM - Changed the text color to match the prototypr
     marginBottom: 20,
     textAlign: 'left',
     //OPM - Adding shadow to the sub-heading
