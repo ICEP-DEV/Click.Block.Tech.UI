@@ -4,11 +4,23 @@ import axios from 'axios';
 import { BASE_URL } from '../API/API';
 import storage from '../async_storage';
 import Icon from 'react-native-vector-icons/Ionicons'; // Importing Ionicons for back arrow
+import { useFonts, BebasNeue_400Regular } from '@expo-google-fonts/bebas-neue'; //OPM - Importing the Bebas Neue Font 
 
 const PersonalInfoScreen = ({ navigation }) => {
   const [customerData, setCustomerData] = useState(null); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
+
+  //OPM - Loading fonts
+  const [fontsLoaded] = useFonts({
+    BebasNeue_400Regular,
+  });
+  
+  if (!fontsLoaded) {
+    console.error('App loading', error);
+    //return <AppLoading />;
+  }
+  
 
   useEffect(() => {
     const fetchCustomerData = async () => {
@@ -59,7 +71,6 @@ const PersonalInfoScreen = ({ navigation }) => {
 
       <View style={styles.contentContainer}>
         <Text style={styles.subHeader}>Contact our support centre to update the details below.</Text>
-
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Fullname:</Text>
           <TextInput
@@ -118,7 +129,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#002f66',
     width: '100%', // Full width
-    height: '15%', // Adjust height as needed (30% of screen height)
+    height: '7.4%', //OPM - Adjust height as needed (30% of screen height)
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute', // Sticks the header at the top
@@ -130,23 +141,27 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     left: 20,
-    top: 40,  // Adjust top to ensure it's not too close to the top edge
   },
   headerText: {
     fontSize: 24,
+    fontFamily: 'BebasNeue_400Regular', // OPM - Apply the font
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
   },
   contentContainer: {
-    marginTop: '40%',  // Adds space to avoid overlapping with the header
+    marginTop: '20%',  // Adds space to avoid overlapping with the header
     paddingHorizontal: 20,
   },
   subHeader: {
-    fontSize: 14,
-    color: '#333333',
+    fontSize: 14, 
+    color: '#02457A', //OPM - Changed the text color to match the one on the prototype
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: 'left',
+    //OPM - Adding shadow to the sub-heading
+    textShadowColor: 'rgba(0, 0, 0, 0.4)', // Black shadow
+    textShadowOffset: { width: 0, height: 0.1 }, // X: 0, Y: 4
+    textShadowRadius: 1.5, // Blur: 4
   },
   fieldContainer: {
     marginBottom: 15,
@@ -178,5 +193,10 @@ export default PersonalInfoScreen;
 
 
 
-
+<View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="arrow-back" size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>MY DETAILS</Text>
+      </View>
  

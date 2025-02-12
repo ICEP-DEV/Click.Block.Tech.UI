@@ -5,7 +5,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 const SessionContext = createContext();
 
 export const SessionProvider = ({ children }) => {
-  const INACTIVITY_TIMEOUT = 3 * 60 * 1000; // 2 minutes
+  const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 2 minutes
   const TIMER_INTERVAL = 1000; // 1 second
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
