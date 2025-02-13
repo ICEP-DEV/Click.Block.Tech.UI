@@ -1,27 +1,15 @@
 import React, { useState, useEffect } from 'react'; 
-import { View, Text, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {View, Text, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '../API/API';
 import storage from '../async_storage';
 import Icon from 'react-native-vector-icons/Ionicons'; // Importing Ionicons for back arrow
-import { useFonts, BebasNeue_400Regular } from '@expo-google-fonts/bebas-neue'; //OPM - Importing the Bebas Neue Font 
 
 const PersonalInfoScreen = ({ navigation }) => {
   const [customerData, setCustomerData] = useState(null); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
-
-  //OPM - Loading fonts
-  const [fontsLoaded] = useFonts({
-    BebasNeue_400Regular,
-  });
   
-  if (!fontsLoaded) {
-    console.error('App loading', error);
-    //return <AppLoading />;
-  }
-  
-
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
@@ -71,9 +59,10 @@ const PersonalInfoScreen = ({ navigation }) => {
 
       <View style={styles.contentContainer}>
         <Text style={styles.subHeader}>Contact our support centre to update the details below.</Text>
-
+        <Text style={styles.headline}>Personal Information : </Text>
+         
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Fullname:</Text>
+          <Text style={styles.label}>Full name(s):</Text>
           <TextInput
             style={styles.input}
             value={`${customerData.FirstName} ${customerData.LastName}`}
@@ -100,21 +89,47 @@ const PersonalInfoScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Date of Birth:</Text>
+          <Text style={styles.label}>Identity Number:</Text>
           <TextInput
             style={styles.input}
-            value={customerData.DateOfBirth || ''}
+            value={customerData.CustID_Nr || ''}
             editable={false}
           />
         </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Residential Address:</Text>
-          <TextInput
-            style={styles.input}
-            value={customerData.Address || ''}
+        <Text style={styles.resheadline}>Residential Address:</Text>
+
+        <View style={styles.resContainer}>
+
+           {/* OPM - Country */}
+           <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[2]} 
             editable={false}
           />
+
+          {/* OPM - Address line 1 */}
+          <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[0]} 
+            editable={false}
+          />
+
+          {/* OPM - City*/}
+          <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[1]}
+            editable={false}
+          />
+
+          {/* OPM - ZipCode*/}
+          <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[3]}
+            editable={false}
+          />
+          
+          
         </View>
       </View>
     </View>
@@ -156,31 +171,85 @@ const styles = StyleSheet.create({
   },
   subHeader: {
     fontSize: 14, 
-    color: '#02457A', //OPM - Changed the text color to match the prototypr
-    marginBottom: 20,
+    color: '#02457A', //OPM - Changed the text color to match the prototype
+    fontWeight: 'Regular',
+    marginBottom: 15,
     textAlign: 'left',
     //OPM - Adding shadow to the sub-heading
-    textShadowColor: 'rgba(0, 0, 0, 0.4)', // Black shadow
-    textShadowOffset: { width: 0, height: 0.1 }, // X: 0, Y: 4
-    textShadowRadius: 1.5, // Blur: 4
+    textShadowColor: 'rgba(0, 0, 0, 0.4)', 
+    textShadowOffset: { width: 0, height: 0.1 }, 
+    textShadowRadius: 1.5, 
   },
-  fieldContainer: {
-    marginBottom: 15,
-  },
-  label: {
+  headline:{
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#003366',
-    marginBottom: 5,
+    color: '#02457A',
+    marginBottom: 10,
+     //OPM - Adding shadow to the sub-heading
+     textShadowColor: 'rgba(0, 0, 0, 0.4)', 
+     textShadowOffset: { width: 0.8, height: 0.5 }, 
+     textShadowRadius: 1.5, 
+  },
+
+  //OPM - Adding the residential style for residence category
+  resheadline:{
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#02457A',
+    margin: 0,
+    marginTop:10,
+    marginBottom: 15,
+     //OPM - Adding shadow to the sub-heading
+     textShadowColor: 'rgba(0, 0, 0, 0.4)', 
+     textShadowOffset: { width: 0.8, height: 0.5 }, 
+     textShadowRadius: 1.5, 
+  },
+  fieldContainer: {
+    marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  //OPM - Adding the residential style for residence category
+  resContainer:{
+    marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#02457A',
+    marginBottom: 10,
+    marginLeft: 10,
+    //OPM - Adding shadow to the sub-heading
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 0.2, height: 0.2 },
+    textShadowRadius: 1.5, // Blur: 4
   },
   input: {
-    fontSize: 16,
-    padding: 15,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 10,
+    fontSize: 15,
+    fontWeight: 'regular',
+    marginLeft: 10,
+    marginRight: 10,
+    padding: 5,
+    borderColor: '#02457A',
+    borderWidth: 2.5,
+    borderRadius: 5,
     backgroundColor: '#f2f2f2',
-    color: '#333333',
+    color: '#02457A',
+  },
+  resinput: {
+    fontSize: 15,
+    fontWeight: 'regular',
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 18,
+    padding: 5,
+    borderColor: '#02457A',
+    borderWidth: 2.5,
+    borderRadius: 5,
+    backgroundColor: '#f2f2f2',
+    color: '#02457A',
   },
   loadingContainer: {
     flex: 1,
@@ -190,14 +259,4 @@ const styles = StyleSheet.create({
 });
 
 export default PersonalInfoScreen;
-
-
-
-
-<View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>MY DETAILS</Text>
-      </View>
  
