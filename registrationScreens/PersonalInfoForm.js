@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   },
   dateInput: {
     height: 45,
-    width: '30%',
+    width: '20%',
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
