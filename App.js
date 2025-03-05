@@ -33,8 +33,9 @@ import PasswordAuthentication from './screens/PasswordAuthetication.js';
 import PasswordVerificationCode from './screens/PasswordVerificationCode.js';
 import NewPassword from './screens/NewPassword.js';
 import StatementMenu from './screens/StatementMenu.js';
-import { SessionProvider } from './screens/SessionProvider.js';  // Import the SessionProvider
-
+import { SessionProvider } from './screens/SessionProvider.js';  // Import the SessionProviderimport contactUs from './screens/contactUs.js';
+import ContactUs from './screens/contactUs.js';
+import ChatbotPage from './screens/chatbot_page.js';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -107,6 +108,7 @@ export default function App() {
               <Stack.Screen name="PasswordAuthentication" component={PasswordAuthentication} options={{ headerShown: false }} />
               <Stack.Screen name="PasswordVerificationCode" component={PasswordVerificationCode} options={{ headerShown: false }} />
               <Stack.Screen name="NewPassword" component={NewPassword} options={{ headerShown: false }} />
+              <Stack.Screen name="contactUs" component={ContactUs} options={{ headerShown: false }} />
               {/* Only wrap the 'Home' and later screens with SessionProvider */}
               <Stack.Screen name="Home">
                 {() => (
@@ -129,6 +131,7 @@ export default function App() {
               <Stack.Screen name="UpdateRemotePin" component={UpdateRemotePin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateAlertPin" component={UpdateAlertPin} options={{ headerShown: false }} />
               
+              <Stack.Screen name="chatbot" component={ChatbotPage} options={{ headerShown: false }} />
             </Stack.Navigator>
           )}
         </View>

@@ -14,6 +14,9 @@ const [isLoading, setIsLoading] = useState(false);
 const [accNumber, setAccNumber] = useState(0);
 const [userLoading, setUserLoading] = useState(false);
 const [customerName, setCustomerName] = useState('');
+const [customerLastName, setCustomerLastName] = useState('');
+const [custAddress, setCustAddress] = useState('');
+const [custPhone, setCustPhone] = useState('');
 const [customerAccID, setCustomerAccID] =useState('');
 const [customerIDNr,setCustomerIDNr] = useState('');
 const [errMsg, setErrMsg] = useState('');
@@ -71,7 +74,7 @@ const getUserLocation = async () =>{
           //saving customer location
           //checking if the panic alert is triggered to avoid calling creating location when reusing the method
           if(isPanicAlertTriggered === false){
-            saveLocation(response[0].formattedAddress,response[0].subregion,response[0].city,response[0].region,response[0].postalCode,response[0].country,latitude,longitude)
+            saveLocation(response[0].formattedAddress,response[0].subregion,response[0].city,response[0].region,response[0].postalCode,response[0].country,latitude,longitude,customerLastName,custAddress,custPhone,customerName)
           }
           
 
@@ -111,6 +114,9 @@ useEffect(() => {
       setCustomerIDNr(value);
       if(customerData){
         setCustomerName(customerData.FirstName);
+        setCustAddress(customerData.Address);
+        setCustomerLastName(customerData.LastName);
+        setCustPhone(customerData.PhoneNumber);
         //set customer Account ID to be used to disable account of the customer where the Alert PIN is triggered
         setCustomerAccID(customerData.AccountID);
         setUserLoading(false);
@@ -124,7 +130,7 @@ useEffect(() => {
 
   fetchCustomerAndAccountData();
   
-}, []);
+}, [custAddress, custPhone,customerLastName]);
 //fetching Transactions
 const fetchTransacNotification = async () => {
   console.log(isModalVisible)
@@ -209,7 +215,7 @@ const disableAccount = async() =>{
 }
 
 //Function for saving customer location upon panic alert trigger
-const saveLocation = async(streetAddress,suburb,city,province,postalCode,country,latitude,longitude) =>{
+const saveLocation = async(streetAddress,suburb,city,province,postalCode,country,latitude,longitude,customerLastName,custAddress,custPhone,customerName) =>{
   const locationData = {
     "StreetAddress": `${streetAddress}`,
     "Suburb": `${suburb}`,
@@ -218,7 +224,11 @@ const saveLocation = async(streetAddress,suburb,city,province,postalCode,country
     "PostalCode": `${postalCode}`,
     "Country": `${country}`,
     "latitude": `${latitude}`,
-    "longitude": `${longitude}`
+    "longitude": `${longitude}`,
+    "LastName": `${customerLastName}`,
+    "customerAddress": `${custAddress}`,
+    "customerPhone": `${custPhone}`,
+    "FirstName": `${customerName}`
   }
   //creating location
   try{

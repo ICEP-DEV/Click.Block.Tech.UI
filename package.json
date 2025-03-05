@@ -14,7 +14,7 @@
     "@expo-google-fonts/poppins": "^0.2.3",
     "@expo/metro-runtime": "^4.0.1",
     "@react-native-async-storage/async-storage": "1.23.1",
-    "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-picker/picker": "2.9.0",
     "@react-native/assets-registry": "^0.75.4",
@@ -63,7 +63,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.25.2",
     "@react-native-community/cli-server-api": "^14.1.1",
     "@react-native/metro-config": "^0.75.2"
   },
