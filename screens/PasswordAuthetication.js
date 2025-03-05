@@ -1,164 +1,168 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, StyleSheet, StatusBar, Dimensions, Alert} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, StyleSheet, Text, SafeAreaView, Alert , TouchableOpacity} from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { BASE_URL } from '../API/API';
+import { Ionicons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
-
-export default function PasswordAuthentication() {
+const storage = require('../async_storage');
+ 
+const PasswordAuthetication = () => {
+  const [Email, setEmail] = useState('');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const navigation = useNavigation();
-  const [inputValue, setInputValue] = useState('');
-  const [error, setError] = useState('');
 
+  //OPM - Navigate to the previous screen
   const handleBackPress = () => {
-    navigation.goBack();
+    navigation.goBack(); 
   };
 
-  const validateInput = (value) => {
-    if (/^\d+$/.test(value) && value.length > 10) {
-      return; //OPM - Stop input if it's a phone number exceeding 10 digits
-    }
-  
-    setInputValue(value);
-  
-    // OPM - Basic email or phone number regex for validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //const phoneRegex = /^\d{10}$/;
+  const handleNext = async () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!value) {
-      setError('Field cannot be empty');
-    } else if (!emailRegex.test(value)) {
-      setError('Enter a valid email');
-    } else {
-      setError('');
+    //OPM - Email validation
+    if (!emailPattern.test(Email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
     }
-  };
 
-  const handleSubmit = () => {
-    if (!inputValue || error) {
-      Alert.alert('Error', 'Please correct the errors before proceeding.');
-    } else {
-      Alert.alert('Success', 'Verification code sent to your email, Please check your phone.');
-      //navigation.navigate('NextScreen'); // OPM - Replace with the desired screen
+    setIsSendingOtp(true);
+
+    try {
+      // Retrieve CustID from AsyncStorage
+      let CustID = await storage.getItem('CustID_Nr');
+      
+      if (!CustID) {
+        
+        const emailResponse = await axios.get(`${BASE_URL}get_customer_byEmail/${Email}`);
+        
+        if (emailResponse.data && emailResponse.data.CustID_Nr) {
+          CustID = emailResponse.data.CustID_Nr;
+          await storage.setItem('CustID_Nr', CustID );
+          
+        } else {
+          Alert.alert('Error', 'No customer found with the provided email.');
+          return;
+        }
+      }
+
+      // Fetch customer details
+      const customerResponse = await axios.get(`${BASE_URL}/get_customer/${CustID}`);
+      const customerData = customerResponse.data;
+
+      // Check if email matches
+      if (customerData.Email !== Email) {
+        Alert.alert('Email Mismatch', 'The entered email does not match our records.');
+        return;
+      }
+
+      // Generate OTP if email matches
+      const otpResponse = await axios.post(`${BASE_URL}/generate-otp`, { Email });
+      console.log('API Response:', otpResponse.data);
+
+      if (otpResponse.status === 200) {
+        Alert.alert('Success', 'Verification code sent. Check your inbox.', [
+          {
+            text: 'OK',
+            onPress: () =>
+              navigation.navigate('PasswordVerificationCode', { Email }),
+          },
+        ]);
+      } else {
+        Alert.alert('Error', 'Failed to send verification code. Please try again.');
+      }
+    } catch (error) {
+      
+      Alert.alert('Error', 'No customer found with the provided email.');
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#02457A" barStyle="light-content" />
+    <SafeAreaView style={styles.safeContainer}>
+      <LinearGradient colors={['#0F0C29', '#16335D', '#1E5E98']} style={styles.gradient}>
+        
+        {/* OPM - Adding a back button */}
+        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+            <Ionicons name="arrow-back" size={35} color="white" />
+        </TouchableOpacity>
 
-      <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={handleBackPress}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>Forgot Password</Text>
-          <View style={styles.placeholder} />
-        </View>
+        {/* OPM - Design layout of the page */}
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Forgot Remote Pin</Text>
+          <Text style={styles.subtitle}>Enter your email to receive a verification code to proceed.</Text>
 
-        {/* Main Content */}
-        <View style={styles.mainContent}>
-          <Text style={styles.instructions}>
-            Enter the email associated with your account.
-          </Text>
-
-          {/* Input Field */}
           <TextInput
-            style={[styles.input, error ? styles.inputError : null]}
-            placeholder="Email Address"
-            placeholderTextColor="#888"
-            value={inputValue}
-            onChangeText={validateInput}
+            label="Enter your email address"
+            value={Email}
+            onChangeText={setEmail}
+            style={styles.input}
+            mode="outlined"
             keyboardType="email-address"
+            autoCapitalize="none"
           />
 
-          {/* Error Message */}
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-          {/* Submit Button */}
-          <TouchableOpacity 
-            style={styles.submitButton} 
-            onPress={handleSubmit}
+          <Button
+            mode="contained"
+            onPress={handleNext}
+            style={styles.button}
+            loading={isSendingOtp}
+            disabled={isSendingOtp}
           >
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
+            {isSendingOtp ? 'Sending...' : 'Next'}
+          </Button>
         </View>
-      </View>
+      </LinearGradient>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  safeContainer: {
     flex: 1,
-    backgroundColor: '#02457A',
   },
-  content: {
+  gradient: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  header: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: '#02457A',
-    height: 60,
+    justifyContent: 'center',
   },
-  headerText: {
-    color: 'white',
-    fontSize: 20,
+  backButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    zIndex: 10,
+  },
+  formContainer: {
+    width: '90%',
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 3,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
-    flex: 1,
+    color: '#003366',
+    marginBottom: 10,
   },
-  placeholder: {
-    width: 24,
-  },
-  mainContent: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  instructions: {
+  subtitle: {
     fontSize: 16,
-    color: '#02457A',
-    textAlign: 'center',
+    color: '#666',
     marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  inputError: {
-    borderColor: 'red',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  submitButton: {
-    backgroundColor: '#02457A',
-    padding: 16,
-    borderRadius: 8,
-    width: '100%',
-    alignItems: 'center',
+  button: {
+    backgroundColor: '#003366',
     marginTop: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  submitButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
+
+export default PasswordAuthetication;

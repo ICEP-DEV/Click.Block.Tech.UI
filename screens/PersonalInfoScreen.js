@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
-import { View, Text, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {View, Text, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '../API/API';
 import storage from '../async_storage';
@@ -59,9 +59,10 @@ const PersonalInfoScreen = ({ navigation }) => {
 
       <View style={styles.contentContainer}>
         <Text style={styles.subHeader}>Contact our support centre to update the details below.</Text>
-
+        <Text style={styles.headline}>Personal Information : </Text>
+         
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Fullname:</Text>
+          <Text style={styles.label}>Full name(s):</Text>
           <TextInput
             style={styles.input}
             value={`${customerData.FirstName} ${customerData.LastName}`}
@@ -88,21 +89,47 @@ const PersonalInfoScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Date of Birth:</Text>
+          <Text style={styles.label}>Identity Number:</Text>
           <TextInput
             style={styles.input}
-            value={customerData.DateOfBirth || ''}
+            value={customerData.CustID_Nr || ''}
             editable={false}
           />
         </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Residential Address:</Text>
-          <TextInput
-            style={styles.input}
-            value={customerData.Address || ''}
+        <Text style={styles.resheadline}>Residential Address:</Text>
+
+        <View style={styles.resContainer}>
+
+           {/* OPM - Country */}
+           <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[2]} 
             editable={false}
           />
+
+          {/* OPM - Address line 1 */}
+          <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[0]} 
+            editable={false}
+          />
+
+          {/* OPM - City*/}
+          <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[1]}
+            editable={false}
+          />
+
+          {/* OPM - ZipCode*/}
+          <TextInput
+            style={styles.resinput}
+            value={customerData.Address.split(', ')[3]}
+            editable={false}
+          />
+          
+          
         </View>
       </View>
     </View>
@@ -118,11 +145,11 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#002f66',
     width: '100%', // Full width
-    height: '15%', // Adjust height as needed (30% of screen height)
+    height: '7.4%', //OPM - Adjust height as needed (30% of screen height)
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute', // Sticks the header at the top
-    top: 0,
+    top: 25,
     left: 0,
     right: 0,
     zIndex: 1, // Ensures header stays on top
@@ -130,41 +157,99 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     left: 20,
-    top: 40,  // Adjust top to ensure it's not too close to the top edge
   },
   headerText: {
     fontSize: 24,
+    fontFamily: 'BebasNeue_400Regular', // OPM - Apply the font
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
   },
   contentContainer: {
-    marginTop: '40%',  // Adds space to avoid overlapping with the header
+    marginTop: '25%',  // Adds space to avoid overlapping with the header
     paddingHorizontal: 20,
   },
   subHeader: {
-    fontSize: 14,
-    color: '#333333',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  fieldContainer: {
+    fontSize: 14, 
+    color: '#02457A', //OPM - Changed the text color to match the prototype
+    fontWeight: 'Regular',
     marginBottom: 15,
+    textAlign: 'left',
+    //OPM - Adding shadow to the sub-heading
+    textShadowColor: 'rgba(0, 0, 0, 0.4)', 
+    textShadowOffset: { width: 0, height: 0.1 }, 
+    textShadowRadius: 1.5, 
   },
-  label: {
+  headline:{
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#003366',
-    marginBottom: 5,
+    color: '#02457A',
+    marginBottom: 10,
+     //OPM - Adding shadow to the sub-heading
+     textShadowColor: 'rgba(0, 0, 0, 0.4)', 
+     textShadowOffset: { width: 0.8, height: 0.5 }, 
+     textShadowRadius: 1.5, 
+  },
+
+  //OPM - Adding the residential style for residence category
+  resheadline:{
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#02457A',
+    margin: 0,
+    marginTop:10,
+    marginBottom: 15,
+     //OPM - Adding shadow to the sub-heading
+     textShadowColor: 'rgba(0, 0, 0, 0.4)', 
+     textShadowOffset: { width: 0.8, height: 0.5 }, 
+     textShadowRadius: 1.5, 
+  },
+  fieldContainer: {
+    marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  //OPM - Adding the residential style for residence category
+  resContainer:{
+    marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#02457A',
+    marginBottom: 10,
+    marginLeft: 10,
+    //OPM - Adding shadow to the sub-heading
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 0.2, height: 0.2 },
+    textShadowRadius: 1.5, // Blur: 4
   },
   input: {
-    fontSize: 16,
-    padding: 15,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 10,
+    fontSize: 15,
+    fontWeight: 'regular',
+    marginLeft: 10,
+    marginRight: 10,
+    padding: 5,
+    borderColor: '#02457A',
+    borderWidth: 2.5,
+    borderRadius: 5,
     backgroundColor: '#f2f2f2',
-    color: '#333333',
+    color: '#02457A',
+  },
+  resinput: {
+    fontSize: 15,
+    fontWeight: 'regular',
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 18,
+    padding: 5,
+    borderColor: '#02457A',
+    borderWidth: 2.5,
+    borderRadius: 5,
+    backgroundColor: '#f2f2f2',
+    color: '#02457A',
   },
   loadingContainer: {
     flex: 1,
@@ -174,9 +259,4 @@ const styles = StyleSheet.create({
 });
 
 export default PersonalInfoScreen;
-
-
-
-
-
  

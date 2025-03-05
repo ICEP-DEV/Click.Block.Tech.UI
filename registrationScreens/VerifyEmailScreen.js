@@ -64,13 +64,13 @@ const VerifyEmailScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeContainer}>
-      <LinearGradient colors={['#003366', '#003366', '#ffffff']} style={styles.gradient}>
+      <LinearGradient colors={['#0F0C29', '#16335D','#1E5E98']} style={styles.gradient}>
         <View style={styles.formContainer}>
 
           {/* Progress Bar */}
           <View style={styles.progressContainer}>
-            <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>1</Text></View>
-            <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>2</Text></View>
+            <View style={[styles.progressSquare, styles.activeSquare]}><Text style={styles.activeProgressText}>1</Text></View>
+            <View style={[styles.progressSquare, styles.activeSquare]}><Text style={styles.activeProgressText}>2</Text></View>
             <View style={[styles.progressSquare, styles.activeSquare]}><Text style={styles.activeProgressText}>3</Text></View>
             <View style={styles.progressSquare}><Text style={styles.inactiveProgressText}>4</Text></View>
           </View>
@@ -127,11 +127,16 @@ const styles = StyleSheet.create({
   progressSquare: {
     width: 30,
     height: 30,
-    borderRadius: 5,
-    backgroundColor: '#ccc',
+    backgroundColor: '#80A2BC',
+    borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOpacity: 3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
   },
   activeSquare: {
     backgroundColor: '#02457A',
@@ -141,7 +146,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inactiveProgressText: {
-    color: '#02457A', // Dark blue text for inactive square
+    color: '#fff', // Dark blue text for inactive square
     fontWeight: 'bold',
   },
   title: {

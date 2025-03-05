@@ -66,12 +66,12 @@ const ContactDetailsScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeContainer}>
-      <LinearGradient colors={['#003366', '#003366', '#ffffff']} style={styles.gradient}>
+      <LinearGradient colors={['#0F0C29', '#16335D',"#1E5E98"]} style={styles.gradient}>
         <View style={styles.formContainer}>
           <View style={styles.progressContainer}>
             {/* Step 1 - Inactive */}
-            <View style={styles.progressSquare}>
-              <Text style={styles.inactiveText}>1</Text>
+            <View style={[styles.progressSquare, styles.activeSquare]}>
+              <Text style={styles.activeText}>1</Text>
             </View>
             {/* Step 2 - Active */}
             <View style={[styles.progressSquare, styles.activeSquare]}>
@@ -79,15 +79,16 @@ const ContactDetailsScreen = () => {
             </View>
             {/* Step 3 - Inactive */}
             <View style={styles.progressSquare}>
-              <Text style={styles.inactiveText}>3</Text>
+              <Text style={styles.activeText}>3</Text>
             </View>
             {/* Step 4 - Inactive */}
             <View style={styles.progressSquare}>
-              <Text style={styles.inactiveText}>4</Text>
+              <Text style={styles.activeText}>4</Text>
             </View>
           </View>
 
-          <Text style={styles.title}>EMAIL ACCOUNT</Text>
+          {/* OPM - Changing the title detail and style */}
+          <Text style={styles.title}>CONTACT DETAILS</Text>
           <Text style={styles.subtitle}>Verify your email account</Text>
 
           <TextInput
@@ -136,13 +137,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   progressSquare: {
-    width: 30,
+   width: 30,
     height: 30,
-    borderRadius: 5,
-    backgroundColor: '#ccc',
+    backgroundColor: '#80A2BC',
+    borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOpacity: 3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
   },
   activeSquare: {
     backgroundColor: '#003366',
@@ -161,15 +167,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#003366',
     marginBottom: 10,
+    textShadowColor: '#888',
+    textShadowOffset: { width: 1, height: 0.5 }, //Oamogetswe - Changed the shadow of the name
+    textShadowRadius: 1,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#02457A',
     marginBottom: 20,
     textAlign: 'center',
+    
   },
   input: {
     marginBottom: 20,
+     borderColor: "#02457A",
   },
   button: {
     backgroundColor: '#003366',

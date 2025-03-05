@@ -30,6 +30,9 @@ import CreatePanicPin from './screens/createPanicpin_screen.js';
 import UpdateRemotePin from './screens/update_remotePin_screen.js';
 import UpdateAlertPin from './screens/update_panicPin_screen.js';
 import PasswordAuthentication from './screens/PasswordAuthetication.js';
+import PasswordVerificationCode from './screens/PasswordVerificationCode.js';
+import NewPassword from './screens/NewPassword.js';
+import StatementMenu from './screens/StatementMenu.js';
 import { SessionProvider } from './screens/SessionProvider.js';  // Import the SessionProviderimport contactUs from './screens/contactUs.js';
 import ContactUs from './screens/contactUs.js';
 import ChatbotPage from './screens/chatbot_page.js';
@@ -103,6 +106,8 @@ export default function App() {
               <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen} options={{ headerShown: false }} />
               <Stack.Screen name="VerifyApp" component={ActivateApp} options={{ headerShown: false }} />
               <Stack.Screen name="PasswordAuthentication" component={PasswordAuthentication} options={{ headerShown: false }} />
+              <Stack.Screen name="PasswordVerificationCode" component={PasswordVerificationCode} options={{ headerShown: false }} />
+              <Stack.Screen name="NewPassword" component={NewPassword} options={{ headerShown: false }} />
               <Stack.Screen name="contactUs" component={ContactUs} options={{ headerShown: false }} />
               {/* Only wrap the 'Home' and later screens with SessionProvider */}
               <Stack.Screen name="Home">
@@ -117,6 +122,7 @@ export default function App() {
               <Stack.Screen name="ManageCard" component={ManageCard} options={{ headerShown: false }} />
               <Stack.Screen name="ManageScreen" component={ManageScreen} options={{ headerShown: false }} />
               <Stack.Screen name="SavingsAccount" component={SavingsAccount} options={{ headerShown: false }} />
+              <Stack.Screen name="StatementMenu" component={StatementMenu} options={{ headerShown: false }} />
               <Stack.Screen name="Congratulations" component={CongratulationsScreen} options={{ headerShown: false }} />
               <Stack.Screen name="CardSettings" component={CardSettings} options={{ headerShown: false }} />
               <Stack.Screen name="UpdatePin" component={UpdatePin} options={{ headerShown: false }} />
@@ -124,6 +130,7 @@ export default function App() {
               <Stack.Screen name="CratePanicPin" component={CreatePanicPin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateRemotePin" component={UpdateRemotePin} options={{ headerShown: false }} />
               <Stack.Screen name="UpdateAlertPin" component={UpdateAlertPin} options={{ headerShown: false }} />
+              
               <Stack.Screen name="chatbot" component={ChatbotPage} options={{ headerShown: false }} />
             </Stack.Navigator>
           )}

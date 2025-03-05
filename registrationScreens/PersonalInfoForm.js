@@ -88,7 +88,7 @@ const PersonalInfoForm = ({ route, navigation }) => {
   };
 
   return (
-    <LinearGradient colors={['#001F54', '#FFFFFF']} style={styles.background}>
+    <LinearGradient colors={['#0F0C29', '#16335D','#1E5E98']} style={styles.background}>
       
         <View style={styles.formContainer}>
           <View style={styles.stepContainer}>
@@ -163,8 +163,6 @@ const PersonalInfoForm = ({ route, navigation }) => {
             placeholderStyle={{ color: '#02457A' }}
             textStyle={{ color: '#02457A' }}
             containerStyle={{ marginBottom: 15 }}
-        
-        
           />
 
           <TextInput
@@ -252,11 +250,16 @@ const styles = StyleSheet.create({
   stepSquare: {
     width: 30,
     height: 30,
-    backgroundColor: '#ccc',
-    borderRadius: 5,
+    backgroundColor: '#80A2BC',
+    borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOpacity: 3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
   },
   activeStep: {
     backgroundColor: '#02457A',
@@ -270,6 +273,14 @@ const styles = StyleSheet.create({
     color: '#02457A',
     fontWeight: 'bold',
     marginBottom: 20,
+    //Oamogetswe - Changed the shadow of the Subtitle
+    fontSize: 18,
+    color: '#02457A',
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textShadowColor: '#888',
+    textShadowOffset: { width: 1, height: 0.5 }, 
+    textShadowRadius: 1, 
   },
   input: {
     width: '100%',
@@ -298,7 +309,7 @@ const styles = StyleSheet.create({
   },
   dateInput: {
     height: 45,
-    width: '30%',
+    width: '20%',
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
